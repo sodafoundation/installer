@@ -23,3 +23,18 @@
   copy:
     src: "{{ nbp_dir }}/flexvolume/opensds"
     dest: "{{ flexvolume_plugin_dir }}/opensds"
+
+- name: Configure opensds endpoint IP in opensds external provisioner
+  shell: |
+    sed -i 's/^args:.*/args: [-endpoint={{ opensds_endpoint }}]/g' pod-provisioner.yaml
+  args:
+    chdir: "{{ nbp_dir }}/provisioner"
+
+- name: Prepare and deploy opensds exteranl provisioner
+  shell: |
+    kubectl create -f serviceaccount.yaml
+    kubectl create -f clusterrole.yaml
+    kubectl create -f clusterrolebinding.yaml
+    kubectl create -f pod-provisoner.yaml
+  args:
+    chdir: "{{ nbp_dir }}/provisioner"

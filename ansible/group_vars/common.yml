@@ -22,7 +22,7 @@ dummy:
 # GENERAL #
 ###########
 
-opensds_release: v0.1.4 # The version should be at least v0.1.4.
+opensds_release: v0.1.7 # The version should be at least v0.1.4.
 nbp_release: v0.1.0 # The version should be at least v0.1.0.
 
 # These fields are not suggested to be modified
@@ -42,7 +42,9 @@ opensds_log_dir: /var/log/opensds
 ###########
 
 nbp_plugin_type: standalone # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
+opensds_endpoint: http://127.0.0.1:50040 # The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
 
+# These fields are not suggested to be modified
 flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opensds.io~opensds
 
 

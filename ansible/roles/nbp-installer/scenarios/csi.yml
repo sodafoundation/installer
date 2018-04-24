@@ -11,3 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+---
+- name: Configure opensds endpoint IP in config map
+  shell: |
+    sed -i 's/^opensdsendpoint.*/opensdsendpoint: {{ opensds_endpoint }}/g' deploy/csi-configmap-opensdsplugin.yaml
+  args:
+    chdir: "{{ nbp_dir }}/csi"
+
+- name: Prepare and deploy opensds csi plugin
+  shell: |
+    kubectl create -f deploy/
+  args:
+    chdir: "{{ nbp_dir }}/csi"

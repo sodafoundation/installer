@@ -13,14 +13,17 @@
 # limitations under the License.
 
 ---
-- name: Configure opensds endpoint IP in config map
-  shell: |
-    sed -i 's/^opensdsendpoint.*/opensdsendpoint: {{ opensds_endpoint }}/g' deploy/csi-configmap-opensdsplugin.yaml
-  args:
-    chdir: "{{ nbp_dir }}/csi"
+- name: Configure opensds endpoint IP in opensds csi plugin
+  lineinfile:
+    dest: "{{ nbp_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
+    regexp: '^  opensdsendpoint'
+    line: '  opensdsendpoint: {{ opensds_endpoint }}'
+    backup: yes
 
 - name: Prepare and deploy opensds csi plugin
   shell: |
-    kubectl create -f deploy/
+    . /etc/profile
+    kubectl create -f deploy/kubernetes
   args:
     chdir: "{{ nbp_dir }}/csi"
+  ignore_errors: yes

@@ -8,5 +8,3 @@ image:
   osdsdock: opensdsio/opensds-dock:latest
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
-# ImageRestartPolicy: valid values are "Never", and "Always"
-imageRestartPolicy: Never

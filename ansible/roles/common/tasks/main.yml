@@ -94,6 +94,11 @@
     state: directory
     mode: 0755
 
+- name: copy config templates into opensds global config folder
+  copy:
+    src: ../../../../conf/
+    dest: "{{ opensds_config_dir }}"
+
 - name: configure opensds global info
   shell: |
     cat > opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
@@ -106,6 +111,8 @@
     [osdsdock]
     api_endpoint = {{ dock_endpoint }}
     log_file = {{ dock_log_file }}
+    # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
+    dock_type = {{ dock_type }}
     # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
     enabled_backends = {{ enabled_backend }}
 

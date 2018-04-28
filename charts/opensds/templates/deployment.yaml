@@ -45,6 +45,13 @@ spec:
             - name: opensds-conf-dir
               mountPath: /etc/opensds
               mountPropagation: "Bidirectional"
+            - name: lvm-socket-dir
+              mountPath: /run/lvm
+            - name: tgt-socket-dir
+              mountPath: /var/run/tgtd
+            - name: tgt-conf-dir
+              mountPath: /etc/tgt
+              mountPropagation: "Bidirectional"
       volumes:
         - name: etcd-cert-dir
           hostPath:
@@ -54,3 +61,15 @@ spec:
           hostPath:
             path: /etc/opensds
             type: Directory
+        - name: lvm-socket-dir
+          hostPath:
+            path: /run/lvm
+            type: Directory
+        - name: tgt-socket-dir
+          hostPath:
+            path: /var/run/tgtd
+            type: Directory
+        - name: tgt-conf-dir
+          hostPath:
+            path: /etc/tgt
+            type: Directory     

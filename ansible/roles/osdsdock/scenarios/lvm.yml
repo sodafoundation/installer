@@ -13,9 +13,13 @@
 # limitations under the License.
 
 ---
-- name: install lvm2 external package when lvm backend enabled
+- name: install lvm2 ang tgt external package when lvm backend enabled
   apt:
-    name: lvm2
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - lvm2
+    - tgt
 
 - name: copy opensds lvm backend file if specify lvm backend
   copy:

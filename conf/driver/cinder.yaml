@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-tgtBindIp: 127.0.0.1 # change tgtBindIp to your real host ip, run 'ifconfig' to check
-tgtConfDir: /etc/tgt/conf.d
+authOptions:
+  endpoint: "http://192.168.56.104/identity"
+  domainId: "Default"
+  domainName: "Default"
+  username: "admin"
+  password: "admin"
+  tenantId: "04154b841eb644a3947506c54fa73c76"
+  tenantName: "admin"
 pool:
-  vg001: # change pool name same to vg_name, but don't change it if you choose ceph backend
+  pool1:
     storageType: block
-    availabilityZone: default
+    availabilityZone: nova-01
     extras:
       dataStorage:
         provisioningPolicy: Thin
@@ -28,4 +34,18 @@ pool:
         maxBWS: 600
       advanced:
         diskType: SSD
-        latency: 5ms
+        latency: 3ms
+  pool2:
+    storageType: block
+    availabilityZone: nova-01
+    extras:
+      dataStorage:
+        provisioningPolicy: Thin
+        isSpaceEfficient: false
+      ioConnectivity:
+        accessProtocol: iscsi
+        maxIOPS: 3000000
+        maxBWS: 300
+      advanced:
+        diskType: SSD
+        latency: 500ms

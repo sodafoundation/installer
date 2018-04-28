@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-tgtBindIp: 127.0.0.1 # change tgtBindIp to your real host ip, run 'ifconfig' to check
+tgtBindIp: 192.168.56.105
 tgtConfDir: /etc/tgt/conf.d
 pool:
-  vg001: # change pool name same to vg_name, but don't change it if you choose ceph backend
+  vg001:
     storageType: block
     availabilityZone: default
     extras:

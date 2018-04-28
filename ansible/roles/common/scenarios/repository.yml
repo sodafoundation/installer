@@ -22,8 +22,8 @@
   changed_when: no
 
 - set_fact:
-    go_path: "{{ lookup('env', 'GOPATH') | default(ansible_env.HOME+'/gopath', true) }}"
-  when: not result|failed
+    go_path: "{{ lookup('env', 'GOPATH') }}"
+  when: not result is failed
 
 - name: check for opensds source code existed
   stat:
@@ -35,7 +35,7 @@
   git:
     repo: "{{ opensds_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: {{ opensds_repository }}
+    version: "{{ opensds_repository }}"
   when:
     - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
 
@@ -51,6 +51,13 @@
     src: "{{ go_path }}/src/github.com/opensds/opensds/build/out/"
     dest: "{{ opensds_work_dir }}"
 
+- name: change the permissions of opensds executable files
+  file:
+    path: "{{ opensds_work_dir }}/bin"
+    state: directory
+    mode: 0755
+    recurse: yes
+
 - name: check for nbp source code existed
   stat:
     path: "{{ go_path }}/src/github.com/opensds/nbp"
@@ -61,7 +68,7 @@
   git:
     repo: "{{ nbp_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/nbp"
-    version: {{ opensds_repository }}
+    version: "{{ nbp_repository }}"
   when:
     - nbpexisted.stat.exists is undefined or nbpexisted.stat.exists == false
 

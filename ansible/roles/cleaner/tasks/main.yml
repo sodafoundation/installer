@@ -87,7 +87,7 @@
 - name: clean opensds csi plugin if csi plugin specified
   shell: |
     . /etc/profile
-    kubectl delete -f deploy/
+    kubectl delete -f deploy/kubernetes
   args:
     chdir: "{{ nbp_work_dir }}/csi"
   ignore_errors: yes

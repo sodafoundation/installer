@@ -35,33 +35,6 @@
     state: stopped
   when: container_enabled == true
 
-- name: kill etcd daemon service
-  shell: killall etcd
-  ignore_errors: yes
-  when: db_driver == "etcd" and container_enabled == false
-
-- name: kill etcd containerized service
-  docker:
-    image: quay.io/coreos/etcd:latest
-    state: stopped
-  when: db_driver == "etcd" and container_enabled == true
-
-- name: remove etcd service data
-  file:
-    path: "{{ etcd_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: db_driver == "etcd"
-
-- name: remove etcd tarball
-  file:
-    path: "/opt/{{ etcd_tarball }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: db_driver == "etcd"
-
 - name: clean opensds release files
   file:
     path: "{{ opensds_work_dir }}"
@@ -76,7 +49,7 @@
     force: yes
   ignore_errors: yes
 
-- name: clean opensds flexvolume plugins binary file
+- name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
     path: "{{ flexvolume_plugin_dir }}"
     state: absent

@@ -42,7 +42,7 @@
         ps aux | grep osdsdock | grep -v grep && break
       done
   args:
-    chdir: "{{ opensds_dir }}"
+    chdir: "{{ opensds_work_dir }}"
   when: container_enabled == false
 
 - name: run osdsdock containerized service

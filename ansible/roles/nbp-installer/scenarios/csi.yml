@@ -15,7 +15,7 @@
 ---
 - name: Configure opensds endpoint IP in opensds csi plugin
   lineinfile:
-    dest: "{{ nbp_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
+    dest: "{{ nbp_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
     regexp: '^  opensdsendpoint'
     line: '  opensdsendpoint: {{ opensds_endpoint }}'
     backup: yes
@@ -25,5 +25,5 @@
     . /etc/profile
     kubectl create -f deploy/kubernetes
   args:
-    chdir: "{{ nbp_dir }}/csi"
+    chdir: "{{ nbp_work_dir }}/csi"
   ignore_errors: yes

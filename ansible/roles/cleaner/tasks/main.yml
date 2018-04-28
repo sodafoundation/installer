@@ -64,14 +64,14 @@
 
 - name: clean opensds release files
   file:
-    path: "{{ opensds_dir }}"
+    path: "{{ opensds_work_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
 
 - name: clean opensds release tarball file
   file:
-    path: "{{ opensds_tarball_url }}"
+    path: "{{ opensds_tarball_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
@@ -86,22 +86,23 @@
 
 - name: clean opensds csi plugin if csi plugin specified
   shell: |
+    . /etc/profile
     kubectl delete -f deploy/
   args:
-    chdir: "{{ nbp_dir }}/csi"
+    chdir: "{{ nbp_work_dir }}/csi"
   ignore_errors: yes
   when: nbp_plugin_type == "csi"
 
 - name: clean nbp release files
   file:
-    path: "{{ nbp_dir }}"
+    path: "{{ nbp_work_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
 
 - name: clean nbp release tarball file
   file:
-    path: "{{ nbp_tarball_url }}"
+    path: "{{ nbp_tarball_dir }}"
     state: absent
     force: yes
   ignore_errors: yes

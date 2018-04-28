@@ -17,70 +17,39 @@
   apt:
     update_cache: yes
 
-- name: install librados-dev and librbd-dev external packages
+- name: install make, gcc, librados-dev and librbd-dev external packages
   apt:
     name: "{{ item }}"
     state: present
   with_items:
+    - make
+    - gcc
     - librados-dev
     - librbd-dev
 
-- name: install docker-py package with pip when enabling containerized deployment
-  pip:
-    name: docker-py
-  when: container_enabled == true
-
-- name: check for opensds release files existed
-  stat:
-    path: "{{ opensds_dir }}"
-  ignore_errors: yes
-  register: opensdsreleasesexisted
-
-- name: download opensds release files
-  get_url:
-    url={{ opensds_download_url }}
-    dest={{ opensds_tarball_url }}
-  when:
-    - opensdsreleasesexisted.stat.exists is undefined or opensdsreleasesexisted.stat.exists == false
-
-- name: extract the opensds release tarball
-  unarchive:
-    src={{ opensds_tarball_url }}
-    dest=/opt/
-  when:
-    - opensdsreleasesexisted.stat.exists is undefined or opensdsreleasesexisted.stat.exists == false
-
-- name: check for nbp release files existed
-  stat:
-    path: "{{ nbp_dir }}"
-  ignore_errors: yes
-  register: nbpreleasesexisted
-
-- name: download nbp release files
-  get_url:
-    url={{ nbp_download_url }}
-    dest={{ nbp_tarball_url }}
-  when:
-    - nbpreleasesexisted.stat.exists is undefined or nbpreleasesexisted.stat.exists == false
-
-- name: extract the nbp release tarball
-  unarchive:
-    src={{ nbp_tarball_url }}
-    dest=/opt/
-  when:
-    - nbpreleasesexisted.stat.exists is undefined or nbpreleasesexisted.stat.exists == false
-
-- name: change the mode of all binary files in opensds release
+- name: create opensds work directory if it doesn't exist
   file:
-    path: "{{ opensds_dir }}/bin"
+    path: "{{ opensds_work_dir }}"
+    state: directory
     mode: 0755
-    recurse: yes
 
-- name: change the mode of all binary files in nbp release
+- name: create nbp work directory if it doesn't exist
   file:
-    path: "{{ nbp_dir }}/flexvolume"
+    path: "{{ nbp_work_dir }}"
+    state: directory
     mode: 0755
-    recurse: yes
+
+- name: include scenarios/repository.yml when installing from container
+  include: scenarios/repository.yml
+  when: install_from == "repository"
+
+- name: include scenarios/release.yml when installing from container
+  include: scenarios/release.yml
+  when: install_from == "release"
+
+- name: include scenarios/container.yml when installing from container
+  include: scenarios/container.yml
+  when: install_from == "container"
 
 - name: create opensds global config directory if it doesn't exist
   file:

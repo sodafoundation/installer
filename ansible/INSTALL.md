@@ -4,7 +4,7 @@
 ### Pre-config (Ubuntu 16.04)
 * Kubernetes
 
-This installation requires k8s v1.10, so please guarantee your cluster verison if you have existed one.
+This installation requires k8s v1.10, so please make sure your existing k8s cluster version is v1.10.
 
 If you don't have k8s cluster, just follow these commands to create a new one:
 ```shell
@@ -32,9 +32,9 @@ ansible --version # Ansible version 2.4.2 or higher is required for ceph; 2.0.2 
 
 ### Configure opensds cluster variables:
 ##### System environment:
-If you want to integrate OpenSDS with cloud platform (for example k8s), please modify `nbp_plugin_type` variable in `group_vars/common.yml`:
+If you want to integrate OpenSDS with k8s csi, please modify `nbp_plugin_type` variable to `csi` in `group_vars/common.yml`:
 ```yaml
-nbp_plugin_type: standalone # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
+nbp_plugin_type: csi # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
 ```
 
 ##### LVM
@@ -55,7 +55,7 @@ pool:
   "vg001" # change pool name to be the same as vg_name
 ```
 
-Besides, Change `tgtBindIp` variable in `group_vars/lvm/lvm.yaml` to your real host ip.
+In addition, change `tgtBindIp` variable in `group_vars/lvm/lvm.yaml` to your real host ip.
 
 ##### Ceph
 If `ceph` is chosen as storage backend, modify `group_vars/osdsdock.yml`:
@@ -111,12 +111,13 @@ osdsctl pool list # Check if the pool resource is available
 ```
 
 ### Check if the csi plugin pod running
+Since you have configured `nbp_plugin_type` above to `csi`, the system would run automatically starting all services, all you need is to check if the csi plugin pods are running:
 ```bash
-kubectl get po
+kubectl get pod
 ```
-If there is no error, the output should like:
+If there is no error, the output should be like:
 ```bash
-root@vultr-test:~/workplace/opensds-installer/ansible# kubectl get po
+root@vultr-test:~/workplace/opensds-installer/ansible# kubectl get pod
 NAME                                 READY     STATUS    RESTARTS   AGE
 csi-attacher-opensdsplugin-0         2/2       Running   0          23s
 csi-nodeplugin-opensdsplugin-nkn6j   2/2       Running   0          22s
@@ -136,7 +137,7 @@ kubectl create -f examples/kubernetes/nginx.yaml
 
 After running this command, the output would be like:
 ```shell
-root@vultr-test:/opt/opensds-k8s-linux-amd64/csi# kubectl get po
+root@vultr-test:/opt/opensds-k8s-linux-amd64/csi# kubectl get pod
 NAME                                 READY     STATUS    RESTARTS   AGE
 csi-attacher-opensdsplugin-0         2/2       Running   0          2m
 csi-nodeplugin-opensdsplugin-nkn6j   2/2       Running   0          2m

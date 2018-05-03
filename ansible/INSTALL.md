@@ -32,9 +32,10 @@ ansible --version # Ansible version 2.4.2 or higher is required for ceph; 2.0.2 
 
 ### Configure opensds cluster variables:
 ##### System environment:
-If you want to integrate OpenSDS with k8s csi, please modify `nbp_plugin_type` variable to `csi` in `group_vars/common.yml`:
+If you want to integrate OpenSDS with k8s csi, please modify `nbp_plugin_type` to `csi` and also change `opensds_endpoint` field in `group_vars/common.yml`:
 ```yaml
-nbp_plugin_type: csi # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
+nbp_plugin_type: standalone # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
+opensds_endpoint: http://127.0.0.1:50040 # The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
 ```
 
 ##### LVM
@@ -105,7 +106,7 @@ sudo ansible-playbook site.yml -i local.hosts
 ### Configure opensds CLI tool
 ```bash
 sudo cp /opt/opensds-linux-amd64/bin/osdsctl /usr/local/bin
-export OPENSDS_ENDPOINT=http://127.0.0.1:50040
+export OPENSDS_ENDPOINT=http://{your_real_host_ip}:50040
 export OPENSDS_AUTH_STRATEGY=noauth
 osdsctl pool list # Check if the pool resource is available
 ```

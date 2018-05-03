@@ -1,0 +1,3 @@
+name: opensds-csiplugin
+description: OpenSDS csi plugin deployment Helm Chart.
+version: 0.1.0

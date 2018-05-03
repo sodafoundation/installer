@@ -13,21 +13,15 @@
 # limitations under the License.
 
 ---
-- name: install python-pip
+- name: install python-pip, lvm2, thin-provisioning-tools and docker-compose
   apt:
-    name: python-pip
-
-- name: install lvm2
-  apt:
-    name: lvm2
-
-- name: install thin-provisioning-tools
-  apt:
-    name: thin-provisioning-tools
-
-- name: install docker-compose
-  pip:
-    name: docker-compose
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - lvm2
+    - thin-provisioning-tools
+    - docker-compose
 
 - name: copy opensds cinder backend file if specify cinder backend
   copy:

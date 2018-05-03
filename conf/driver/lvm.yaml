@@ -12,29 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: run osdslet daemon service
-  shell:
-    cmd: |
-      i=0
-      while
-        i="$((i+1))"
-        [ "$i" -lt 4 ]
-      do
-        nohup bin/osdslet > osdslet.out 2> osdslet.err < /dev/null &
-        sleep 5
-        ps aux | grep osdslet | grep -v grep && break
-      done
-  args:
-    chdir: "{{ opensds_work_dir }}"
-  when: container_enabled == false
-
-- name: run osdslet containerized service
-  docker:
-    name: osdslet
-    image: opensdsio/opensds-controller:latest
-    state: started
-    net: host
-    volumes:
-    - "/etc/opensds/:/etc/opensds"
-  when: container_enabled == true
+tgtBindIp: 192.168.56.105
+tgtConfDir: /etc/tgt/conf.d
+pool:
+  vg001:
+    storageType: block
+    availabilityZone: default
+    extras:
+      dataStorage:
+        provisioningPolicy: Thin
+        isSpaceEfficient: false
+      ioConnectivity:
+        accessProtocol: iscsi
+        maxIOPS: 7000000
+        maxBWS: 600
+      advanced:
+        diskType: SSD
+        latency: 5ms

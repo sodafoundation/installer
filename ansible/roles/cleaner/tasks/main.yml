@@ -35,48 +35,21 @@
     state: stopped
   when: container_enabled == true
 
-- name: kill etcd daemon service
-  shell: killall etcd
-  ignore_errors: yes
-  when: db_driver == "etcd" and container_enabled == false
-
-- name: kill etcd containerized service
-  docker:
-    image: quay.io/coreos/etcd:latest
-    state: stopped
-  when: db_driver == "etcd" and container_enabled == true
-
-- name: remove etcd service data
-  file:
-    path: "{{ etcd_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: db_driver == "etcd"
-
-- name: remove etcd tarball
-  file:
-    path: "/opt/{{ etcd_tarball }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: db_driver == "etcd"
-
 - name: clean opensds release files
   file:
-    path: "{{ opensds_dir }}"
+    path: "{{ opensds_work_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
 
 - name: clean opensds release tarball file
   file:
-    path: "{{ opensds_tarball_url }}"
+    path: "{{ opensds_tarball_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
 
-- name: clean opensds flexvolume plugins binary file
+- name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
     path: "{{ flexvolume_plugin_dir }}"
     state: absent
@@ -84,16 +57,25 @@
   ignore_errors: yes
   when: nbp_plugin_type == "flexvolume"
 
+- name: clean opensds csi plugin if csi plugin specified
+  shell: |
+    . /etc/profile
+    kubectl delete -f deploy/kubernetes
+  args:
+    chdir: "{{ nbp_work_dir }}/csi"
+  ignore_errors: yes
+  when: nbp_plugin_type == "csi"
+
 - name: clean nbp release files
   file:
-    path: "{{ nbp_dir }}"
+    path: "{{ nbp_work_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
 
 - name: clean nbp release tarball file
   file:
-    path: "{{ nbp_tarball_url }}"
+    path: "{{ nbp_tarball_dir }}"
     state: absent
     force: yes
   ignore_errors: yes

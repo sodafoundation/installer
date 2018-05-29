@@ -13,20 +13,13 @@
 # limitations under the License.
 
 ---
-# Defines some clean processes when banishing the cluster.
+# Dummy variable to avoid error because ansible does not recognize the
+# file as a good configuration file when no variable in it.
+dummy:
 
-- name: destory an opensds cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdsdock.yml
-    - group_vars/keystone.yml
-  gather_facts: false
-  become: True
-  roles:
-    - cleaner
-    - keystone-cleaner
-    - dashboard-cleaner
-    
+
+###########
+# GENERAL #
+###########
+
+dashboard_dir: /root/gopath/src/github.com/opensds/opensds/dashboard

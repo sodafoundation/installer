@@ -23,6 +23,7 @@
     - group_vars/osdsdb.yml
     - group_vars/osdslet.yml
     - group_vars/osdsdock.yml
+    - group_vars/dashboard.yml
   gather_facts: false
   become: True
   roles:
@@ -31,3 +32,5 @@
     - osdslet
     - osdsdock
     - nbp-installer
+    - keystone-installer
+    - dashboard-installer

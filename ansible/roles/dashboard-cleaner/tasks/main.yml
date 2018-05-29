@@ -1,0 +1,68 @@
+# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: stop nginx
+  service:
+    name: nginx
+    state: stopped
+  
+- name: remove /etc/nginx/sites-available/default
+  file:
+    path: "/etc/nginx/sites-available/default"
+    state: absent
+    force: yes
+  
+- name: remove /var/www/html/*
+  shell: rm -rf /var/www/html/* warn=False
+  become: yes
+  
+- name: check for golang
+  stat:
+    path: /usr/local/go
+  register: result
+  changed_when: no
+  
+- set_fact:
+    go_path: "{{ lookup('env', 'GOPATH') }}"
+  when: not result is failed
+
+- name: remove {{ go_path }}/src/github.com/opensds/opensds/dashboard/dist
+  file:
+    path: "{{ go_path }}/src/github.com/opensds/opensds/dashboard/dist"
+    state: absent
+    force: yes
+
+- name: npm uninstall
+  shell: "{{ item }}"
+  with_items:
+      - npm uninstall
+  args:
+    chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
+  become: yes
+  
+- name: uninstall angular
+  shell: npm uninstall -g @angular/cli@1.7.4
+  become: yes
+  
+- name: uninstall nodejs
+  shell:  "{{ item }}"
+  with_items:
+      - curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - 
+      - apt --purge remove nodejs -y
+  become: yes
+
+- name: uninstall nginx
+  shell: apt --purge remove nginx -y
+  become: yes

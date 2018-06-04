@@ -93,6 +93,14 @@ create_user_and_endpoint(){
     openstack endpoint create --region RegionOne opensds$OPENSDS_VERSION admin http://$HOST_IP:50040/$OPENSDS_VERSION/%\(tenant_id\)s
 }
 
+delete_redundancy_data() {
+    . $DEV_STACK_DIR/openrc admin admin
+    openstack project delete demo
+    openstack project delete alt_demo
+    openstack project delete invisible_to_admin
+    openstack user delete demo
+    openstack user delete alt_demo
+}
 
 download_code(){
     if [ ! -d ${DEV_STACK_DIR} ];then
@@ -107,7 +115,7 @@ install(){
     download_code
     opensds_conf
 
-    # If keystone is on there no need continue next steps.
+    # If keystone is ready to start, there is no need continue next step.
     if wait_for_url http://$HOST_IP/identity "keystone" 0.25 4; then
         return
     fi
@@ -115,6 +123,7 @@ install(){
     cd ${DEV_STACK_DIR}
     su $STACK_USER_NAME -c ${DEV_STACK_DIR}/stack.sh
     create_user_and_endpoint
+    delete_redundancy_data
 }
 
 cleanup() {

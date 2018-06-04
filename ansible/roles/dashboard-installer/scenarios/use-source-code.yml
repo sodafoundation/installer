@@ -25,7 +25,7 @@
   become: yes
   
 - name: install angular CLI
-  shell: npm install -g @angular/cli@1.7.4
+  shell: npm install -g --unsafe-perm --verbose @angular/cli@1.7.4
   become: yes
 
 - name: check for golang

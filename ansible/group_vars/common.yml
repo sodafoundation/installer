@@ -31,7 +31,7 @@ nbp_work_dir: /opt/opensds-k8s-linux-amd64
 opensds_config_dir: /etc/opensds
 opensds_log_dir: /var/log/opensds
 
-# openstack authentication strategy, support 'noauth', 'keystone'.
+# opensds authentication strategy, support 'noauth', 'keystone'.
 opensds_auth_strategy: noauth
 
 

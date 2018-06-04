@@ -16,10 +16,15 @@
 # Dummy variable to avoid error because ansible does not recognize the
 # file as a good configuration file when no variable in it.
 dummy:
-
-
-###########
+#############
 # GENERAL #
+#############
+
+# Dashboard installation types are: container, source_code
+dashboard_installation_type: source_code
+
+###########
+# DOCKER  #
 ###########
 
-dashboard_dir: /root/gopath/src/github.com/opensds/opensds/dashboard
+dashboard_docker_image: opensdsio/dashboard:latest

@@ -13,11 +13,15 @@
 # limitations under the License.
 
 ---
-- name: uninstall dashboard(previously installed it was using container)
-  include_tasks: scenarios/use-container.yml
-  when: dashboard_installation_type == "container"
+- name: run dashboard containerized service
+  docker_container:
+    name: dashboard
+    image: opensdsio/dashboard:latest
+    state: started
+    ports:
+     - "81:80"
+    command: nginx -g "daemon off;"
+    privileged: true
+    restart_policy: always
 
-- name: uninstall dashboard(previously installed it was using source code)
-  include_tasks: scenarios/use-source-code.yml
-  when: dashboard_installation_type == "source_code"
-  
+

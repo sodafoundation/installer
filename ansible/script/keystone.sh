@@ -108,7 +108,7 @@ install(){
     opensds_conf
 
     # If keystone is on there no need continue next steps.
-    if osds::util::wait_for_url http://$HOST_IP/identity "keystone" 0.25 4; then
+    if wait_for_url http://$HOST_IP/identity "keystone" 0.25 4; then
         return
     fi
     devstack_local_conf

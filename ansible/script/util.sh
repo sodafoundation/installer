@@ -25,7 +25,7 @@ wait_for_url() {
   local times=${4:-30}
 
   which curl >/dev/null || {
-    osds::echo_summary "curl must be installed"
+    echo_summary "curl must be installed"
     exit 1
   }
 
@@ -33,12 +33,12 @@ wait_for_url() {
   for i in $(seq 1 $times); do
     local out
     if out=$(curl --max-time 1 -gkfs $url 2>/dev/null); then
-      osds::echo_summary "On try ${i}, ${prefix}: ${out}"
+      echo_summary "On try ${i}, ${prefix}: ${out}"
       return 0
     fi
     sleep ${wait}
   done
-  osds::echo_summary "Timed out waiting for ${prefix} to answer at ${url}; tried ${times} waiting ${wait} between each"
+  echo_summary "Timed out waiting for ${prefix} to answer at ${url}; tried ${times} waiting ${wait} between each"
   return 1
 }
 
@@ -55,7 +55,7 @@ test_host_port_free() {
   local fail=1
 
   which nc >/dev/null || {
-    osds::echo_summary "netcat isn't installed, can't verify if ${host}:${port} is free, skipping the check..."
+    echo_summary "netcat isn't installed, can't verify if ${host}:${port} is free, skipping the check..."
     return ${success}
   }
 
@@ -159,14 +159,4 @@ is_service_enabled() {
     done
     $xtrace
     return $enabled
-}
-
-serice_operation() {
-    local action=$1
-    for service in $(echo $SUPPORT_SERVICES|tr ',' ' '); do
-            if is_service_enabled $service; then
-                source $TOP_DIR/lib/$service.sh
-                osds::$service::$action
-            fi
-    done
 }

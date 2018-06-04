@@ -17,14 +17,14 @@ source $TOP_DIR/local.conf
 
 # Global
 HOST_IP=${HOST_IP:-}
-HOST_IP=$(osds::util::get_default_host_ip "$HOST_IP" "inet")
+HOST_IP=$(get_default_host_ip "$HOST_IP" "inet")
 if [ "$HOST_IP" == "" ]; then
-    osds::util::die $LINENO "Could not determine host ip address.  See local.conf for suggestions on setting HOST_IP."
+    die $LINENO "Could not determine host ip address.  See local.conf for suggestions on setting HOST_IP."
 fi
 
 # OpenSDS configuration.
 OPENSDS_VERSION=${OPENSDS_VERSION:-v1beta}
-#openstack authentication strategy, support 'noauth', 'keystone'.
+# OpenSDS authentication strategy, support 'noauth', 'keystone'.
 OPENSDS_AUTH_STRATEGY=${OPENSDS_AUTH_STRATEGY:-noauth}
 # OpenSDS service name in keystone.
 OPENSDS_SERVER_NAME=${OPENSDS_SERVER_NAME:-opensds}

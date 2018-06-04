@@ -13,86 +13,11 @@
 # limitations under the License.
 
 ---
-- name: install nginx
-  shell: apt install nginx -y
-  become: yes
+- name: use container to install dashboard
+  include_tasks: scenarios/use-container.yml
+  when: dashboard_installation_type == "container"
 
-- name: install nodejs
-  shell:  "{{ item }}"
-  with_items:
-      - curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - 
-      - apt install -y nodejs
-  become: yes
+- name: use source code to install dashboard
+  include_tasks: scenarios/use-source-code.yml
+  when: dashboard_installation_type == "source_code"
   
-- name: install angular CLI
-  shell: npm install -g @angular/cli@1.7.4
-  become: yes
-
-- name: check for golang
-  stat:
-    path: /usr/local/go
-  register: result
-  changed_when: no
-  
-- set_fact:
-    go_path: "{{ lookup('env', 'GOPATH') }}"
-  when: not result is failed
-  
-- name: check for opensds source code existed
-  stat:
-    path: "{{ go_path }}/src/github.com/opensds/opensds"
-  register: opensdsexisted
-  
-- name: download opensds source code if not exists
-  git:
-    repo: "{{ opensds_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: "{{ opensds_repository }}"
-  when:
-    - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
-
-- name: check for opensds dashboard source code existed
-  stat:
-    path: "{{ go_path }}/src/github.com/opensds/dashboard"
-  register: dashboardexisted
-    
-- name: build opensds dashboard
-  shell: "{{ item }}"
-  with_items:
-      - npm install
-      - ng build --prod
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
-  become: yes
-  when: dashboardexisted
-    
-- name: copied `dist` folder to the `html` folder
-  shell: cp -R {{ go_path }}/src/github.com/opensds/opensds/dashboard/dist/* /var/www/html/
-  become: yes
-  when: dashboardexisted
-  
-- name: set nginx default config
-  become: yes
-  shell: |
-    cat > /etc/nginx/sites-available/default <<EOF
-    server {
-        listen 81 default_server;
-        listen [::]:81 default_server;
-        root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        location /v3/ {
-        proxy_pass http://10.10.3.173:5000/v3/;
-        }
-        location /v1beta/ {
-        proxy_pass http://10.10.3.173:50040/v1beta/;
-        }
-    }
-
-- name: restart nginx
-  service:
-    name: nginx
-    state: restarted
-  
-
-

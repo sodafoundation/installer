@@ -13,20 +13,22 @@
 # limitations under the License.
 
 ---
-# Defines some clean processes when banishing the cluster.
+- name: set script dir permissions
+  file:
+    path: "{{ opensds_installer_dir }}/ansible/script"
+    mode: 0755
 
-- name: destory an opensds cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdsdock.yml
-    - group_vars/keystone.yml
-  gather_facts: false
-  become: True
-  roles:
-    - cleaner
-    - keystone-cleaner
-    - dashboard-cleaner
-    
+- name: uninstall keystone
+  shell: "{{ item }}"
+  with_items:
+      - bash "{{ opensds_installer_dir }}/ansible/script/keystone.sh" uninstall
+  when: uninstall_keystone == true
+  become: yes
+  
+- name: cleanup keystone
+  shell: "{{ item }}"
+  with_items:
+      - bash "{{ opensds_installer_dir }}/ansible/script/keystone.sh" cleanup
+  when: cleanup_keystone == true
+  become: yes
+  

@@ -13,20 +13,11 @@
 # limitations under the License.
 
 ---
-# Defines some clean processes when banishing the cluster.
+- name: stop container where dashboard is located
+  docker_container:
+    name: dashboard
+    image: opensdsio/dashboard:latest
+    state: stopped
 
-- name: destory an opensds cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdsdock.yml
-    - group_vars/keystone.yml
-  gather_facts: false
-  become: True
-  roles:
-    - cleaner
-    - keystone-cleaner
-    - dashboard-cleaner
-    
+
+

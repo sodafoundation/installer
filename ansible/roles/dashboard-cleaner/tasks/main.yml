@@ -13,20 +13,11 @@
 # limitations under the License.
 
 ---
-# Defines some clean processes when banishing the cluster.
+- name: uninstall dashboard(previously installed it was using container)
+  include_tasks: scenarios/use-container.yml
+  when: dashboard_installation_type == "container"
 
-- name: destory an opensds cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdsdock.yml
-    - group_vars/keystone.yml
-  gather_facts: false
-  become: True
-  roles:
-    - cleaner
-    - keystone-cleaner
-    - dashboard-cleaner
-    
+- name: uninstall dashboard(previously installed it was using source code)
+  include_tasks: scenarios/use-source-code.yml
+  when: dashboard_installation_type == "source_code"
+  

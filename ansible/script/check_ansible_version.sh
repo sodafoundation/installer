@@ -18,7 +18,7 @@ ansiblever=`ansible --version |grep -Eow '^ansible [^ ]+' |gawk '{ print $2 }'`
 
 if [ $(version $ansiblever) < $(version 2.4.2) ]; then
   echo "Ansible version 2.4.2 or higher is required"
-  return 1
+  exit 1
 fi
 
-return 0
+exit 0

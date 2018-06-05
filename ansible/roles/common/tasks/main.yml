@@ -15,13 +15,13 @@
 ---
 - name: set script dir permissions
   file:
-    path: ../../../../script
+    path: ./script
     mode: 0755
     
 - name: check ansible version
   shell: "{{ item }}"
   with_items:
-      - bash ../../../../script/check_ansible_version.sh
+      - bash ./script/check_ansible_version.sh
   become: yes
 
 - name: run the equivalent of "apt-get update" as a separate step

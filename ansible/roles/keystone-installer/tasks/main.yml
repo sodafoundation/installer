@@ -15,12 +15,12 @@
 ---
 - name: set script dir permissions
   file:
-    path: ../../../../script
+    path: ./script
     mode: 0755
 
 - name: install keystone
   shell: "{{ item }}"
   with_items:
-      - bash ../../../../script/keystone.sh install
+      - bash ./script/keystone.sh install
   when: opensds_auth_strategy == "keystone"
   become: yes

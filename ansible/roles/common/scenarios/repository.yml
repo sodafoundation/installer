@@ -24,6 +24,13 @@
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
   when: not result is failed
+  
+- name: check go_path
+  shell: "{{ item }}"
+  with_items:
+      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+      - /bin/false
+  when: go_path == ""
 
 - name: check for opensds source code existed
   stat:

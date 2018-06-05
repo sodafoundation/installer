@@ -38,7 +38,7 @@
     go_path: "{{ lookup('env', 'GOPATH') }}"
   when: not result is failed
   
-- name: build opensds dashboard
+- name: check go_path
   shell: "{{ item }}"
   with_items:
       - echo "The environment variable GOPATH must be set and cannot be an empty string!"

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: set script dir permissions
-  file:
-    path: ../../../../script
-    mode: 0755
+ansiblever=`ansible --version |grep -Eow '^ansible [^ ]+' |gawk '{ print $2 }'`
 
-- name: uninstall keystone
-  shell: "{{ item }}"
-  with_items:
-      - bash ../../../../script/keystone.sh uninstall
-  when: uninstall_keystone == true
-  become: yes
-  
-- name: cleanup keystone
-  shell: "{{ item }}"
-  with_items:
-      - bash ../../../../script/keystone.sh cleanup
-  when: cleanup_keystone == true
-  become: yes
-  
+if [ $(version $ansiblever) < $(version 2.4.2) ]; then
+  echo "Ansible version 2.4.2 or higher is required"
+  return 1
+fi
+
+return 0

@@ -15,20 +15,20 @@
 ---
 - name: set script dir permissions
   file:
-    path: "{{ opensds_installer_dir }}/ansible/script"
+    path: ./script
     mode: 0755
 
 - name: uninstall keystone
   shell: "{{ item }}"
   with_items:
-      - bash "{{ opensds_installer_dir }}/ansible/script/keystone.sh" uninstall
+      - bash ./script/keystone.sh uninstall
   when: uninstall_keystone == true
   become: yes
   
 - name: cleanup keystone
   shell: "{{ item }}"
   with_items:
-      - bash "{{ opensds_installer_dir }}/ansible/script/keystone.sh" cleanup
+      - bash ./script/keystone.sh cleanup
   when: cleanup_keystone == true
   become: yes
   

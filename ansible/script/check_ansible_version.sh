@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: set script dir permissions
-  file:
-    path: ./script
-    mode: 0755
+ansiblever=`ansible --version |grep -Eow '^ansible [^ ]+' |gawk '{ print $2 }'`
 
-- name: install keystone
-  shell: "{{ item }}"
-  with_items:
-      - bash ./script/keystone.sh install
-  when: opensds_auth_strategy == "keystone"
-  become: yes
+if [ $(version $ansiblever) < $(version 2.4.2) ]; then
+  echo "Ansible version 2.4.2 or higher is required"
+  exit 1
+fi
+
+exit 0

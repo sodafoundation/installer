@@ -20,4 +20,3 @@
 - name: use source code to install dashboard
   include_tasks: scenarios/use-source-code.yml
   when: dashboard_installation_type == "source_code"
-  

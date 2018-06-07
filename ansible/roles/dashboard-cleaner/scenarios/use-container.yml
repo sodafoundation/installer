@@ -18,6 +18,3 @@
     name: dashboard
     image: opensdsio/dashboard:latest
     state: stopped
-
-
-

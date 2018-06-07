@@ -27,4 +27,3 @@ uninstall_keystone: true
 
 # Execute the stack.sh
 cleanup_keystone: true
-

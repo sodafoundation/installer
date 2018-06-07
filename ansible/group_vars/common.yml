@@ -22,7 +22,8 @@ dummy:
 # GENERAL #
 ###########
 
-# This field indicates which way user prefers to install, currently support 'repository', 'release' and 'container'
+# This field indicates which way user prefers to install, currently support
+# 'repository', 'release' and 'container'
 install_from: repository
 
 # These fields are not suggested to be modifie
@@ -31,17 +32,16 @@ nbp_work_dir: /opt/opensds-k8s-linux-amd64
 opensds_config_dir: /etc/opensds
 opensds_log_dir: /var/log/opensds
 
-# opensds authentication strategy, support 'noauth', 'keystone'.
+# opensds authentication strategy, support 'noauth' and 'keystone'.
 opensds_auth_strategy: noauth
 
-
-opensds_installer_dir: /root/opensds-installer
 
 ##############
 # REPOSITORY #
 ##############
 
-# If user specifies intalling from repository,then he can choose the specific branch
+# If user specifies intalling from repository,then he can choose the specific
+# repository branch
 opensds_repository: development
 nbp_repository: master
 

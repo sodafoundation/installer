@@ -16,12 +16,15 @@
 # Dummy variable to avoid error because ansible does not recognize the
 # file as a good configuration file when no variable in it.
 dummy:
-#############
-# GENERAL #
-#############
 
-# Dashboard installation types are: container, source_code
+
+###########
+# GENERAL #
+###########
+
+# Dashboard installation types are: 'container', 'source_code'
 dashboard_installation_type: source_code
+
 
 ###########
 # DOCKER  #

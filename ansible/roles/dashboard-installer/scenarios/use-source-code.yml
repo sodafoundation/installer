@@ -21,6 +21,7 @@
   shell:  "{{ item }}"
   with_items:
       - curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - 
+      - apt-get update
       - apt install -y nodejs
   become: yes
   

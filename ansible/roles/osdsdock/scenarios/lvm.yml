@@ -20,19 +20,47 @@
   with_items:
     - lvm2
     - tgt
+    - thin-provisioning-tools
+
+- name: create directory to volume group file
+  file:
+    path: "{{ opensds_work_dir }}/volumegroups"
+    state: directory
+    recurse: yes
+
+- name: create volume group in thin mode
+  shell:
+    _raw_params: |
+      function _create_lvm_volume_group {
+          local vg=$1
+          local size=$2
+
+          local backing_file={{ opensds_work_dir }}/volumegroups/${vg}.img
+          if ! sudo vgs $vg; then
+              # Only create if the file doesn't already exists
+              [[ -f $backing_file ]] || truncate -s $size $backing_file
+              local vg_dev
+              vg_dev=`sudo losetup -f --show $backing_file`
+
+              # Only create physical volume if it doesn't already exist
+              if ! sudo pvs $vg_dev; then
+                  sudo pvcreate $vg_dev
+              fi
+
+              # Only create volume group if it doesn't already exist
+              if ! sudo vgs $vg; then
+                  sudo vgcreate $vg $vg_dev
+              fi
+          fi
+      }
+      modprobe dm_thin_pool
+      _create_lvm_volume_group {{ opensds_volume_group }} 10G
+  args:
+    executable: /bin/bash
+  become: true
 
 - name: copy opensds lvm backend file if specify lvm backend
   copy:
     src: ../../../group_vars/lvm/lvm.yaml
     dest: "{{ lvm_config_path }}"
 
-- name: check if volume group existed
-  shell: vgdisplay {{ vg_name }}
-  ignore_errors: yes
-  register: vg_existed
-
-- name: create a volume group and initialize it
-  lvg:
-    vg: "{{ vg_name }}"
-    pvs: "{{ pv_devices }}"
-  when: vg_existed is undefined or vg_existed.rc != 0

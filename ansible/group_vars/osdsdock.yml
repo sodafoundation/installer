@@ -37,16 +37,14 @@ dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 #   LVM   #
 ###########
 
-pv_devices: # Specify block devices and ensure them existed if you choose lvm
-  #- /dev/sdc
-  #- /dev/sdd
-vg_name: vg001 # Specify a name randomly
 
 # These fields are NOT suggested to be modified
 lvm_name: lvm backend
 lvm_description: This is a lvm backend service
 lvm_driver_name: lvm
 lvm_config_path: "{{ opensds_config_dir }}/driver/lvm.yaml"
+opensds_volume_group: opensds-volumes
+
 
 
 ###########

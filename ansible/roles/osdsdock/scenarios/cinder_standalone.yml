@@ -48,6 +48,11 @@
               local vg_dev
               vg_dev=`sudo losetup -f --show $backing_file`
 
+              # Only create physical volume if it doesn't already exist
+              if ! sudo pvs $vg_dev; then
+                  sudo pvcreate $vg_dev
+              fi
+
               # Only create volume group if it doesn't already exist
               if ! sudo vgs $vg; then
                   sudo vgcreate $vg $vg_dev

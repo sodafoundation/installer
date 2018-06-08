@@ -41,22 +41,13 @@ opensds_endpoint: http://127.0.0.1:50040 # The IP (127.0.0.1) should be replaced
 ##### LVM
 If `lvm` is chosen as storage backend, modify `group_vars/osdsdock.yml`:
 ```yaml
-enabled_backend: lvm # Change it according to the chosen backend. Supported backends include 'lvm', 'ceph', and 'cinder'
-pv_devices: # Specify block devices and ensure them existed if you choose lvm
-  #- /dev/sdc
-  #- /dev/sdd
-vg_name: "specified_vg_name" # Specify a name for VG if choosing lvm
+enabled_backend: lvm 
 ```
 
-Modify ```group_vars/lvm/lvm.yaml```, change pool name to be the same as `vg_name` above:
+Modify ```group_vars/lvm/lvm.yaml```, change `tgtBindIp to` your real host ip if needed:
 ```yaml
-tgtBindIp: 127.0.0.1 # change tgtBindIp to your real host ip, run 'ifconfig' to check
-tgtConfDir: /etc/tgt/conf.d
-pool:
-  "vg001" # change pool name to be the same as vg_name
+tgtBindIp: 127.0.0.1 
 ```
-
-In addition, change `tgtBindIp` variable in `group_vars/lvm/lvm.yaml` to your real host ip.
 
 ##### Ceph
 If `ceph` is chosen as storage backend, modify `group_vars/osdsdock.yml`:

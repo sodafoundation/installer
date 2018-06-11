@@ -13,13 +13,21 @@
 # limitations under the License.
 
 ---
-- name: run dashboard containerized service
-  docker_container:
-    name: dashboard
-    image: opensdsio/dashboard:latest
-    state: started
-    ports:
-     - "8080:8080"
-    command: nginx -g "daemon off;"
-    privileged: true
-    restart_policy: always
+- name: set script dir permissions
+  file:
+    path: ./script
+    mode: 0755
+
+- name: uninstall keystone
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh uninstall
+  when: opensds_auth_strategy == "keystone" and uninstall_keystone == true
+  become: yes
+  
+- name: cleanup keystone
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh cleanup
+  when: opensds_auth_strategy == "keystone" and cleanup_keystone == true
+  become: yes

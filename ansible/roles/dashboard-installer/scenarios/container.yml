@@ -13,11 +13,14 @@
 # limitations under the License.
 
 ---
-- name: uninstall dashboard(previously installed it was using container)
-  include_tasks: scenarios/use-container.yml
-  when: dashboard_installation_type == "container"
+- name: install docker-py package with pip when enabling containerized deployment
+  pip:
+    name: docker-py
 
-- name: uninstall dashboard(previously installed it was using source code)
-  include_tasks: scenarios/use-source-code.yml
-  when: dashboard_installation_type == "source_code"
-  
+- name: run dashboard containerized service
+  docker_container:
+    name: dashboard
+    image: opensdsio/dashboard:latest
+    state: started
+    network_mode: host
+    restart_policy: always

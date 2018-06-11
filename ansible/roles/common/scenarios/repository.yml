@@ -42,7 +42,7 @@
   git:
     repo: "{{ opensds_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: "{{ opensds_repository }}"
+    version: "{{ opensds_repo_branch }}"
   when:
     - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
 
@@ -75,7 +75,7 @@
   git:
     repo: "{{ nbp_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/nbp"
-    version: "{{ nbp_repository }}"
+    version: "{{ nbp_repo_branch }}"
   when:
     - nbpexisted.stat.exists is undefined or nbpexisted.stat.exists == false
 

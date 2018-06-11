@@ -30,11 +30,11 @@
   when: container_enabled == false
 
 - name: run osdslet containerized service
-  docker:
+  docker_container:
     name: osdslet
     image: opensdsio/opensds-controller:latest
     state: started
-    net: host
+    network_mode: host
     volumes:
     - "/etc/opensds/:/etc/opensds"
   when: container_enabled == true

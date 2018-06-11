@@ -28,15 +28,13 @@
   apt:
     update_cache: yes
 
-- name: install make, gcc, librados-dev and librbd-dev external packages
+- name: install make and gcc external packages
   apt:
     name: "{{ item }}"
     state: present
   with_items:
     - make
     - gcc
-    - librados-dev
-    - librbd-dev
 
 - name: create opensds work directory if it doesn't exist
   file:

@@ -13,8 +13,25 @@
 # limitations under the License.
 
 ---
-- name: stop container where dashboard is located
-  docker_container:
-    name: dashboard
-    image: opensdsio/dashboard:latest
-    state: stopped
+# Dummy variable to avoid error because ansible does not recognize the
+# file as a good configuration file when no variable in it.
+dummy:
+
+
+###########
+# GENERAL #
+###########
+
+# opensds authentication strategy, support 'noauth' and 'keystone'.
+opensds_auth_strategy: keystone
+
+
+############
+# KEYSTONE #
+############
+
+# Execute the unstack.sh
+uninstall_keystone: true
+
+# Execute the stack.sh
+cleanup_keystone: true

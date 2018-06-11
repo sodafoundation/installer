@@ -13,22 +13,6 @@
 # limitations under the License.
 
 ---
-- name: install nginx
-  shell: apt install nginx -y
-  become: yes
-
-- name: install nodejs
-  shell:  "{{ item }}"
-  with_items:
-      - curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - 
-      - apt-get update
-      - apt install -y nodejs
-  become: yes
-  
-- name: install angular CLI
-  shell: npm install -g @angular/cli@1.7.4
-  become: yes
-
 - name: check for golang
   stat:
     path: /usr/local/go
@@ -55,7 +39,7 @@
   git:
     repo: "{{ opensds_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: "{{ opensds_repository }}"
+    version: "{{ opensds_repo_branch }}"
   when:
     - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
 
@@ -64,38 +48,11 @@
     path: "{{ go_path }}/src/github.com/opensds/dashboard"
   register: dashboardexisted
     
-- name: build opensds dashboard
-  shell: "{{ item }}"
-  with_items:
-      - npm install
-      - ng build --prod
+- name: build and configure opensds dashboard
+  shell: make
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
   become: yes
-  when: dashboardexisted
-    
-- name: copied `dist` folder to the `html` folder
-  shell: cp -R {{ go_path }}/src/github.com/opensds/opensds/dashboard/dist/* /var/www/html/
-  become: yes
-  when: dashboardexisted
-  
-- name: set nginx default config
-  become: yes
-  shell: |
-    cat > /etc/nginx/sites-available/default <<EOF
-    server {
-        listen 8080 default_server;
-        listen [::]:8080 default_server;
-        root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        location /v3/ {
-            proxy_pass http://127.0.0.1/identity/v3/;
-        }
-        location /v1beta/ {
-            proxy_pass http://127.0.0.1:50040/v1beta/;
-        }
-    }
 
 - name: restart nginx
   service:

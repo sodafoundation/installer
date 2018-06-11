@@ -13,6 +13,13 @@
 # limitations under the License.
 
 ---
+- name: install open-iscsi external packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - open-iscsi
+
 - name: include scenarios/flexvolume.yml
   include: scenarios/flexvolume.yml
   when: nbp_plugin_type == "flexvolume"

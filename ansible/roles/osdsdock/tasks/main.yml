@@ -13,6 +13,14 @@
 # limitations under the License.
 
 ---
+- name: install tgt and ceph-common external packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - tgt
+    - ceph-common
+
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
   when: enabled_backend == "lvm"
@@ -46,11 +54,11 @@
   when: container_enabled == false
 
 - name: run osdsdock containerized service
-  docker:
+  docker_container:
     name: osdsdock
     image: opensdsio/opensds-dock:latest
     state: started
-    net: host
+    network_mode: host
     privileged: true
     volumes:
     - "/etc/opensds/:/etc/opensds"

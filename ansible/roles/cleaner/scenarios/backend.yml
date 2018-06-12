@@ -77,6 +77,7 @@
     executable: /bin/bash
   become: true
   when: enabled_backend == "lvm"
+  ignore_errors: yes
 
 - name: stop cinder-standalone service
   shell: docker-compose down
@@ -84,6 +85,7 @@
   args:
     chdir: "{{ cinder_data_dir }}/cinder/contrib/block-box"
   when: enabled_backend == "cinder"
+  ignore_errors: yes
 
 - name: clean the volume group of cinder
   shell:
@@ -149,4 +151,4 @@
     executable: /bin/bash
   become: true
   when: enabled_backend == "cinder"
-
+  ignore_errors: yes

@@ -23,6 +23,7 @@
   with_items:
     - bash ./script/keystone.sh uninstall
   when: opensds_auth_strategy == "keystone" and uninstall_keystone == true
+  ignore_errors: yes
   become: yes
   
 - name: cleanup keystone
@@ -30,4 +31,5 @@
   with_items:
     - bash ./script/keystone.sh cleanup
   when: opensds_auth_strategy == "keystone" and cleanup_keystone == true
+  ignore_errors: yes
   become: yes

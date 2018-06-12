@@ -14,27 +14,27 @@
 
 - name: kill osdslet daemon service
   shell: killall osdslet osdsdock
-  ignore_errors: yes
   when: container_enabled == false
+  ignore_errors: true
 
 - name: kill osdslet containerized service
   docker_container:
     name: osdslet
-    image: opensdsio/opensds-controller:latest
+    image: "{{ controller_docker_image }}"
     state: stopped
   when: container_enabled == true
 
 - name: kill osdsdock containerized service
   docker_container:
     name: osdsdock
-    image: opensdsio/opensds-dock:latest
+    image: "{{ dock_docker_image }}"
     state: stopped
   when: container_enabled == true
 
 - name: stop container where dashboard is located
   docker_container:
     name: dashboard
-    image: opensdsio/dashboard:latest
+    image: "{{ dashboard_docker_image }}"
     state: stopped
   when: dashboard_installation_type == "container"
 
@@ -55,18 +55,16 @@
   ignore_errors: yes
   when: nbp_plugin_type == "csi"
 
-- name: clean all opensds configuration files
+- name: clean all configuration and log files in opensds and nbp work directory
   file:
-    path: "{{ opensds_config_dir }}"
+    path: "{{ item }}"
     state: absent
     force: yes
-  ignore_errors: yes
-
-- name: clean all opensds log files
-  file:
-    path: "{{ opensds_log_dir }}"
-    state: absent
-    force: yes
+  with_items:
+    - "{{ opensds_work_dir }}"
+    - "{{ nbp_work_dir }}"
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_log_dir }}"
   ignore_errors: yes
 
 - name: include scenarios/auth-keystone.yml when specifies keystone
@@ -79,7 +77,7 @@
 
 - name: include scenarios/release.yml if installed from release
   include_tasks: scenarios/release.yml
-  when: install_from == "release" or dashboard_installation_type == "source_code"
+  when: install_from == "release"
 
 - name: include scenarios/backend.yml for cleaning up storage backend service
   include_tasks: scenarios/backend.yml

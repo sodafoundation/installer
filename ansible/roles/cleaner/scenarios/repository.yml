@@ -48,3 +48,4 @@
     chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
   when: dashboard_installation_type == "source_code"
   become: yes
+  ignore_errors: yes

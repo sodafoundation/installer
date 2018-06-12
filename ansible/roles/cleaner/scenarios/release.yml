@@ -13,30 +13,12 @@
 # limitations under the License.
 
 ---
-- name: clean opensds release files if installed from release
+- name: clean up all release files if installed from release
   file:
-    path: "{{ opensds_work_dir }}"
+    path: "{{ item }}"
     state: absent
     force: yes
-  ignore_errors: yes
-
-- name: clean opensds release tarball file if installed from release
-  file:
-    path: "{{ opensds_tarball_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-
-- name: clean nbp release files if installed from release
-  file:
-    path: "{{ nbp_work_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-
-- name: clean nbp release tarball file if installed from release
-  file:
-    path: "{{ nbp_tarball_dir }}"
-    state: absent
-    force: yes
+  with_items:
+    - "{{ opensds_tarball_dir }}"
+    - "{{ nbp_tarball_dir }}"
   ignore_errors: yes

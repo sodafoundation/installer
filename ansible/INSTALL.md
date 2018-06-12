@@ -22,11 +22,9 @@ cd opensds-installer/ansible
 ```
 
 ### Install ansible tool
-To install ansible, you can run `install_ansible.sh` directly or input these commands below:
+To install ansible, you can run `install_ansible.sh` directly:
 ```bash
-sudo add-apt-repository ppa:ansible/ansible # This step is needed to upgrade ansible to version 2.4.2 which is required for the ceph backend.
-sudo apt-get update
-sudo apt-get install ansible
+chmod +x ./install_ansible.sh && ./install_ansible.sh
 ansible --version # Ansible version 2.4.2 or higher is required for ceph; 2.0.2 or higher is needed for other backends.
 ```
 
@@ -34,8 +32,11 @@ ansible --version # Ansible version 2.4.2 or higher is required for ceph; 2.0.2 
 ##### System environment:
 If you want to integrate OpenSDS with k8s csi, please modify `nbp_plugin_type` to `csi` and also change `opensds_endpoint` field in `group_vars/common.yml`:
 ```yaml
-nbp_plugin_type: standalone # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
-opensds_endpoint: http://127.0.0.1:50040 # The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
+# 'hotpot_only' is the default integration way, but you can change it to 'csi'
+# or 'flexvolume'
+nbp_plugin_type: hotpot_only
+# The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
+opensds_endpoint: http://127.0.0.1:50040
 ```
 
 ##### LVM

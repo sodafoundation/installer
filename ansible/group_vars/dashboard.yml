@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Dashboard installation types are: 'container', 'source_code'
-dashboard_installation_type: source_code
+dashboard_installation_type: container
 
 
 ###########

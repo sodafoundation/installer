@@ -32,18 +32,15 @@ nbp_work_dir: /opt/opensds-k8s-linux-amd64
 opensds_config_dir: /etc/opensds
 opensds_log_dir: /var/log/opensds
 
-# opensds authentication strategy, support 'noauth' and 'keystone'.
-opensds_auth_strategy: noauth
-
 
 ##############
 # REPOSITORY #
 ##############
 
-# If user specifies intalling from repository,then he can choose the specific
+# If user specifies intalling from repository, then he can choose the specific
 # repository branch
-opensds_repository: development
-nbp_repository: master
+opensds_repo_branch: development
+nbp_repo_branch: master
 
 # These fields are not suggested to be modified
 opensds_remote_url: https://github.com/opensds/opensds.git
@@ -55,7 +52,7 @@ nbp_remote_url: https://github.com/opensds/nbp.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-opensds_release: v0.1.7 # The version should be at least v0.1.4
+opensds_release: v0.1.9 # The version should be at least v0.1.4
 nbp_release: v0.1.0 # The version should be at least v0.1.0
 
 # These fields are not suggested to be modified
@@ -76,8 +73,11 @@ container_enabled: false
 # PLUGIN  #
 ###########
 
-nbp_plugin_type: standalone # standalone is the default integration way, but you can change it to 'csi', 'flexvolume'
-opensds_endpoint: http://127.0.0.1:50040 # The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
+# 'hotpot_only' is the default integration way, but you can change it to 'csi'
+# or 'flexvolume'
+nbp_plugin_type: hotpot_only
+# The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
+opensds_endpoint: http://127.0.0.1:50040
 
 # These fields are not suggested to be modified
 flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opensds.io~opensds

@@ -13,21 +13,12 @@
 # limitations under the License.
 
 ---
-- name: set script dir permissions
+- name: clean up all release files if installed from release
   file:
-    path: ./script
-    mode: 0755
-
-- name: uninstall keystone
-  shell: "{{ item }}"
+    path: "{{ item }}"
+    state: absent
+    force: yes
   with_items:
-    - bash ./script/keystone.sh uninstall
-  when: uninstall_keystone == true
-  become: yes
-  
-- name: cleanup keystone
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone.sh cleanup
-  when: cleanup_keystone == true
-  become: yes
+    - "{{ opensds_tarball_dir }}"
+    - "{{ nbp_tarball_dir }}"
+  ignore_errors: yes

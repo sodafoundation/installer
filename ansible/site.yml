@@ -20,6 +20,7 @@
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/auth.yml
     - group_vars/osdsdb.yml
     - group_vars/osdslet.yml
     - group_vars/osdsdock.yml
@@ -31,6 +32,6 @@
     - osdsdb
     - osdslet
     - osdsdock
+    - osdsauth
     - nbp-installer
-    - keystone-installer
     - dashboard-installer

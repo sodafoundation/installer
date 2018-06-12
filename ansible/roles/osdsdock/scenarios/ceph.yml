@@ -58,15 +58,12 @@
     src: /opt/ceph-ansible/site.yml.sample
     dest: /opt/ceph-ansible/site.yml
 
-- name: ping all hosts
-  shell: ansible all -m ping -i ceph.hosts
+- name: ping all hosts and run ceph-ansible playbook
+  shell: "{{ item }}"
   become: true
-  args:
-    chdir: /opt/ceph-ansible
-
-- name: run ceph-ansible playbook
-  shell: ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
-  become: true
+  with_items:
+    - ansible all -m ping -i ceph.hosts
+    - ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
   args:
     chdir: /opt/ceph-ansible
 

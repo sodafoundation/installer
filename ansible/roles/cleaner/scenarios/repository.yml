@@ -13,21 +13,6 @@
 # limitations under the License.
 
 ---
-- name: stop nginx
-  service:
-    name: nginx
-    state: stopped
-  
-- name: remove /etc/nginx/sites-available/default
-  file:
-    path: "/etc/nginx/sites-available/default"
-    state: absent
-    force: yes
-  
-- name: remove /var/www/html/*
-  shell: rm -rf /var/www/html/* warn=False
-  become: yes
-  
 - name: check for golang
   stat:
     path: /usr/local/go
@@ -44,32 +29,23 @@
       - echo "The environment variable GOPATH must be set and cannot be an empty string!"
       - /bin/false
   when: go_path == ""
-  
-- name: remove {{ go_path }}/src/github.com/opensds/opensds/dashboard/dist
-  file:
-    path: "{{ go_path }}/src/github.com/opensds/opensds/dashboard/dist"
-    state: absent
-    force: yes
 
-- name: npm uninstall
-  shell: "{{ item }}"
-  with_items:
-      - npm uninstall
+- name: clean opensds controller data
+  shell: make clean
+  args:
+    chdir: "{{ go_path }}/src/github.com/opensds/opensds"
+  when: install_from == "repository"
+
+- name: clean opensds northbound plugin data
+  shell: make clean
+  args:
+    chdir: "{{ go_path }}/src/github.com/opensds/nbp"
+  when: install_from == "repository"
+
+- name: clean opensds dashboard data
+  shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
+  when: dashboard_installation_type == "source_code"
   become: yes
-  
-- name: uninstall angular
-  shell: npm uninstall -g @angular/cli@1.7.4
-  become: yes
-  
-- name: uninstall nodejs
-  shell:  "{{ item }}"
-  with_items:
-      - curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - 
-      - apt --purge remove nodejs -y
-  become: yes
-
-- name: uninstall nginx
-  shell: apt --purge remove nginx -y
-  become: yes
+  ignore_errors: yes

@@ -49,9 +49,14 @@
   register: dashboardexisted
     
 - name: build and configure opensds dashboard
-  shell: make
+  shell: "{{ item }}"
+  with_items:
+    - service apache2 stop
+    - make
+    - service apache2 start
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
+    warn: false
   become: yes
 
 - name: restart nginx

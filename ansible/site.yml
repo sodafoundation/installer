@@ -29,9 +29,9 @@
   become: True
   roles:
     - common
+    - osdsauth
     - osdsdb
     - osdslet
     - osdsdock
-    - osdsauth
     - nbp-installer
     - dashboard-installer

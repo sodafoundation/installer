@@ -13,11 +13,6 @@
 # limitations under the License.
 
 ---
-- name: set script dir permissions
-  file:
-    path: ./script
-    mode: 0755
-
 - name: install keystone
   shell: "{{ item }}"
   with_items:

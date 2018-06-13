@@ -17,6 +17,9 @@
   file:
     path: ./script
     mode: 0755
+    recurse: yes
+  ignore_errors: yes
+  become: yes
     
 - name: check ansible version
   shell: "{{ item }}"
@@ -73,6 +76,7 @@
     graceful = True
     log_file = {{ controller_log_file }}
     socket_order = inc
+    auth_strategy = {{ opensds_auth_strategy }}
 
     [osdsdock]
     api_endpoint = {{ dock_endpoint }}

@@ -13,16 +13,9 @@
 # limitations under the License.
 
 ---
-- name: check for golang
-  stat:
-    path: /usr/local/go
-  register: result
-  changed_when: no
-  
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  when: not result is failed
-  
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:
@@ -43,16 +36,15 @@
   when:
     - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
 
-- name: check for opensds dashboard source code existed
-  stat:
-    path: "{{ go_path }}/src/github.com/opensds/dashboard"
-  register: dashboardexisted
-    
 - name: build and configure opensds dashboard
   shell: make
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
   become: yes
+
+- name: update nginx default config
+  become: yes
+  shell: bash ./script/set_nginx_config.sh
 
 - name: restart nginx
   service:

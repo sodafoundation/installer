@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ansiblever=`ansible --version |grep -Eow '^ansible [^ ]+' |gawk '{ print $2 }'`
+ansiblever=$(ansible --version |grep -Eow '^ansible [^ ]+' |gawk '{ print $2 }')
+echo "The actual version of ansible is $ansiblever"
 
-if [ $(version $ansiblever) < $(version 2.4.2) ]; then
+if [[ "$ansiblever" < '2.4.2' ]]; then
   echo "Ansible version 2.4.2 or higher is required"
   exit 1
 fi
 
 exit 0
+

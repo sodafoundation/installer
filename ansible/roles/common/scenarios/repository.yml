@@ -13,17 +13,8 @@
 # limitations under the License.
 
 ---
-# If we can't get golang installed before any module is used we will fail
-# so just try what we can to get it installed
-- name: check for golang
-  stat:
-    path: /usr/local/go
-  register: result
-  changed_when: no
-
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  when: not result is failed
   
 - name: check go_path
   shell: "{{ item }}"

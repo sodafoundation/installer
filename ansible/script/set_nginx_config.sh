@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,26 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-# Defines deployment design and assigns role to server groups
+TOP_DIR=$(cd $(dirname "$0") && pwd)
+source "$TOP_DIR/util.sh"
+source "$TOP_DIR/sdsrc"
 
-- name: deploy an opensds local cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/auth.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdslet.yml
-    - group_vars/osdsdock.yml
-    - group_vars/dashboard.yml
-  gather_facts: false
-  become: True
-  roles:
-    - common
-    - osdsauth
-    - osdsdb
-    - osdslet
-    - osdsdock
-    - nbp-installer
-    - dashboard-installer
+cat > /etc/nginx/sites-available/default <<EOF
+    server {
+        listen 8088 default_server;
+        listen [::]:8088 default_server;
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+        location /v3/ {
+            proxy_pass http://$HOST_IP/identity/v3/;
+        }
+        location /v1beta/ {
+            proxy_pass http://$HOST_IP:50040/$OPENSDS_VERSION/;
+        }
+    }
+EOF
+
+

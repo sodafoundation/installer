@@ -13,23 +13,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-source $TOP_DIR/local.conf
 
 # Global
 HOST_IP=${HOST_IP:-}
 HOST_IP=$(get_default_host_ip "$HOST_IP" "inet")
 if [ "$HOST_IP" == "" ]; then
-    die $LINENO "Could not determine host ip address.  See local.conf for suggestions on setting HOST_IP."
+    die $LINENO "Could not determine host ip address. See local.conf for suggestions on setting HOST_IP."
 fi
 
 # OpenSDS configuration.
 OPENSDS_VERSION=${OPENSDS_VERSION:-v1beta}
-# OpenSDS authentication strategy, support 'noauth', 'keystone'.
-OPENSDS_AUTH_STRATEGY=${OPENSDS_AUTH_STRATEGY:-noauth}
+
 # OpenSDS service name in keystone.
 OPENSDS_SERVER_NAME=${OPENSDS_SERVER_NAME:-opensds}
-# OpenSDS backend list.
-OPENSDS_BACKEND_LIST=${OPENSDS_BACKEND_LIST:-lvm}
 
 # devstack keystone configuration
 STACK_GIT_BASE=${STACK_GIT_BASE:-https://git.openstack.org}
@@ -39,18 +35,6 @@ STACK_HOME=${STACK_HOME:-/opt/stack}
 STACK_BRANCH=${STACK_BRANCH:-stable/queens}
 DEV_STACK_DIR=$STACK_HOME/devstack
 
-# ETCD configuration
-ETCD_VERSION=${ETCD_VERSION:-3.2.0}
-ETCD_HOST=${ETCD_HOST:-$HOST_IP}
-ETCD_PORT=${ETCD_PORT:-62379}
-ETCD_PEER_PORT=${ETCD_PEER_PORT:-62380}
-ETCD_DIR=${OPT_DIR}/etcd
-ETCD_LOGFILE=${ETCD_DIR}/etcd.log
-ETCD_DATADIR=${ETCD_DIR}/data
+GOPATH=${GOPATH:-$HOME/gopath}
+OPENSDS_DIR=${GOPATH}/src/github.com/opensds/opensds
 
-OPENSDS_ENABLED_SERVICES=opensds,etcd
-if [ $OPENSDS_AUTH_STRATEGY = keystone ];then
-    OPENSDS_ENABLED_SERVICES+=,keystone
-fi
-OPENSDS_ENABLED_SERVICES+=,$OPENSDS_BACKEND_LIST
-SUPPORT_SERVICES=keystone,lvm,ceph,etcd,opensds

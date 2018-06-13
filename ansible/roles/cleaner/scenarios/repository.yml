@@ -13,15 +13,8 @@
 # limitations under the License.
 
 ---
-- name: check for golang
-  stat:
-    path: /usr/local/go
-  register: result
-  changed_when: no
-  
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  when: not result is failed
 
 - name: check go_path
   shell: "{{ item }}"

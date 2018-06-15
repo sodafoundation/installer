@@ -83,7 +83,7 @@ cinder_image_tag: debian-cinder
 # removed when use ansible script clean environment.
 cinder_volume_group: cinder-volumes
 # All source code and volume group file will be placed in the cinder_data_dir:
-cinder_data_dir: "{{ workplace }}/cinder_data_dir"
+cinder_data_dir: "/opt/cinder_data_dir"
 
 # These fields are not suggested to be modified
 cinder_name: cinder backend

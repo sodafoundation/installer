@@ -25,7 +25,7 @@ authOptions:
 pool:
   "cinder-lvm@lvm#lvm":
     storageType: block
-    availabilityZone: nova
+    availabilityZone: default
     extras:
       dataStorage:
         provisioningPolicy: Thin

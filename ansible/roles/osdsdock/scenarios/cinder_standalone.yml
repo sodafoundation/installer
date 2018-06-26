@@ -156,5 +156,5 @@
   wait_for:
     host: 127.0.0.1
     port: 8776
-    delay: 2
+    delay: 15
     timeout: 120

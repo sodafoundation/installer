@@ -26,28 +26,9 @@
   when:
     - opensdsreleasesexisted.stat.exists is undefined or opensdsreleasesexisted.stat.exists == false
 
-- name: check for nbp release files existed
-  stat:
-    path: "{{ nbp_tarball_dir }}"
-  ignore_errors: yes
-  register: nbpreleasesexisted
-
-- name: download and extract the nbp release tarball if not exists
-  unarchive:
-    src={{ nbp_download_url }}
-    dest=/tmp/
-  when:
-    - nbpreleasesexisted.stat.exists is undefined or nbpreleasesexisted.stat.exists == false
-
 - name: change the mode of all binary files in opensds release
   file:
     path: "{{ opensds_tarball_dir }}/bin"
-    mode: 0755
-    recurse: yes
-
-- name: change the mode of all binary files in nbp release
-  file:
-    path: "{{ nbp_tarball_dir }}/flexvolume"
     mode: 0755
     recurse: yes
 
@@ -55,8 +36,3 @@
   copy:
     src: "{{ opensds_tarball_dir }}/"
     dest: "{{ opensds_work_dir }}"
-
-- name: copy nbp tarball into nbp work directory
-  copy:
-    src: "{{ nbp_tarball_dir }}/"
-    dest: "{{ nbp_work_dir }}"

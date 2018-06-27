@@ -40,14 +40,13 @@
     - gcc
     - python-pip
 
-- name: create opensds and nbp work directory if it doesn't exist
+- name: create opensds work directory if it doesn't exist
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
   with_items:
     - "{{ opensds_work_dir }}"
-    - "{{ nbp_work_dir }}"
     - "{{ opensds_config_dir }}"
     - "{{ opensds_log_dir }}"
 
@@ -110,3 +109,8 @@
   args:
     chdir: "{{ opensds_config_dir }}"
   ignore_errors: yes
+
+- name: include nbp-installer role if nbp_plugin_type != hotpot_only
+  include_role:
+    name: nbp-installer
+  when: nbp_plugin_type != "hotpot_only"

@@ -55,29 +55,3 @@
     state: directory
     mode: 0755
     recurse: yes
-
-- name: check for nbp source code existed
-  stat:
-    path: "{{ go_path }}/src/github.com/opensds/nbp"
-  ignore_errors: yes
-  register: nbpexisted
-
-- name: download nbp source code if not exists
-  git:
-    repo: "{{ nbp_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/nbp"
-    version: "{{ nbp_repo_branch }}"
-  when:
-    - nbpexisted.stat.exists is undefined or nbpexisted.stat.exists == false
-
-- name: build nbp binary file
-  shell: make
-  environment:
-    GOPATH: "{{ go_path }}"
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/nbp"
-
-- name: copy nbp install scripts into nbp work directory
-  copy:
-    src: "{{ go_path }}/src/github.com/opensds/nbp/install/"
-    dest: "{{ nbp_work_dir }}"

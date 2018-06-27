@@ -25,6 +25,8 @@ dummy:
 # opensds authentication strategy, support 'noauth' and 'keystone'.
 opensds_auth_strategy: keystone
 
+# The URL should be replaced with the keystone actual URL
+keystone_os_auth_url: http://127.0.0.1/identity
 
 ############
 # KEYSTONE #

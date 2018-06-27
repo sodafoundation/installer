@@ -1,0 +1,79 @@
+# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- set_fact:
+    go_path: "{{ lookup('env', 'GOPATH') }}"
+  
+- name: check go_path
+  shell: "{{ item }}"
+  with_items:
+      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+      - /bin/false
+  when: go_path == ""
+
+- name: check for nbp source code existed
+  stat:
+    path: "{{ go_path }}/src/github.com/opensds/nbp"
+  ignore_errors: yes
+  register: nbpexisted
+
+- name: download nbp source code if not exists
+  git:
+    repo: "{{ nbp_remote_url }}"
+    dest: "{{ go_path }}/src/github.com/opensds/nbp"
+    version: "{{ nbp_repo_branch }}"
+  when:
+    - nbpexisted.stat.exists is undefined or nbpexisted.stat.exists == false
+
+- name: build nbp binary file
+  shell: make
+  environment:
+    GOPATH: "{{ go_path }}"
+  args:
+    chdir: "{{ go_path }}/src/github.com/opensds/nbp"
+
+- name: create nbp install directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ nbp_work_dir }}/csi"
+    - "{{ nbp_work_dir }}/flexvolume"
+    - "{{ nbp_work_dir }}/provisioner"
+
+- name: copy nbp csi deploy scripts into nbp work directory
+  copy:
+    src: "{{ item }}"
+    dest: "{{ nbp_work_dir }}/csi/"
+    directory_mode: yes
+  with_items:
+    - "{{ go_path }}/src/github.com/opensds/nbp/csi/server/deploy"
+    - "{{ go_path }}/src/github.com/opensds/nbp/csi/server/examples"
+
+- name: copy nbp flexvolume binary file into nbp work directory
+  copy:
+    src: "{{ go_path }}/src/github.com/opensds/nbp/.output/flexvolume.server.opensds"
+    dest: "{{ nbp_work_dir }}/flexvolume/opensds"
+    mode: 0755
+
+- name: copy nbp provisioner deploy scripts into nbp work directory
+  copy:
+    src: "{{ item }}"
+    dest: "{{ nbp_work_dir }}/provisioner/"
+    directory_mode: yes
+  with_items:
+    - "{{ go_path }}/src/github.com/opensds/nbp/opensds-provisioner/deploy"
+    - "{{ go_path }}/src/github.com/opensds/nbp/opensds-provisioner/examples"

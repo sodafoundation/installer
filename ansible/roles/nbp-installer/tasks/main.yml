@@ -20,10 +20,26 @@
   with_items:
     - open-iscsi
 
-- name: include scenarios/flexvolume.yml
+- name: create nbp work directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ nbp_work_dir }}"
+
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/repository.yml
+  when: install_from == "repository"
+
+- name: include scenarios/release.yml when installing from release
+  include: scenarios/release.yml
+  when: install_from == "release"
+
+- name: include scenarios/flexvolume.yml when nbp plugin type is flexvolume
   include: scenarios/flexvolume.yml
   when: nbp_plugin_type == "flexvolume"
 
-- name: include scenarios/csi.yml
+- name: include scenarios/csi.yml when nbp plugin type is csi
   include: scenarios/csi.yml
   when: nbp_plugin_type == "csi"

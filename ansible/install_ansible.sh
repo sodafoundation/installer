@@ -16,7 +16,7 @@
 
 # This step is needed to upgrade ansible to version 2.4.2 which is required for
 # the ceph backend.
-sudo add-apt-repository ppa:ansible/ansible-2.4.2
+sudo add-apt-repository ppa:ansible/ansible-2.4
 
 sudo apt-get update
 sudo apt-get install -y ansible

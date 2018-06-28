@@ -39,7 +39,7 @@ opensds_log_dir: /var/log/opensds
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-opensds_repo_branch: development
+opensds_repo_branch: master
 nbp_repo_branch: master
 
 # These fields are not suggested to be modified
@@ -52,8 +52,8 @@ nbp_remote_url: https://github.com/opensds/nbp.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-opensds_release: v0.1.9 # The version should be at least v0.1.4
-nbp_release: v0.1.0 # The version should be at least v0.1.0
+opensds_release: v0.2.0 # The version should be at least v0.2.0
+nbp_release: v0.2.0 # The version should be at least v0.2.0
 
 # These fields are not suggested to be modified
 opensds_download_url: https://github.com/opensds/opensds/releases/download/{{ opensds_release }}/opensds-{{ opensds_release }}-linux-amd64.tar.gz

@@ -13,14 +13,6 @@
 # limitations under the License.
 
 ---
-- name: install tgt and ceph-common external packages
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - tgt
-    - ceph-common
-
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
   when: enabled_backend == "lvm"

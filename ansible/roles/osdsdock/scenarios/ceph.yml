@@ -35,6 +35,7 @@
   git:
     repo: https://github.com/ceph/ceph-ansible.git
     dest: /opt/ceph-ansible
+    version: stable-3.0
   when:
     - cephansibleexisted.stat.exists is undefined or cephansibleexisted.stat.exists == false
 
@@ -47,11 +48,6 @@
   copy:
     src: ../../../group_vars/ceph/all.yml
     dest: /opt/ceph-ansible/group_vars/all.yml
-
-- name: copy ceph osds.yml file into ceph-ansible group_vars directory
-  copy:
-    src: ../../../group_vars/ceph/osds.yml
-    dest: /opt/ceph-ansible/group_vars/osds.yml
 
 - name: copy site.yml.sample to site.yml in ceph-ansible
   copy:

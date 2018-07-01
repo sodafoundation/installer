@@ -48,6 +48,7 @@
   with_items:
     - "{{ opensds_work_dir }}"
     - "{{ opensds_config_dir }}"
+    - "{{ opensds_driver_config_dir }}"
     - "{{ opensds_log_dir }}"
 
 - name: include scenarios/repository.yml when installing from repository
@@ -84,24 +85,6 @@
     dock_type = {{ dock_type }}
     # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
     enabled_backends = {{ enabled_backend }}
-
-    [lvm]
-    name = {{ lvm_name }}
-    description = {{ lvm_description }}
-    driver_name = {{ lvm_driver_name }}
-    config_path = {{ lvm_config_path }}
-
-    [ceph]
-    name = {{ ceph_name }}
-    description = {{ ceph_description }}
-    driver_name = {{ ceph_driver_name }}
-    config_path = {{ ceph_config_path }}
-
-    [cinder]
-    name = {{ cinder_name }}
-    description = {{ cinder_description }}
-    driver_name = {{ cinder_driver_name }}
-    config_path = {{ cinder_config_path }}
 
     [database]
     endpoint = {{ db_endpoint }}

@@ -22,7 +22,7 @@ dummy:
 # GENERAL #
 ###########
 
-# opensds authentication strategy, support 'noauth' and 'keystone'.
+# OpenSDS authentication strategy, support 'noauth' and 'keystone'.
 opensds_auth_strategy: keystone
 
 # The URL should be replaced with the keystone actual URL

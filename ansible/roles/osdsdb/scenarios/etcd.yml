@@ -46,7 +46,7 @@
   when: service_etcd_status.rc != 0
 
 - name: check etcd cluster health
-  shell: ./etcdctl cluster-health
+  shell: ./etcdctl --endpoints http://{{ etcd_host }}:{{ etcd_port }} cluster-health
   become: true
   ignore_errors: true
   args:

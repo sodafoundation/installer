@@ -48,7 +48,7 @@
 - name: run osdsdock containerized service
   docker_container:
     name: osdsdock
-    image: opensdsio/opensds-dock:latest
+    image: "{{ dock_docker_image }}"
     state: started
     network_mode: host
     privileged: true

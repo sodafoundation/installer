@@ -32,7 +32,7 @@
 - name: run osdslet containerized service
   docker_container:
     name: osdslet
-    image: opensdsio/opensds-controller:latest
+    image: "{{ controller_docker_image }}"
     state: started
     network_mode: host
     volumes:

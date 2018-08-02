@@ -14,7 +14,7 @@
 
 - name: kill osdslet daemon service
   shell: killall osdslet osdsdock
-  when: container_enabled == false
+  when: install_from != "container"
   ignore_errors: true
 
 - name: kill osdslet containerized service
@@ -22,14 +22,14 @@
     name: osdslet
     image: "{{ controller_docker_image }}"
     state: stopped
-  when: container_enabled == true
+  when: install_from == "container"
 
 - name: kill osdsdock containerized service
   docker_container:
     name: osdsdock
     image: "{{ dock_docker_image }}"
     state: stopped
-  when: container_enabled == true
+  when: install_from == "container"
 
 - name: stop container where dashboard is located
   docker_container:

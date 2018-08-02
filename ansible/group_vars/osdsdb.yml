@@ -45,4 +45,7 @@ etcd_dir: /opt/etcd-{{ etcd_release }}-linux-amd64
 # DOCKER  #
 ###########
 
+etcd_container_enabled: false
+
+# These fields are NOT suggested to be modified
 etcd_docker_image: quay.io/coreos/etcd:latest

@@ -71,11 +71,11 @@ nbp_tarball_dir: /tmp/opensds-k8s-{{ nbp_release }}-linux-amd64
 # CONTAINER #
 #############
 
-container_enabled: false
+opensds_image_tag: aruba
 
 # These fields are NOT suggested to be modified
-controller_docker_image: opensdsio/opensds-controller:latest
-dock_docker_image: opensdsio/opensds-dock:latest
+controller_docker_image: opensdsio/opensds-controller:{{ opensds_image_tag }}
+dock_docker_image: opensdsio/opensds-dock:{{ opensds_image_tag }}
 
 
 ###########

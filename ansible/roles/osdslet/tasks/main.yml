@@ -27,7 +27,7 @@
       done
   args:
     chdir: "{{ opensds_work_dir }}"
-  when: container_enabled == false
+  when: install_from != "container"
 
 - name: run osdslet containerized service
   docker_container:
@@ -37,4 +37,4 @@
     network_mode: host
     volumes:
     - "/etc/opensds/:/etc/opensds"
-  when: container_enabled == true
+  when: install_from == "container"

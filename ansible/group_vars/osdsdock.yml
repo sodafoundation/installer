@@ -90,10 +90,3 @@ cinder_name: cinder backend
 cinder_description: This is a cinder backend service
 cinder_driver_name: cinder
 cinder_config_path: "{{ opensds_driver_config_dir }}/cinder.yaml"
-
-
-###########
-# DOCKER  #
-###########
-
-dock_docker_image: opensdsio/opensds-dock:latest

@@ -46,6 +46,15 @@
   ignore_errors: yes
   when: nbp_plugin_type == "flexvolume"
 
+- name: clean opensds external provisioner plugin if flexvolume specified
+  shell: |
+    . /etc/profile
+    kubectl delete -f deploy/
+  args:
+    chdir: "{{ nbp_work_dir }}/provisioner"
+  ignore_errors: yes
+  when: nbp_plugin_type == "flexvolume"
+
 - name: clean opensds csi plugin if csi plugin specified
   shell: |
     . /etc/profile

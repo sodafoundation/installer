@@ -21,14 +21,15 @@
 
 - name: download and extract the nbp release tarball if not exists
   unarchive:
-    src={{ nbp_download_url }}
-    dest=/tmp/
+    src: "{{ nbp_download_url }}"
+    dest: /tmp/
+    remote_src: yes
   when:
     - nbpreleasesexisted.stat.exists is undefined or nbpreleasesexisted.stat.exists == false
 
 - name: change the mode of all binary files in nbp release
   file:
-    path: "{{ nbp_tarball_dir }}/flexvolume"
+    path: "{{ nbp_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
 
@@ -36,3 +37,4 @@
   copy:
     src: "{{ nbp_tarball_dir }}/"
     dest: "{{ nbp_work_dir }}"
+    mode: 0755

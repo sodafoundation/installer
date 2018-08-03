@@ -21,8 +21,9 @@
 
 - name: download and extract the opensds release tarball if not exists
   unarchive:
-    src={{ opensds_download_url }}
-    dest=/tmp/
+    src: "{{ opensds_download_url }}"
+    dest: /tmp/
+    remote_src: yes
   when:
     - opensdsreleasesexisted.stat.exists is undefined or opensdsreleasesexisted.stat.exists == false
 
@@ -36,3 +37,4 @@
   copy:
     src: "{{ opensds_tarball_dir }}/"
     dest: "{{ opensds_work_dir }}"
+    mode: 0755

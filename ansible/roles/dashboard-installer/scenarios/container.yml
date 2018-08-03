@@ -20,7 +20,7 @@
 - name: run dashboard containerized service
   docker_container:
     name: dashboard
-    image: opensdsio/dashboard:latest
+    image: "{{ dashboard_docker_image }}"
     state: started
     network_mode: host
     restart_policy: always

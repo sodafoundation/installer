@@ -24,11 +24,15 @@ dummy:
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: repository
+install_from: release
+
+# This field indicates which os family the system will be running, currently
+# support 'Debian' and 'RedHat'
+ansible_os_family: Debian
 
 # These fields are NOT suggested to be modifie
-opensds_work_dir: /opt/opensds-linux-amd64
-nbp_work_dir: /opt/opensds-k8s-linux-amd64
+opensds_work_dir: /opt/opensds-hotpot-linux-amd64
+nbp_work_dir: /opt/opensds-sushi-linux-amd64
 opensds_config_dir: /etc/opensds
 opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
 opensds_log_dir: /var/log/opensds
@@ -40,8 +44,8 @@ opensds_log_dir: /var/log/opensds
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-opensds_repo_branch: master
-nbp_repo_branch: master
+opensds_repo_branch: stable/aruba
+nbp_repo_branch: stable/aruba
 
 # These fields are NOT suggested to be modified
 opensds_remote_url: https://github.com/opensds/opensds.git
@@ -67,7 +71,11 @@ nbp_tarball_dir: /tmp/opensds-k8s-{{ nbp_release }}-linux-amd64
 # CONTAINER #
 #############
 
-container_enabled: false
+opensds_image_tag: aruba
+
+# These fields are NOT suggested to be modified
+controller_docker_image: opensdsio/opensds-controller:{{ opensds_image_tag }}
+dock_docker_image: opensdsio/opensds-dock:{{ opensds_image_tag }}
 
 
 ###########

@@ -42,7 +42,7 @@ dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 lvm_name: lvm backend
 lvm_description: This is a lvm backend service
 lvm_driver_name: lvm
-lvm_config_path: "{{ opensds_config_dir }}/driver/lvm.yaml"
+lvm_config_path: "{{ opensds_driver_config_dir }}/lvm.yaml"
 opensds_volume_group: opensds-volumes
 
 
@@ -60,7 +60,7 @@ ceph_pools: # Specify pool name randomly
 ceph_name: ceph backend
 ceph_description: This is a ceph backend service
 ceph_driver_name: ceph
-ceph_config_path: "{{ opensds_config_dir }}/driver/ceph.yaml"
+ceph_config_path: "{{ opensds_driver_config_dir }}/ceph.yaml"
 
 
 ###########
@@ -85,15 +85,8 @@ cinder_volume_group: cinder-volumes
 # All source code and volume group file will be placed in the cinder_data_dir:
 cinder_data_dir: "/opt/cinder_data_dir"
 
-# These fields are not suggested to be modified
+# These fields are NOT suggested to be modified
 cinder_name: cinder backend
 cinder_description: This is a cinder backend service
 cinder_driver_name: cinder
-cinder_config_path: "{{ opensds_config_dir }}/driver/cinder.yaml"
-
-
-###########
-# DOCKER  #
-###########
-
-dock_docker_image: opensdsio/opensds-dock:latest
+cinder_config_path: "{{ opensds_driver_config_dir }}/cinder.yaml"

@@ -15,7 +15,7 @@
 ---
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:

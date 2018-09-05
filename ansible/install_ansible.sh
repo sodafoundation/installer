@@ -16,8 +16,8 @@
 
 # This step is needed to upgrade ansible to version 2.4.2 which is required for
 # the ceph backend.
-apt-get remove -y ansible
-apt-get purge -y ansible
+sudo apt-get remove -y ansible
+sudo apt-get purge -y ansible
 
 sudo add-apt-repository ppa:ansible/ansible-2.4
 

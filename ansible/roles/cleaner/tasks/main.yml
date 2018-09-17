@@ -38,6 +38,13 @@
     state: stopped
   when: dashboard_installation_type == "container"
 
+- name: clean etcd db resource
+  file:
+    path: "{{ etcd_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
     path: "{{ flexvolume_plugin_dir }}"

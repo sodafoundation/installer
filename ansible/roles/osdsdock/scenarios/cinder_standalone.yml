@@ -68,7 +68,7 @@
 
               # Only create volume group if it doesn't already exist
               if ! sudo vgs $vg; then
-sudo rm -rf /dev/$vg
+    sudo rm -rf /dev/$vg
                   sudo vgcreate $vg $vg_dev
               fi
           fi

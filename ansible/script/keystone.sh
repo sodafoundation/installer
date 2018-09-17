@@ -82,7 +82,7 @@ auth_type = password
 
 OPENSDS_GLOBAL_CONFIG_DOC
 
-cp "$OPENSDS_DIR/examples/policy.json" "$OPENSDS_CONFIG_DIR"
+cp "$ANSIBLE_CONF_DIR/policy.json" "$OPENSDS_CONFIG_DIR"
 }
 
 create_user_and_endpoint(){

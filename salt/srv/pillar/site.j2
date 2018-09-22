@@ -1,0 +1,54 @@
+#*****************************************
+# SITE & RELEASE DATA COLLECTION
+# Save file as /srv/pillar/site.j2
+# this is jinja not yaml!!
+# Set ip-address here using single quotes.
+#*****************************************
+{%- set sitedata = {} %}
+{%- do sitedata.update( {
+
+      'host_ipv4': grains.ipv4[-1],
+      'host_ipv6': grains.ipv6[-1],
+      'tgtBindIp': grains.ipv4[-1],
+      'db_host': grains.ipv4[-1],
+      'dns_host1': '8.8.8.8',
+      'dns_host2': '64.6.64.6',
+      'ipdomain': 'example.com',
+      'timezone': 'America/Denver',
+
+      'port_controller': '50040',
+      'port_dock': '50050',
+
+      'hotpot_release': 'v0.3.3',
+      'hotpot_hashsum': 'md5=fa144886b3ac67af47790d018bbfb3d9',
+      'hotpot_uri': 'https://github.com/opensds/opensds/releases/download',
+
+      'sushi_release': 'v0.3.3',
+      'sushi_hashsum': 'md5=91969a17ca772851ddb80feec2aa7a7c',
+      'sushi_uri': 'https://github.com/opensds/nbp/releases/download',
+
+      'cinder_hashsum': 'md5=1751f8e4f6b4cddd8c4843a0f4473274',
+      'cinder_url': 'https://raw.githubusercontent.com/openstack/cinder/master/contrib/block-box/docker-compose.yml',
+
+      'kubectl_hashsum': 'md5=b0629c3ca34bc043da2f5d3eb226fb9e',
+      'kubectl_url': 'https://storage.googleapis.com/kubernetes-release/release/v1.12.3/bin/linux/amd64/kubectl',
+
+      'dock_type': 'provisioner',
+      'nbp_plugin_type': 'hotpot_only',
+      'enabled_backend': 'lvm',
+      'poolname': 'opensds-volumes',
+
+      'img_controller': 'opensdsio/opensds-controller',
+      'img_dock': 'opensdsio/opensds-dock',
+      'img_dashboard': 'opensdsio/dashboard',
+      'img_etcd': 'quay.io/coreos/etcd',
+
+      'ver_controller': 'latest',
+      'ver_dock': 'latest',
+      'ver_dashboard': 'latest',
+      'ver_etcd': 'latest',
+
+      'devstack_enabled_services': 'mysql,key',
+      'devstack_password': 'opensds@123',
+      'devstack_dir': '/opt/opensds-linux-amd64-devstack',
+}) %}

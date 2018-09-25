@@ -45,6 +45,27 @@
     force: yes
   ignore_errors: yes
 
+- name: kill etcd process
+  shell:
+    killall etcd
+  ignore_errors: yes
+
+- name: clean expired virtualized physical volume
+  shell: |
+     rm -rf devs.log
+     rm -rf dev.log
+     pvs -a -S vg_name="" --noheadings > devs.log
+     for line in `cat devs.log`
+     do
+        awk -F ' ' '{ print $1 }' devs.log > dev.log
+        for dev in `cat dev.log`
+        do
+          sudo losetup -d $dev
+        done
+        break
+     done
+  ignore_errors: yes
+
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
     path: "{{ flexvolume_plugin_dir }}"

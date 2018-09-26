@@ -6,4 +6,11 @@ apiVersion: v1
 metadata:
   name: csi-configmap-opensdsplugin
 data:
-  opensdsendpoint: {{ .Values.opensdsEndpoint }}
+  opensdsendpoint: {{ .Values.data.opensdsEndpoint }}
+  opensdsauthstrategy: {{ .Values.data.opensdsAuthStrategy }}
+  osauthurl: {{ .Values.data.osAuthURL }}
+  osusername: {{ .Values.data.osUsername }}
+  ospassword: {{ .Values.data.osPassword }}
+  ostenantname: {{ .Values.data.osTenantName }}
+  osprojectname: {{ .Values.data.osProjectName }}
+  osuserdomainid: {{ .Values.data.osUserDomainId }}

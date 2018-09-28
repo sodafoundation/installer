@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## The global.sh file is created for setting global variables
-## you should set all variables you need in the script/vars.sh file 
+## This file is used to set global variables. 
+## Before executing this file, please set the variables you need in the script/vars.sh file.
 
 source ./script/vars.sh
 var_path=./group_vars

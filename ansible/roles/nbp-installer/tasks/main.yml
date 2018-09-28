@@ -13,13 +13,6 @@
 # limitations under the License.
 
 ---
-- name: install open-iscsi external packages
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - open-iscsi
-
 - name: create nbp work directory if it doesn't exist
   file:
     path: "{{ item }}"
@@ -27,14 +20,15 @@
     mode: 0755
   with_items:
     - "{{ nbp_work_dir }}"
+  when: nbp_plugin_type != "hotpot_only"
 
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
-  when: install_from == "repository"
+  when: install_from == "repository" and nbp_plugin_type != "hotpot_only"
 
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
-  when: install_from == "release"
+  when: install_from == "release" and nbp_plugin_type != "hotpot_only"
 
 - name: include scenarios/flexvolume.yml when nbp plugin type is flexvolume
   include: scenarios/flexvolume.yml

@@ -31,14 +31,14 @@
     regexp: '^  opensdsendpoint'
     line: '  opensdsendpoint: {{ opensds_endpoint }}'
     backup: yes
-    
+
 - name: Configure opensds auth strategy in opensds external provisioner plugin
   lineinfile:
     dest: "{{ nbp_work_dir }}/provisioner/deploy/configmap.yaml"
     regexp: '^  opensdsauthstrategy'
     line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
     backup: yes
-    
+
 - name: Configure keystone os auth url in opensds external provisioner plugin
   lineinfile:
     dest: "{{ nbp_work_dir }}/provisioner/deploy/configmap.yaml"

@@ -82,15 +82,15 @@ auth_type = password
 
 OPENSDS_GLOBAL_CONFIG_DOC
 
-cp "$OPENSDS_DIR/examples/policy.json" "$OPENSDS_CONFIG_DIR"
+cp "$ANSIBLE_CONF_DIR/policy.json" "$OPENSDS_CONFIG_DIR"
 }
 
 create_user_and_endpoint(){
     . "$DEV_STACK_DIR/openrc" admin admin
     openstack user create --domain default --password "$STACK_PASSWORD" "$OPENSDS_SERVER_NAME"
-    openstack role add --project service --user opensds admin
+    openstack role add --project service --user "$OPENSDS_SERVER_NAME" admin
     openstack group create service
-    openstack group add user service opensds
+    openstack group add user service "$OPENSDS_SERVER_NAME"
     openstack role add service --project service --group service
     openstack group add user admins admin
     openstack service create --name "opensds$OPENSDS_VERSION" --description "OpenSDS Block Storage" "opensds$OPENSDS_VERSION"

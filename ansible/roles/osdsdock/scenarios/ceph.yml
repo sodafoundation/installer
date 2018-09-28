@@ -20,6 +20,12 @@
   with_items:
     - ceph-common
 
+- name: install notario package with pip when ceph backend enabled
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - notario
+
 - name: configure ceph section in opensds global info if specify ceph backend
   shell: |
     cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
@@ -78,13 +84,13 @@
 
 - name: check if ceph osd is running
   shell: ps aux | grep ceph-osd | grep -v grep
-  ignore_errors: false
+  ignore_errors: true
   changed_when: false
   register: service_ceph_osd_status
 
 - name: check if ceph mon is running
   shell: ps aux | grep ceph-mon | grep -v grep
-  ignore_errors: false
+  ignore_errors: true
   changed_when: false
   register: service_ceph_mon_status
 

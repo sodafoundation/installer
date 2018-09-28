@@ -19,14 +19,14 @@
     regexp: '^  opensdsendpoint'
     line: '  opensdsendpoint: {{ opensds_endpoint }}'
     backup: yes
-    
+
 - name: Configure opensds auth strategy in opensds csi plugin
   lineinfile:
     dest: "{{ nbp_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
     regexp: '^  opensdsauthstrategy'
     line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
     backup: yes
-    
+
 - name: Configure keystone os auth url in opensds csi plugin
   lineinfile:
     dest: "{{ nbp_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"

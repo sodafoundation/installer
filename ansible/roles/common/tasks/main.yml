@@ -39,6 +39,7 @@
     - make
     - gcc
     - python-pip
+    - open-iscsi
 
 - name: install Red Hat system packages
   package:
@@ -110,8 +111,3 @@
   args:
     chdir: "{{ opensds_config_dir }}"
   ignore_errors: yes
-
-- name: include nbp-installer role if nbp_plugin_type != hotpot_only
-  include_role:
-    name: nbp-installer
-  when: nbp_plugin_type != "hotpot_only"

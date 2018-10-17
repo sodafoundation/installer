@@ -31,7 +31,7 @@ spec:
       containers:
         - name: csi-snapshotter
           # This should be replaced by an official k8s-csi snapshotter image when it is released.
-          image: xyang105/csi:csi-snapshotter
+          image: quay.io/k8scsi/csi-snapshotter:v0.4.0
           args:
             - "--snapshotter=csi-opensdsplugin"
             - "--csi-address=$(ADDRESS)"
@@ -44,7 +44,7 @@ spec:
             - name: socket-dir
               mountPath: /csi
         - name: opensds
-          image: {{ .Values.imagePullPolicy }}
+          image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"

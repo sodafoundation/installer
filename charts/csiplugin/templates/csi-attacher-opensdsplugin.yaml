@@ -21,7 +21,7 @@ metadata:
   name: csi-attacher-opensdsplugin
 spec:
   serviceName: "csi-attacher-opensdsplugin"
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
@@ -30,7 +30,7 @@ spec:
       serviceAccount: csi-attacher
       containers:
         - name: csi-attacher
-          image: quay.io/k8scsi/csi-attacher:v0.2.0
+          image: quay.io/k8scsi/csi-attacher:v0.4.0
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
@@ -48,6 +48,8 @@ spec:
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
+            - "--opensdsAuthStrategy=$(OPENSDS_AUTH_STRATEGY)"
+            - "-v8"
           env:
             - name: CSI_ENDPOINT
               value: unix://csi/csi.sock
@@ -56,6 +58,41 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: opensdsendpoint
+            - name: OPENSDS_AUTH_STRATEGY
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: opensdsauthstrategy
+            - name: OS_AUTH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: osauthurl
+            - name: OS_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: osusername
+            - name: OS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: ospassword
+            - name: OS_TENANT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: ostenantname
+            - name: OS_PROJECT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: osprojectname
+            - name: OS_USER_DOMAIN_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: osuserdomainid
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - name: socket-dir

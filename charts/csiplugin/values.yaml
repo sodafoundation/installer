@@ -7,5 +7,13 @@ image: opensdsio/csiplugin:latest
 imagePullPolicy: IfNotPresent
 # ImageRestartPolicy: valid values are "Never", and "Always"
 imageRestartPolicy: Never
-# Please modify opensdsEndpoint field in real environment
-opensdsEndpoint: http://127.0.0.1:50040
+# Please modify data fields in real environment
+data:
+  opensdsEndpoint: http://127.0.0.1:50040
+  opensdsAuthStrategy: keystone
+  osAuthURL: http://127.0.0.1/identity
+  osUsername: admin
+  osPassword: opensds@123
+  osTenantName: admin
+  osProjectName: admin
+  osUserDomainId: default

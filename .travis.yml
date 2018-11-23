@@ -1,5 +1,8 @@
 dist: trusty
+language: node_js
 sudo: required
+node_js:
+  - node
 
 install:
   # Install ansible 2.4.x

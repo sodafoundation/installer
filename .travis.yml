@@ -1,0 +1,19 @@
+dist: trusty
+language: node_js
+sudo: required
+node_js:
+  - node
+
+install:
+  # Install ansible 2.4.x
+  - chmod +x ansible/install_ansible.sh
+  - echo | /bin/bash ansible/install_ansible.sh
+  # Modify some fields in global variables
+  - sed -i 's/^opensds_auth_strategy: .*/opensds_auth_strategy: '"noauth"'/g' ansible/group_vars/auth.yml
+  - sed -i 's/^dashboard_installation_type: .*/dashboard_installation_type: '"source_code"'/g' ansible/group_vars/dashboard.yml
+
+script:
+  - cd ansible && sudo ansible-playbook site.yml -i local.hosts
+
+after_success:
+  - cd ansible && sudo ansible-playbook clean.yml -i local.hosts

@@ -15,5 +15,5 @@ install:
 script:
   - cd ansible && sudo ansible-playbook site.yml -i local.hosts
 
-after_success:
+after_script:
   - cd ansible && sudo ansible-playbook clean.yml -i local.hosts

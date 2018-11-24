@@ -36,6 +36,7 @@
     chdir: "{{ dashboard_work_dir }}"
     warn: false
   become: yes
+  ignore_errors: yes
 
 - name: update nginx default config
   become: yes

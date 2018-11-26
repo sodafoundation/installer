@@ -70,11 +70,6 @@
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
 
-- name: copy config templates into opensds global config folder
-  copy:
-    src: ../../../../conf/multi/
-    dest: "{{ multi_config_dir }}"
-
 - name: install keystone
   shell: "{{ item }}"
   with_items:

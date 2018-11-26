@@ -86,20 +86,26 @@ MULTI_GLOBAL_CONFIG_DOC
 
 create_user_and_endpoint(){
     . "$DEV_STACK_DIR/openrc" admin admin
+    if openstack user show $MULTI_SERVER_NAME &>/dev/null; then
+        return 
+    fi
     openstack user create --domain default --password "$STACK_PASSWORD" "$MULTI_SERVER_NAME"
     openstack role add --project service --user "$MULTI_SERVER_NAME" admin
     openstack group create service
     openstack group add user service "$MULTI_SERVER_NAME"
     openstack role add service --project service --group service
     openstack group add user admins admin
-    openstack service create --name "multi$MULTI_VERSION" --description "Multi-cloud Block Storage" "multi$MULTI_VERSION"
-    openstack endpoint create --region RegionOne "multi$MULTI_VERSION" public "http://$HOST_IP:8089/$MULTI_VERSION/%\(tenant_id\)s"
-    openstack endpoint create --region RegionOne "multi$MULTI_VERSION" internal "http://$HOST_IP:multi/$MULTI_VERSION/%\(tenant_id\)s"
-    openstack endpoint create --region RegionOne "multi$MULTI_VERSION" admin "http://$HOST_IP:8089/$MULTI_VERSION/%\(tenant_id\)s"
+    openstack service create --name "multicloud$MULTI_VERSION" --description "Multi-cloud Block Storage" "multicloud$MULTI_VERSION"
+    openstack endpoint create --region RegionOne "multicloud$MULTI_VERSION" public "http://$HOST_IP:8089/$MULTI_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "multicloud$MULTI_VERSION" internal "http://$HOST_IP:8089/$MULTI_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "multicloud$MULTI_VERSION" admin "http://$HOST_IP:8089/$MULTI_VERSION/%(tenant_id)s"
 }
 
 delete_redundancy_data() {
     . "$DEV_STACK_DIR/openrc" admin admin
+    if ! openstack user show demo &>/dev/null; then
+        return
+    fi
     openstack project delete demo
     openstack project delete alt_demo
     openstack project delete invisible_to_admin
@@ -120,12 +126,11 @@ install(){
     multi_conf
 
     # If keystone is ready to start, there is no need continue next step.
-    if wait_for_url "http://$HOST_IP/identity" "keystone" 0.25 4; then
-        return
+    if ! wait_for_url "http://$HOST_IP/identity" "keystone" 0.25 4; then
+        devstack_local_conf
+        cd "${DEV_STACK_DIR}"
+        su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/stack.sh" >/dev/null
     fi
-    devstack_local_conf
-    cd "${DEV_STACK_DIR}"
-    su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/stack.sh" >/dev/null
     create_user_and_endpoint
     delete_redundancy_data
 }

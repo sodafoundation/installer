@@ -94,9 +94,9 @@ create_user_and_endpoint(){
     openstack role add service --project service --group service
     openstack group add user admins admin
     openstack service create --name "opensds$OPENSDS_VERSION" --description "OpenSDS Block Storage" "opensds$OPENSDS_VERSION"
-    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" public "http://$HOST_IP:50040/$OPENSDS_VERSION/%\(tenant_id\)s"
-    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" internal "http://$HOST_IP:50040/$OPENSDS_VERSION/%\(tenant_id\)s"
-    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" admin "http://$HOST_IP:50040/$OPENSDS_VERSION/%\(tenant_id\)s"
+    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" public "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" internal "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" admin "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
 }
 
 delete_redundancy_data() {

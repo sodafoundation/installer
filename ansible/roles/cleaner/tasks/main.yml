@@ -45,6 +45,13 @@
     force: yes
   ignore_errors: yes
 
+- name: clean multi-cloud source 
+  file:
+   path: "{ multi_config_dir }"
+   state: absent
+   force: yes
+  ignore_errors: yes
+
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
     path: "{{ flexvolume_plugin_dir }}"

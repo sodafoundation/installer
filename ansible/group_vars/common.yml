@@ -24,7 +24,7 @@ dummy:
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: release
+install_from: container
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
@@ -37,6 +37,7 @@ opensds_config_dir: /etc/opensds
 opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
 opensds_log_dir: /var/log/opensds
 
+multi_config_dir: /etc/multi
 
 ##############
 # REPOSITORY #
@@ -50,7 +51,7 @@ nbp_repo_branch: stable/aruba
 # These fields are NOT suggested to be modified
 opensds_remote_url: https://github.com/opensds/opensds.git
 nbp_remote_url: https://github.com/opensds/nbp.git
-
+multi_remote_url: https://github.com/opensds/multi-cloud.git
 
 ###########
 # RELEASE #

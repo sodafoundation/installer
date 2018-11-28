@@ -24,8 +24,14 @@ fi
 # OpenSDS configuration.
 OPENSDS_VERSION=${OPENSDS_VERSION:-v1beta}
 
+# Multi-cloud 
+MULTI_VERSION=${MULTI_VERSION:-v1}
+
 # OpenSDS service name in keystone.
 OPENSDS_SERVER_NAME=${OPENSDS_SERVER_NAME:-opensds}
+
+# Multi-Cloud service name in keystone
+MULTI_SERVER_NAME=${MULTI_SERVER_NAME:-multicloud}
 
 # devstack keystone configuration
 STACK_GIT_BASE=${STACK_GIT_BASE:-https://git.openstack.org}

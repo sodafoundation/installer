@@ -45,11 +45,13 @@
     force: yes
   ignore_errors: yes
 
-- name: clean multi-cloud source 
+- name: clean all configuration and log files in multicloud
   file:
-   path: "{ multi_config_dir }"
-   state: absent
-   force: yes
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ multicloud_work_dir }}"
   ignore_errors: yes
 
 - name: clean opensds flexvolume plugins binary file if flexvolume specified

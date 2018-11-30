@@ -13,18 +13,38 @@
 # limitations under the License.
 
 ---
-- name: uninstall keystone
+- name: uninstall opensds keystone
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh uninstall
-  when: opensds_auth_strategy == "keystone" and uninstall_keystone == true
+  when:
+    - deploy_project != "multicloud" 
+    - opensds_auth_strategy == "keystone" and uninstall_keystone == true
   ignore_errors: yes
   become: yes
   
-- name: cleanup keystone
+- name: cleanup opensds keystone
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh cleanup
-  when: opensds_auth_strategy == "keystone" and cleanup_keystone == true
+  when:
+    - deploy_project != "multicloud" 
+    - opensds_auth_strategy == "keystone" and cleanup_keystone == true
+  ignore_errors: yes
+  become: yes
+
+- name: uninstall multicloud keystone
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh uninstall
+  when: deploy_project != "opensds" and uninstall_keystone == true
+  ignore_errors: yes
+  become: yes
+  
+- name: cleanup multicloud keystone
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh cleanup
+  when: deploy_project != "opensds" and cleanup_keystone == true
   ignore_errors: yes
   become: yes

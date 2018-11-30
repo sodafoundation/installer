@@ -22,9 +22,16 @@ dummy:
 # GENERAL #
 ###########
 
+# This field indicates local machine host ip
+host_ip: 10.10.3.100
+
+# This field indicates which project should be deploy
+# 'opensds','multicloud','all'
+deploy_project: all
+
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: container
+install_from: release
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
@@ -37,7 +44,14 @@ opensds_config_dir: /etc/opensds
 opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
 opensds_log_dir: /var/log/opensds
 
-multi_config_dir: /etc/multi
+##############
+# multi-cloud #
+##############
+# This field indicates the location of docker-compose.yml
+multicloud_work_dir: /opt/opensds-gelato-linux-amd64
+# This field indicates docker-compose.yml download path
+compose_down_path: https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml
+
 
 ##############
 # REPOSITORY #

@@ -18,8 +18,12 @@
   with_first_found:
     - "scenarios/etcd_{{ ansible_architecture }}.yml"
     - "scenarios/etcd.yml"
-  when: db_driver == "etcd" and etcd_container_enabled == false
+  when:
+    - deploy_project != "multicloud" 
+    - db_driver == "etcd" and etcd_container_enabled == false
 
 - name: include scenarios/container.yml
   include: scenarios/container.yml
-  when: db_driver == "etcd" and etcd_container_enabled == true
+  when:
+    - deploy_project != "multicloud" 
+    - db_driver == "etcd" and etcd_container_enabled == true

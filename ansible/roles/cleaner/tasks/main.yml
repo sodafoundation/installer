@@ -45,13 +45,13 @@
     force: yes
   ignore_errors: yes
 
-- name: clean all configuration and log files in multicloud
+- name: clean all configuration and log files in gelato
   file:
     path: "{{ item }}"
     state: absent
     force: yes
   with_items:
-    - "{{ multicloud_work_dir }}"
+    - "{{ gelato_work_dir }}"
   ignore_errors: yes
 
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
@@ -60,34 +60,34 @@
     state: absent
     force: yes
   ignore_errors: yes
-  when: nbp_plugin_type == "flexvolume"
+  when: sushi_plugin_type == "flexvolume"
 
 - name: clean opensds external provisioner plugin if flexvolume specified
   shell: |
     . /etc/profile
     kubectl delete -f deploy/
   args:
-    chdir: "{{ nbp_work_dir }}/provisioner"
+    chdir: "{{ sushi_work_dir }}/provisioner"
   ignore_errors: yes
-  when: nbp_plugin_type == "flexvolume"
+  when: sushi_plugin_type == "flexvolume"
 
 - name: clean opensds csi plugin if csi plugin specified
   shell: |
     . /etc/profile
     kubectl delete -f deploy/kubernetes
   args:
-    chdir: "{{ nbp_work_dir }}/csi"
+    chdir: "{{ sushi_work_dir }}/csi"
   ignore_errors: yes
-  when: nbp_plugin_type == "csi"
+  when: sushi_plugin_type == "csi"
 
-- name: clean all configuration and log files in opensds and nbp work directory
+- name: clean all configuration and log files in hotpot and sushi work directory
   file:
     path: "{{ item }}"
     state: absent
     force: yes
   with_items:
-    - "{{ opensds_work_dir }}"
-    - "{{ nbp_work_dir }}"
+    - "{{ hotpot_work_dir }}"
+    - "{{ sushi_work_dir }}"
     - "{{ opensds_config_dir }}"
     - "{{ opensds_log_dir }}"
   ignore_errors: yes

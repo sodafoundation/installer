@@ -13,46 +13,45 @@
 # limitations under the License.
 
 ---
-- set_fact:
-    go_path: "{{ lookup('env', 'GOPATH') }}"
-  
-- name: check go_path
-  shell: "{{ item }}"
-  with_items:
-      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
-      - /bin/false
-  when: go_path == ""
+- name: install docker-py package with pip when deploying gelato cluster
+  pip:
+    name: docker-py
+  when: deploy_project != "hotpot"
 
-- name: create multi-cloud work directory if it doesn't exist
+- name: create gelato work directory if it doesn't exist
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
   with_items:
-    - "{{ multicloud_work_dir }}"
-  when: deploy_project != "opensds"
+    - "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
 
 - name: install keystone
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone_multi.sh install
   become: yes
-  when: deploy_project != "opensds"
+  when: deploy_project != "hotpot"
 
 - name: add variables to environment variables
   shell: export AUTHSTRATEGY_URL="{{ keystone_os_auth_url }}"
-  when: deploy_project != "opensds"
+  when: deploy_project != "hotpot"
 
 - name: add variables to environment variables
   shell:
     cmd: export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
-  when: deploy_project != "opensds"
+  when: deploy_project != "hotpot"
  
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/repository.yml
+  when:  deploy_project != "hotpot" and install_from == "repository"
+
 - name: download docker-compose configuration
   shell: wget "{{ compose_down_path }}"
   args:
-    chdir: "{{ multicloud_work_dir }}"
-  when: deploy_project != "opensds"
+    chdir: "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot" and install_from != "repository"
 
 - name: set variables for docker-compose configuration
   shell: |
@@ -61,14 +60,14 @@
      sed -i "s,OS_USERNAME:.*$,OS_USERNAME: \"{{ os_username }}\","  docker-compose.yml
      sed -i "s,OS_PASSWORD:.*$,OS_PASSWORD: \"{{ os_password }}\","  docker-compose.yml
   args:
-    chdir: "{{ multicloud_work_dir }}"
-  when: deploy_project != "opensds"
+    chdir: "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
 
 - name: start service
   shell: docker-compose up -d
   args:
-    chdir: "{{ multicloud_work_dir }}"
-  when: deploy_project != "opensds"
+    chdir: "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
 
 - name: wait for service to start normally
   wait_for:
@@ -77,5 +76,4 @@
     delay: 15
     timeout: 120
   ignore: true
-  when: deploy_project != "opensds"
-
+  when: deploy_project != "hotpot"

@@ -13,28 +13,28 @@
 # limitations under the License.
 
 ---
-- name: check for opensds release files existed
+- name: check for hotpot release files existed
   stat:
-    path: "{{ opensds_tarball_dir }}"
+    path: "{{ hotpot_tarball_dir }}"
   ignore_errors: yes
-  register: opensdsreleasesexisted
+  register: hotpotreleasesexisted
 
-- name: download and extract the opensds release tarball if not exists
+- name: download and extract the hotpot release tarball if not exists
   unarchive:
-    src: "{{ opensds_download_url }}"
+    src: "{{ hotpot_download_url }}"
     dest: /tmp/
     remote_src: yes
   when:
-    - opensdsreleasesexisted.stat.exists is undefined or opensdsreleasesexisted.stat.exists == false
+    - hotpotreleasesexisted.stat.exists is undefined or hotpotreleasesexisted.stat.exists == false
 
-- name: change the mode of all binary files in opensds release
+- name: change the mode of all binary files in hotpot release
   file:
-    path: "{{ opensds_tarball_dir }}/bin"
+    path: "{{ hotpot_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
 
-- name: copy opensds tarball into opensds work directory
+- name: copy hotpot tarball into hotpot work directory
   copy:
-    src: "{{ opensds_tarball_dir }}/"
-    dest: "{{ opensds_work_dir }}"
+    src: "{{ hotpot_tarball_dir }}/"
+    dest: "{{ hotpot_work_dir }}"
     mode: 0755

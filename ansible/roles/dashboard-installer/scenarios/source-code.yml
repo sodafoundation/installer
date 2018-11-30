@@ -13,26 +13,16 @@
 # limitations under the License.
 
 ---
-- set_fact:
-    go_path: "{{ lookup('env', 'GOPATH') }}"
-
-- name: check go_path
-  shell: "{{ item }}"
-  with_items:
-    - echo "The environment variable GOPATH must be set and cannot be an empty string!"
-    - /bin/false
-  when: go_path == ""
-  
-- name: check for opensds source code existed
+- name: check for opensds-dashboard source code existed
   stat:
-    path: "{{ go_path }}/src/github.com/opensds/opensds"
+    path: "{{ dashboard_work_dir }}"
   register: opensdsexisted
-  
-- name: download opensds source code if not exists
+
+- name: download opensds-dashboard source code if not exists
   git:
-    repo: "{{ opensds_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: "{{ opensds_repo_branch }}"
+    repo: "{{ dashboard_remote_url }}"
+    dest: "{{ dashboard_work_dir }}"
+    version: "{{ dashboard_repo_branch }}"
   when:
     - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
 
@@ -43,9 +33,10 @@
     - make
     - service apache2 start
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
+    chdir: "{{ dashboard_work_dir }}"
     warn: false
   become: yes
+  ignore_errors: yes
 
 - name: update nginx default config
   become: yes

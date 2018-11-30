@@ -15,19 +15,23 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: enabled_backend == "lvm"
+  when: deploy_project != "multicloud" and enabled_backend == "lvm"
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: enabled_backend == "ceph"
+  when: deploy_project != "multicloud" and enabled_backend == "ceph"
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
-  when: enabled_backend == "cinder" and use_cinder_standalone == false
+  when:
+    - deploy_project != "multicloud" 
+    - enabled_backend == "cinder" and use_cinder_standalone == false
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
-  when: enabled_backend == "cinder" and use_cinder_standalone == true
+  when: 
+    - deploy_project != "multicloud"
+    - enabled_backend == "cinder" and use_cinder_standalone == true
 
 - name: run osdsdock daemon service
   shell:
@@ -43,7 +47,7 @@
       done
   args:
     chdir: "{{ opensds_work_dir }}"
-  when: install_from != "container"
+  when: deploy_project != "multicloud" and install_from != "container"
 
 - name: run osdsdock containerized service
   docker_container:
@@ -59,4 +63,4 @@
     - "/run/:/run/:shared"
     - "/etc/localtime:/etc/localtime:ro"
     - "/lib/modules:/lib/modules:ro"
-  when: install_from == "container"
+  when: deploy_project != "multicloud" and install_from == "container"

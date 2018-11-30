@@ -1,0 +1,21 @@
+dist: trusty
+language: node_js
+sudo: required
+node_js:
+  - node
+
+install:
+  - sudo apt-get update && sudo apt-get install -y nginx
+
+before_script:
+  # Install ansible 2.4.x
+  - chmod +x ansible/install_ansible.sh
+  - echo | /bin/bash ansible/install_ansible.sh
+  # Modify some fields in global variables
+  - chmod +x ci_prepare.sh && ./ci_prepare.sh
+
+script:
+  - cd ansible && sudo ansible-playbook site.yml -i local.hosts
+
+after_script:
+  - cd ansible && sudo ansible-playbook clean.yml -i local.hosts

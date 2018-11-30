@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,27 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-# Defines deployment design and assigns role to server groups
-
-- name: deploy an opensds local cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/auth.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdslet.yml
-    - group_vars/osdsdock.yml
-    - group_vars/dashboard.yml
-  gather_facts: false
-  become: True
-  roles:
-    - common
-    - osdsauth
-    - osdsdb
-    - osdslet
-    - osdsdock
-    - dashboard-installer
-    - nbp-installer
-    - multicloud
+sed -i 's/^opensds_auth_strategy: .*/opensds_auth_strategy: '"noauth"'/g' ansible/group_vars/auth.yml
+sed -i 's/^dashboard_installation_type: .*/dashboard_installation_type: '"source_code"'/g' ansible/group_vars/dashboard.yml

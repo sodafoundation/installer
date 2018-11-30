@@ -72,8 +72,8 @@ multi_remote_url: https://github.com/opensds/multi-cloud.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-opensds_release: v0.3.2 # The version should be at least v0.2.1
-nbp_release: v0.3.2 # The version should be at least v0.2.1
+opensds_release: v0.3.3 # The version should be at least v0.2.1
+nbp_release: v0.3.3 # The version should be at least v0.2.1
 
 # These fields are NOT suggested to be modified
 opensds_download_url: https://github.com/opensds/opensds/releases/download/{{ opensds_release }}/opensds-hotpot-{{ opensds_release }}-linux-amd64.tar.gz

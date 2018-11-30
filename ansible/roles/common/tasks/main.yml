@@ -69,23 +69,25 @@
     - "{{ opensds_config_dir }}"
     - "{{ opensds_driver_config_dir }}"
     - "{{ opensds_log_dir }}"
+  when: deploy_project != "multicloud"
 
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
-  when: install_from == "repository"
+  when: install_from == "repository" and deploy_project != "multicloud"
 
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
-  when: install_from == "release"
+  when: install_from == "release" and deploy_project != "multicloud"
 
 - name: include scenarios/container.yml when installing from container
   include: scenarios/container.yml
-  when: install_from == "container"
+  when: install_from == "container" or deploy_project != "opensds"
 
 - name: copy config templates into opensds global config folder
   copy:
     src: ../../../../conf/
     dest: "{{ opensds_config_dir }}"
+  when: deploy_project != "multicloud"
 
 - name: configure opensds global info
   shell: |
@@ -111,3 +113,4 @@
   args:
     chdir: "{{ opensds_config_dir }}"
   ignore_errors: yes
+  when: deploy_project != "multicloud"

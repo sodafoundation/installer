@@ -45,10 +45,8 @@ opensds_log_dir: /var/log/opensds
 # multi-cloud #
 ##############
 multi_config_dir: /etc/multicloud
-
 # This field indicates the location of docker-compose.yml
 multicloud_work_dir: /opt/opensds-gelato-linux-amd64
-
 # This field indicates docker-compose.yml download path
 compose_down_path: https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml
 

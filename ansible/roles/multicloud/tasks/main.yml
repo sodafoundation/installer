@@ -30,7 +30,7 @@
     mode: 0755
   with_items:
     - "{{ multi_config_dir }}"
-	- "{{ multicloud_work_dir }}"
+    - "{{ multicloud_work_dir }}"
   when: deploy_project != "opensds"
 
 - name: install keystone

@@ -30,6 +30,7 @@
     mode: 0755
   with_items:
     - "{{ multi_config_dir }}"
+	- "{{ multicloud_work_dir }}"
   when: deploy_project != "opensds"
 
 - name: install keystone
@@ -54,12 +55,16 @@
      export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
   when: deploy_project != "opensds"
  
+- name: download docker-compose configuration
+  shell: wget "{{ compose_down_path }}"
+  args:
+    chdir: "{{ multicloud_work_dir }}"
+  when: deploy_project != "opensds"
+
 - name: start service
   shell: docker-compose up -d
-  environment:
-    GOPATH: "{{ go_path }}"
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    chdir: "{{ multicloud_work_dir }}"
   when: deploy_project != "opensds"
 
 - name: wait for service to start normally

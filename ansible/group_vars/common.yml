@@ -22,9 +22,13 @@ dummy:
 # GENERAL #
 ###########
 
+# This field indicates which project should be deploy
+# 'opensds','multicloud','all'
+deploy_project: all
+
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: container
+install_from: release
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'

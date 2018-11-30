@@ -13,51 +13,15 @@
 # limitations under the License.
 
 ---
-- name: set script dir permissions
-  file:
-    path: ./script
-    mode: 0755
-    recurse: yes
-  ignore_errors: yes
-  become: yes
-
-- name: check ansible version
+- set_fact:
+    go_path: "{{ lookup('env', 'GOPATH') }}"
+  
+- name: check go_path
   shell: "{{ item }}"
   with_items:
-    - bash ./script/check_ansible_version.sh
-  become: yes
-
-- name: run the equivalent of "apt-get update" as a separate step
-  apt:
-    update_cache: yes
-
-- name: install system packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - make
-    - gcc
-    - python-pip
-    - open-iscsi
-
-- name: install Red Hat system packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - librados-devel
-    - librbd-devel
-  when: ansible_os_family == "RedHat"
-
-- name: install Ubuntu system packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - librados-dev
-    - librbd-dev
-  when: ansible_os_family == "Debian"
+      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+      - /bin/false
+  when: go_path == ""
 
 - name: create multi-cloud work directory if it doesn't exist
   file:
@@ -66,41 +30,37 @@
     mode: 0755
   with_items:
     - "{{ multi_config_dir }}"
-
-- name: include scenarios/repository.yml when installing from repository
-  include: scenarios/repository.yml
+  when: deploy_project != "opensds"
 
 - name: install keystone
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone_multi.sh install
   become: yes
+  when: deploy_project != "opensds"
 
-- name: install docker-py package with pip when enabling containerized deployment
-  pip:
-    name: docker-py
+- name: add variables to environment variables
+  shell: export AUTHSTRATEGY_URL="{{ keystone_os_auth_url }}"
+  when: deploy_project != "opensds"
 
-- name: run dashboard containerized service
-  docker_container:
-    name: dashboard
-    image: "{{ dashboard_docker_image }}"
-    state: started
-    network_mode: host
-    restart_policy: always
+- name: add variables to environment variables
+  shell:
+    cmd: export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
+  when: deploy_project != "opensds"
 
-- name: make docker
-  shell: make docker
-  environment:
-    GOPATH: "{{ go_path }}"
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
-
+- name: add variables to environment variables
+  shell: |
+     export AUTHSTRATEGY_URL="{{ keystone_os_auth_url }}"
+     export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
+  when: deploy_project != "opensds"
+ 
 - name: start service
   shell: docker-compose up -d
   environment:
     GOPATH: "{{ go_path }}"
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+  when: deploy_project != "opensds"
 
 - name: wait for service to start normally
   wait_for:
@@ -109,4 +69,5 @@
     delay: 15
     timeout: 120
   ignore: true
+  when: deploy_project != "opensds"
 

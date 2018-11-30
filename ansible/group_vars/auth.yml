@@ -25,6 +25,9 @@ dummy:
 # OpenSDS authentication strategy, support 'noauth' and 'keystone'.
 opensds_auth_strategy: keystone
 
+# Multicloud authentication strategy, support 'noauth' and 'keystone'.
+multicloud_auth_strategy: noauth
+
 # The URL should be replaced with the keystone actual URL
 keystone_os_auth_url: http://127.0.0.1/identity
 

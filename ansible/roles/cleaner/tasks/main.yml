@@ -51,7 +51,6 @@
     state: absent
     force: yes
   with_items:
-    - "{ multi_config_dir }"
     - "{{ multicloud_work_dir }}"
   ignore_errors: yes
 

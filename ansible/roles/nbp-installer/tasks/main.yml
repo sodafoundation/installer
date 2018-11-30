@@ -20,24 +20,20 @@
     mode: 0755
   with_items:
     - "{{ nbp_work_dir }}"
-  when: deploy_project != "multicloud" and nbp_plugin_type != "hotpot_only"
+  when: nbp_plugin_type != "hotpot_only"
 
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
-  when: 
-    - deploy_project != "multicloud"
-    - install_from == "repository" and nbp_plugin_type != "hotpot_only"
+  when: install_from == "repository" and nbp_plugin_type != "hotpot_only"
 
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
-  when: 
-    - deploy_project != "multicloud"
-    - install_from == "release" and nbp_plugin_type != "hotpot_only"
+  when: install_from == "release" and nbp_plugin_type != "hotpot_only"
 
 - name: include scenarios/flexvolume.yml when nbp plugin type is flexvolume
   include: scenarios/flexvolume.yml
-  when: deploy_project != "multicloud" and nbp_plugin_type == "flexvolume"
+  when: nbp_plugin_type == "flexvolume"
 
 - name: include scenarios/csi.yml when nbp plugin type is csi
   include: scenarios/csi.yml
-  when: deploy_project != "multicloud" and nbp_plugin_type == "csi"
+  when: nbp_plugin_type == "csi"

@@ -29,7 +29,6 @@
     state: directory
     mode: 0755
   with_items:
-    - "{{ multi_config_dir }}"
     - "{{ multicloud_work_dir }}"
   when: deploy_project != "opensds"
 
@@ -48,15 +47,19 @@
   shell:
     cmd: export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
   when: deploy_project != "opensds"
-
-- name: add variables to environment variables
-  shell: |
-     export AUTHSTRATEGY_URL="{{ keystone_os_auth_url }}"
-     export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
-  when: deploy_project != "opensds"
  
 - name: download docker-compose configuration
   shell: wget "{{ compose_down_path }}"
+  args:
+    chdir: "{{ multicloud_work_dir }}"
+  when: deploy_project != "opensds"
+
+- name: set variables for docker-compose configuration
+  shell: |
+     sed -i "s,OS_AUTH_AUTHSTRATEGY:.*$,OS_AUTH_AUTHSTRATEGY: \"{{ multicloud_auth_strategy }}\","  docker-compose.yml
+     sed -i "s,OS_AUTH_URL:.*$,OS_AUTH_URL: \"http://{{ host_ip }}/identity\","  docker-compose.yml
+     sed -i "s,OS_USERNAME:.*$,OS_USERNAME: \"{{ os_username }}\","  docker-compose.yml
+     sed -i "s,OS_PASSWORD:.*$,OS_PASSWORD: \"{{ os_password }}\","  docker-compose.yml
   args:
     chdir: "{{ multicloud_work_dir }}"
   when: deploy_project != "opensds"

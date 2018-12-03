@@ -13,28 +13,28 @@
 # limitations under the License.
 
 ---
-- name: check for nbp release files existed
+- name: check for sushi release files existed
   stat:
-    path: "{{ nbp_tarball_dir }}"
+    path: "{{ sushi_tarball_dir }}"
   ignore_errors: yes
-  register: nbpreleasesexisted
+  register: sushireleasesexisted
 
-- name: download and extract the nbp release tarball if not exists
+- name: download and extract the sushi release tarball if not exists
   unarchive:
-    src: "{{ nbp_download_url }}"
+    src: "{{ sushi_download_url }}"
     dest: /tmp/
     remote_src: yes
   when:
-    - nbpreleasesexisted.stat.exists is undefined or nbpreleasesexisted.stat.exists == false
+    - sushireleasesexisted.stat.exists is undefined or sushireleasesexisted.stat.exists == false
 
-- name: change the mode of all binary files in nbp release
+- name: change the mode of all binary files in sushi release
   file:
-    path: "{{ nbp_tarball_dir }}/bin"
+    path: "{{ sushi_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
 
-- name: copy nbp tarball into nbp work directory
+- name: copy sushi tarball into sushi work directory
   copy:
-    src: "{{ nbp_tarball_dir }}/"
-    dest: "{{ nbp_work_dir }}"
+    src: "{{ sushi_tarball_dir }}/"
+    dest: "{{ sushi_work_dir }}"
     mode: 0755

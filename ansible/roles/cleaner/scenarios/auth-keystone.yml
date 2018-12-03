@@ -18,7 +18,7 @@
   with_items:
     - bash ./script/keystone.sh uninstall
   when:
-    - deploy_project != "multicloud" 
+    - deploy_project != "gelato" 
     - opensds_auth_strategy == "keystone" and uninstall_keystone == true
   ignore_errors: yes
   become: yes
@@ -28,7 +28,7 @@
   with_items:
     - bash ./script/keystone.sh cleanup
   when:
-    - deploy_project != "multicloud" 
+    - deploy_project != "gelato" 
     - opensds_auth_strategy == "keystone" and cleanup_keystone == true
   ignore_errors: yes
   become: yes
@@ -37,7 +37,7 @@
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh uninstall
-  when: deploy_project != "opensds" and uninstall_keystone == true
+  when: deploy_project != "hotpot" and uninstall_keystone == true
   ignore_errors: yes
   become: yes
   
@@ -45,6 +45,6 @@
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh cleanup
-  when: deploy_project != "opensds" and cleanup_keystone == true
+  when: deploy_project != "hotpot" and cleanup_keystone == true
   ignore_errors: yes
   become: yes

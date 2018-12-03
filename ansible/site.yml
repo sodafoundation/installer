@@ -32,8 +32,8 @@
   roles:
     - common
     - osdsauth
-    - hotpot-installer
     - osdsdb
+    - hotpot-installer
     - osdsdock
     - gelato-installer
     - sushi-installer

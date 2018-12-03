@@ -15,22 +15,22 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: deploy_project != "multicloud" and enabled_backend == "lvm"
+  when: deploy_project != "gelato" and enabled_backend == "lvm"
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: deploy_project != "multicloud" and enabled_backend == "ceph"
+  when: deploy_project != "gelato" and enabled_backend == "ceph"
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
   when:
-    - deploy_project != "multicloud" 
+    - deploy_project != "gelato"
     - enabled_backend == "cinder" and use_cinder_standalone == false
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
   when: 
-    - deploy_project != "multicloud"
+    - deploy_project != "gelato"
     - enabled_backend == "cinder" and use_cinder_standalone == true
 
 - name: run osdsdock daemon service
@@ -46,8 +46,8 @@
         ps aux | grep osdsdock | grep -v grep && break
       done
   args:
-    chdir: "{{ opensds_work_dir }}"
-  when: deploy_project != "multicloud" and install_from != "container"
+    chdir: "{{ hotpot_work_dir }}"
+  when: deploy_project != "gelato" and install_from != "container"
 
 - name: run osdsdock containerized service
   docker_container:
@@ -63,4 +63,4 @@
     - "/run/:/run/:shared"
     - "/etc/localtime:/etc/localtime:ro"
     - "/lib/modules:/lib/modules:ro"
-  when: deploy_project != "multicloud" and install_from == "container"
+  when: deploy_project != "gelato" and install_from == "container"

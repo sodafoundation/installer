@@ -30,3 +30,13 @@
 - name: run the equivalent of "apt-get update" as a separate step
   apt:
     update_cache: yes
+
+- name: install system packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - make
+    - gcc
+    - python-pip
+    - open-iscsi

@@ -51,11 +51,11 @@ hotpot_remote_url: https://github.com/opensds/opensds.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-hotpot_release: v0.3.2 # The version should be at least v0.2.1
+hotpot_release: v0.3.3 # The version should be at least v0.2.1
 
 # These fields are NOT suggested to be modified
-hotpot_download_url: https://github.com/opensds/opensds/releases/download/{{ opensds_release }}/opensds-hotpot-{{ opensds_release }}-linux-amd64.tar.gz
-hotpot_tarball_dir: /tmp/opensds-hotpot-{{ opensds_release }}-linux-amd64
+hotpot_download_url: https://github.com/opensds/opensds/releases/download/{{ hotpot_release }}/opensds-hotpot-{{ hotpot_release }}-linux-amd64.tar.gz
+hotpot_tarball_dir: /tmp/opensds-hotpot-{{ hotpot_release }}-linux-amd64
 
 
 #############

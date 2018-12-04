@@ -40,11 +40,3 @@
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/nbp"
   when: install_from == "repository" and sushi_plugin_type != "hotpot_only"
-
-- name: clean opensds dashboard data
-  shell: make clean
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
-  when: dashboard_installation_type == "source_code"
-  become: yes
-  ignore_errors: yes

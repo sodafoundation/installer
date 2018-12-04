@@ -31,15 +31,15 @@
   include: scenarios/repository.yml
   when:  deploy_project != "hotpot" and install_from == "repository"
 
-- name: download docker-compose configuration file
-  shell: wget "{{ gelato_docker_compose_file }}"
-  args:
-    chdir: "{{ gelato_work_dir }}"
+- name: download gelato docker-compose configuration file
+  get_url:
+    url={{ gelato_docker_compose_file }}
+    dest={{ gelato_work_dir }}/docker-compose.yml
   when: deploy_project != "hotpot" and install_from != "repository"
 
 - name: set variables for docker-compose configuration
   shell: |
-     sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY={{ multicloud_auth_strategy }},"  docker-compose.yml
+     sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }},"  docker-compose.yml
      sed -i "s,OS_AUTH_URL=.*$,OS_AUTH_URL=http://{{ host_ip }}/identity,"  docker-compose.yml
      sed -i "s,OS_USERNAME=.*$,OS_USERNAME={{ os_username }},"  docker-compose.yml
      sed -i "s,OS_PASSWORD=.*$,OS_PASSWORD={{ os_password }},"  docker-compose.yml

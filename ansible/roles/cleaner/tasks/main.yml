@@ -12,7 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: kill osdslet daemon service
+- name: stop container where dashboard is located
+  docker_container:
+    name: dashboard
+    image: "{{ dashboard_docker_image }}"
+    state: stopped
+  when: dashboard_installation_type == "container"
+
+- name: kill osdslet and osdsdock daemon service
   shell: killall osdslet osdsdock
   when: install_from != "container"
   ignore_errors: true
@@ -31,13 +38,6 @@
     state: stopped
   when: install_from == "container"
 
-- name: stop container where dashboard is located
-  docker_container:
-    name: dashboard
-    image: "{{ dashboard_docker_image }}"
-    state: stopped
-  when: dashboard_installation_type == "container"
-
 - name: clean etcd db resource
   file:
     path: "{{ etcd_dir }}"
@@ -45,14 +45,11 @@
     force: yes
   ignore_errors: yes
 
-- name: clean all configuration and log files in gelato
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "{{ gelato_work_dir }}"
-  ignore_errors: yes
+- name: stop all gelato services
+  shell: docker-compose down
+  args:
+    chdir: "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
 
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
@@ -80,7 +77,7 @@
   ignore_errors: yes
   when: sushi_plugin_type == "csi"
 
-- name: clean all configuration and log files in hotpot and sushi work directory
+- name: clean all configuration and log files in created work directories
   file:
     path: "{{ item }}"
     state: absent
@@ -90,15 +87,17 @@
     - "{{ sushi_work_dir }}"
     - "{{ opensds_config_dir }}"
     - "{{ opensds_log_dir }}"
+    - "{{ dashboard_work_dir }}"
+    - "{{ gelato_work_dir }}"
   ignore_errors: yes
 
-- name: include scenarios/auth-keystone.yml when specifies keystone
+- name: include scenarios/auth-keystone.yml when keystone specified
   include_tasks: scenarios/auth-keystone.yml
   when: opensds_auth_strategy == "keystone"
 
 - name: include scenarios/repository.yml if installed from repository
   include_tasks: scenarios/repository.yml
-  when: install_from == "repository" or dashboard_installation_type == "source_code"
+  when: install_from == "repository"
 
 - name: include scenarios/release.yml if installed from release
   include_tasks: scenarios/release.yml

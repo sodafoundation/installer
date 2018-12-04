@@ -63,7 +63,7 @@
 
 - name: configure opensds global info
   shell: |
-    cat > opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
     [osdslet]
     api_endpoint = {{ controller_endpoint }}
     graceful = True

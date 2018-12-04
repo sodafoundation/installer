@@ -26,19 +26,16 @@ dummy:
 opensds_auth_strategy: keystone
 
 # The URL should be replaced with the keystone actual URL
-keystone_os_auth_url: http://127.0.0.1/identity
+keystone_os_auth_url: "http://{{ host_ip }}/identity"
 
 
 ###############
 # Multi-cloud #
 ###############
 
-# Multicloud authentication strategy, support 'noauth' and 'keystone'.
-multicloud_auth_strategy: noauth
-
 # Multi-cloud Account Info, set for docker-compose.yml
-# default 'multicloud'
-os_username: multicloud
+# default 'admin'
+os_username: admin
 os_password: opensds@123
 
 

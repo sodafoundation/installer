@@ -25,13 +25,4 @@
   with_items:
     - bash ./script/keystone_multi.sh install
   become: yes
-  when: deploy_project != "hotpot" and multicloud_auth_strategy == "keystone"
-
-- name: add variables to environment variables
-  shell: export AUTHSTRATEGY_URL="{{ keystone_os_auth_url }}"
-  when: deploy_project != "hotpot"
-
-- name: add variables to environment variables
-  shell:
-    cmd: export OS_AUTH_AUTHSTRATEGY= "{{ multicloud_auth_strategy }}"
-  when: deploy_project != "hotpot"
+  when: deploy_project != "hotpot" and opensds_auth_strategy == "keystone"

@@ -17,30 +17,16 @@
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh uninstall
-  when: deploy_project != "gelato" and uninstall_keystone == true
+  when:
+    - opensds_auth_strategy == "keystone"
   ignore_errors: yes
   become: yes
   
 - name: cleanup opensds keystone
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh cleanup
-  when: deploy_project != "gelato" and cleanup_keystone == true
-  ignore_errors: yes
-  become: yes
-
-- name: uninstall gelato keystone
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone_multi.sh uninstall
-  when: deploy_project != "hotpot" and uninstall_keystone == true
-  ignore_errors: yes
-  become: yes
-  
-- name: cleanup gelato keystone
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone_multi.sh cleanup
-  when: deploy_project != "hotpot" and cleanup_keystone == true
+    - bash ./script/keystone.sh uninstall_purge
+  when:
+    - opensds_auth_strategy == "keystone" and keystone_uninstall_purge == true
   ignore_errors: yes
   become: yes

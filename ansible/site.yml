@@ -31,7 +31,7 @@
   become: True
   roles:
     - common
-    - osdsauth
+    - auth-installer
     - osdsdb
     - hotpot-installer
     - osdsdock

@@ -1,11 +1,17 @@
-dist: trusty
+dist: xenial
 language: node_js
 sudo: required
 node_js:
   - node
 
+services:
+  - docker
+  - docker-compose
+
 install:
-  - sudo apt-get update && sudo apt-get install -y nginx
+  - sudo apt-get update && sudo apt-get install -y apache2
+  - sudo service apache2 stop
+  - sudo apt-get install -y nginx
 
 before_script:
   # Install ansible 2.4.x
@@ -18,4 +24,4 @@ script:
   - cd ansible && sudo ansible-playbook site.yml -i local.hosts
 
 after_script:
-  - cd ansible && sudo ansible-playbook clean.yml -i local.hosts
+  - sudo ansible-playbook clean.yml -i local.hosts

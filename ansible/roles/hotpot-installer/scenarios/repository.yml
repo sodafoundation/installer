@@ -23,55 +23,34 @@
       - /bin/false
   when: go_path == ""
 
-- name: check for opensds source code existed
+- name: check for hotpot source code existed
   stat:
     path: "{{ go_path }}/src/github.com/opensds/opensds"
   ignore_errors: yes
-  register: opensdsexisted
-  when: deploy_project != "multicloud"
+  register: hotpotexisted
 
-- name: download opensds source code if not exists
+- name: download hotpot source code if not exists
   git:
-    repo: "{{ opensds_remote_url }}"
+    repo: "{{ hotpot_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: "{{ opensds_repo_branch }}"
-  when:
-    - deploy_project != "multicloud"
-    - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
+    version: "{{ hotpot_repo_branch }}"
+  when: hotpotexisted.stat.exists is undefined or hotpotexisted.stat.exists == false
 
-- name: build opensds binary file
+- name: build hotpot binary file
   shell: make
   environment:
     GOPATH: "{{ go_path }}"
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds"
-  when: deploy_project != "multicloud"
 
-- name: copy opensds binary files into opensds work directory
+- name: copy hotpot binary files into hotpot work directory
   copy:
     src: "{{ go_path }}/src/github.com/opensds/opensds/build/out/"
-    dest: "{{ opensds_work_dir }}"
-  when: deploy_project != "multicloud"
+    dest: "{{ hotpot_work_dir }}"
 
-- name: change the permissions of opensds executable files
+- name: change the permissions of hotpot executable files
   file:
-    path: "{{ opensds_work_dir }}/bin"
+    path: "{{ hotpot_work_dir }}/bin"
     state: directory
     mode: 0755
     recurse: yes
-  when: deploy_project != "multicloud"
-
-- name: check for multi-cloud source code existed
-  stat:
-    path: "{{ go_path }}/src/github.com/opensds/multi-cloud"
-  ignore_errors: yes
-  register: multicloudexisted
-  when: deploy_project != "opensds"
-
-- name: download multi-cloud source code if not exists
-  git:
-    repo: "{{ multi_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/multi-cloud"
-  when:
-    - deploy_project != "opensds"
-    - multicloudexisted.stat.exists is undefined or multicloudexisted.stat.exists == false

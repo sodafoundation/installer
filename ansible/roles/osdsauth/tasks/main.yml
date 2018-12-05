@@ -13,9 +13,16 @@
 # limitations under the License.
 
 ---
-- name: install keystone
+- name: install hotpot keystone
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh install
-  when: deploy_project != "multicloud" and opensds_auth_strategy == "keystone"
+  when: deploy_project != "gelato" and opensds_auth_strategy == "keystone"
   become: yes
+
+- name: install gelato keystone
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone_multi.sh install
+  become: yes
+  when: deploy_project != "hotpot" and opensds_auth_strategy == "keystone"

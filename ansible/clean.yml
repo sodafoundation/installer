@@ -21,9 +21,11 @@
   vars_files:
     - group_vars/common.yml
     - group_vars/auth.yml
+    - group_vars/hotpot.yml
     - group_vars/osdsdb.yml
-    - group_vars/osdslet.yml
     - group_vars/osdsdock.yml
+    - group_vars/gelato.yml
+    - group_vars/sushi.yml
     - group_vars/dashboard.yml
   gather_facts: false
   become: True

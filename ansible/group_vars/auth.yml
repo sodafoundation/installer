@@ -29,4 +29,4 @@ opensds_auth_strategy: keystone
 keystone_os_auth_url: "http://{{ host_ip }}/identity"
 
 # delete all keystone packages
-keystone_uninstall_purge: flase
+keystone_uninstall_purge: false

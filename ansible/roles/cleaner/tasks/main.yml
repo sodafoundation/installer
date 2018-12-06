@@ -50,6 +50,7 @@
   args:
     chdir: "{{ gelato_work_dir }}"
   when: deploy_project != "hotpot"
+  ignore_errors: yes
 
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:

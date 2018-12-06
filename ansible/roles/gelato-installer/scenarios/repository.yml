@@ -15,7 +15,7 @@
 ---
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:
@@ -32,7 +32,7 @@
 - name: download gelato source code if not exists
   git:
     repo: "{{ gelato_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/gelato"
+    dest: "{{ go_path }}/src/github.com/opensds/multi-cloud"
     version: "{{ gelato_repo_branch }}"
   when:
     - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false

@@ -65,9 +65,7 @@ chown stack:stack "$DEV_STACK_LOCAL_CONF"
 
 hotpot_conf() {
 mkdir -p $OPENSDS_CONFIG_DIR
-cat >> "$OPENSDS_CONFIG_DIR/opensds.conf" << OPENSDS_GLOBAL_CONFIG_DOC
-
-
+cat > "$OPENSDS_CONFIG_DIR/opensds.conf" << OPENSDS_GLOBAL_CONFIG_DOC
 [keystone_authtoken]
 memcached_servers = $HOST_IP:11211
 signing_dir = /var/cache/opensds

@@ -13,27 +13,27 @@
 # limitations under the License.
 
 ---
-- name: create nbp work directory if it doesn't exist
+- name: create sushi work directory if it doesn't exist
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
   with_items:
-    - "{{ nbp_work_dir }}"
-  when: nbp_plugin_type != "hotpot_only"
+    - "{{ sushi_work_dir }}"
+  when: sushi_plugin_type != "hotpot_only"
 
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
-  when: install_from == "repository" and nbp_plugin_type != "hotpot_only"
+  when: install_from == "repository" and sushi_plugin_type != "hotpot_only"
 
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
-  when: install_from == "release" and nbp_plugin_type != "hotpot_only"
+  when: install_from == "release" and sushi_plugin_type != "hotpot_only"
 
-- name: include scenarios/flexvolume.yml when nbp plugin type is flexvolume
+- name: include scenarios/flexvolume.yml when sushi plugin type is flexvolume
   include: scenarios/flexvolume.yml
-  when: nbp_plugin_type == "flexvolume"
+  when: sushi_plugin_type == "flexvolume"
 
-- name: include scenarios/csi.yml when nbp plugin type is csi
+- name: include scenarios/csi.yml when sushi plugin type is csi
   include: scenarios/csi.yml
-  when: nbp_plugin_type == "csi"
+  when: sushi_plugin_type == "csi"

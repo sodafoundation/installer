@@ -42,7 +42,7 @@
 
 - name: create directory to volume group file
   file:
-    path: "{{ opensds_work_dir }}/volumegroups"
+    path: "{{ hotpot_work_dir }}/volumegroups"
     state: directory
     recurse: yes
 
@@ -53,7 +53,7 @@
           local vg=$1
           local size=$2
 
-          local backing_file={{ opensds_work_dir }}/volumegroups/${vg}.img
+          local backing_file={{ hotpot_work_dir }}/volumegroups/${vg}.img
           if ! sudo vgs $vg; then
               # Only create if the file doesn't already exists
               [[ -f $backing_file ]] || truncate -s $size $backing_file

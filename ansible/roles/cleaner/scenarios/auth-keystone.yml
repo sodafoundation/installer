@@ -18,33 +18,15 @@
   with_items:
     - bash ./script/keystone.sh uninstall
   when:
-    - deploy_project != "multicloud" 
-    - opensds_auth_strategy == "keystone" and uninstall_keystone == true
+    - opensds_auth_strategy == "keystone"
   ignore_errors: yes
   become: yes
   
 - name: cleanup opensds keystone
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh cleanup
+    - bash ./script/keystone.sh uninstall_purge
   when:
-    - deploy_project != "multicloud" 
-    - opensds_auth_strategy == "keystone" and cleanup_keystone == true
-  ignore_errors: yes
-  become: yes
-
-- name: uninstall multicloud keystone
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone.sh uninstall
-  when: deploy_project != "opensds" and uninstall_keystone == true
-  ignore_errors: yes
-  become: yes
-  
-- name: cleanup multicloud keystone
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone.sh cleanup
-  when: deploy_project != "opensds" and cleanup_keystone == true
+    - opensds_auth_strategy == "keystone" and keystone_uninstall_purge == true
   ignore_errors: yes
   become: yes

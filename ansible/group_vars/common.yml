@@ -23,10 +23,10 @@ dummy:
 ###########
 
 # This field indicates local machine host ip
-host_ip: 10.10.3.100
+host_ip: 127.0.0.1
 
 # This field indicates which project should be deploy
-# 'opensds','multicloud','all'
+# 'hotpot', 'gelato' or 'all'
 deploy_project: all
 
 # This field indicates which way user prefers to install, currently support
@@ -36,72 +36,3 @@ install_from: release
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
 ansible_os_family: Debian
-
-# These fields are NOT suggested to be modifie
-opensds_work_dir: /opt/opensds-hotpot-linux-amd64
-nbp_work_dir: /opt/opensds-sushi-linux-amd64
-opensds_config_dir: /etc/opensds
-opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
-opensds_log_dir: /var/log/opensds
-
-##############
-# multi-cloud #
-##############
-# This field indicates the location of docker-compose.yml
-multicloud_work_dir: /opt/opensds-gelato-linux-amd64
-# This field indicates docker-compose.yml download path
-compose_down_path: https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml
-
-
-##############
-# REPOSITORY #
-##############
-
-# If user specifies intalling from repository, then he can choose the specific
-# repository branch
-opensds_repo_branch: stable/aruba
-nbp_repo_branch: stable/aruba
-
-# These fields are NOT suggested to be modified
-opensds_remote_url: https://github.com/opensds/opensds.git
-nbp_remote_url: https://github.com/opensds/nbp.git
-multi_remote_url: https://github.com/opensds/multi-cloud.git
-
-###########
-# RELEASE #
-###########
-
-# If user specifies intalling from release,then he can choose the specific version
-opensds_release: v0.3.3 # The version should be at least v0.2.1
-nbp_release: v0.3.3 # The version should be at least v0.2.1
-
-# These fields are NOT suggested to be modified
-opensds_download_url: https://github.com/opensds/opensds/releases/download/{{ opensds_release }}/opensds-hotpot-{{ opensds_release }}-linux-amd64.tar.gz
-opensds_tarball_dir: /tmp/opensds-hotpot-{{ opensds_release }}-linux-amd64
-nbp_download_url: https://github.com/opensds/nbp/releases/download/{{ nbp_release }}/opensds-sushi-{{ nbp_release }}-linux-amd64.tar.gz
-nbp_tarball_dir: /tmp/opensds-sushi-{{ nbp_release }}-linux-amd64
-
-
-#############
-# CONTAINER #
-#############
-
-opensds_image_tag: aruba
-
-# These fields are NOT suggested to be modified
-controller_docker_image: opensdsio/opensds-controller:{{ opensds_image_tag }}
-dock_docker_image: opensdsio/opensds-dock:{{ opensds_image_tag }}
-
-
-###########
-# PLUGIN  #
-###########
-
-# 'hotpot_only' is the default integration way, but you can change it to 'csi'
-# or 'flexvolume'
-nbp_plugin_type: hotpot_only
-# The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
-opensds_endpoint: http://127.0.0.1:50040
-
-# These fields are NOT suggested to be modified
-flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opensds.io~opensds

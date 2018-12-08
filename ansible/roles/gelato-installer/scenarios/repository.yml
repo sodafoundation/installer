@@ -23,20 +23,28 @@
       - /bin/false
   when: go_path == ""
 
-- name: clean opensds controller data
-  shell: make clean
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds"
-  when: install_from == "repository" and deploy_project != "gelato"
+- name: check for gelato source code existed
+  stat:
+    path: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+  ignore_errors: yes
+  register: gelatoexisted
 
-- name: clean opensds multi-cloud engine data
-  shell: make clean
+- name: download gelato source code if not exists
+  git:
+    repo: "{{ gelato_remote_url }}"
+    dest: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    version: "{{ gelato_repo_branch }}"
+  when:
+    - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false
+
+- name: build gelato docker images
+  shell: make docker
+  environment:
+    GOPATH: "{{ go_path }}"
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
-  when: install_from == "repository" and deploy_project != "hotpot"
 
-- name: clean opensds northbound plugin data
-  shell: make clean
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/nbp"
-  when: install_from == "repository" and sushi_plugin_type != "hotpot_only"
+- name: copy gelato docker-compose.yml file into gelato work directory
+  copy:
+    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/docker-compose.yml"
+    dest: "{{ gelato_work_dir }}"

@@ -19,11 +19,11 @@
     - "scenarios/etcd_{{ ansible_architecture }}.yml"
     - "scenarios/etcd.yml"
   when:
-    - deploy_project != "multicloud" 
+    - deploy_project != "gelato" 
     - db_driver == "etcd" and etcd_container_enabled == false
 
 - name: include scenarios/container.yml
   include: scenarios/container.yml
   when:
-    - deploy_project != "multicloud" 
+    - deploy_project != "gelato" 
     - db_driver == "etcd" and etcd_container_enabled == true

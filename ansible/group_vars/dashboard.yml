@@ -25,6 +25,9 @@ dummy:
 # Dashboard installation types are: 'container', 'source_code'
 dashboard_installation_type: container
 
+# These fields are NOT suggested to be modified
+dashboard_work_dir: /opt/opensds-dashboard-linux-amd64
+
 
 ##########
 # DOCKER #
@@ -42,5 +45,4 @@ dashboard_docker_image: opensdsio/dashboard:latest
 dashboard_repo_branch: master
 
 # These fields are NOT suggested to be modified
-dashboard_work_dir: /opt/opensds-dashboard
 dashboard_remote_url: https://github.com/opensds/opensds-dashboard.git

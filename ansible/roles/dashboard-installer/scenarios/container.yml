@@ -24,3 +24,5 @@
     state: started
     network_mode: host
     restart_policy: always
+    env:
+      OPENSDS_HOST_IP: "{{ host_ip }}"

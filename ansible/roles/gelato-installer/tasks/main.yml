@@ -1,0 +1,67 @@
+# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: install docker-py package with pip when deploying gelato cluster
+  pip:
+    name: docker-py
+  when: deploy_project != "hotpot"
+
+- name: create gelato work directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
+ 
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/repository.yml
+  when:  deploy_project != "hotpot" and install_from == "repository"
+
+- name: download gelato docker-compose configuration file
+  get_url:
+    url={{ gelato_docker_compose_file }}
+    dest={{ gelato_work_dir }}/docker-compose.yml
+  when: deploy_project != "hotpot" and install_from != "repository"
+
+- name: gelato keystone configuration
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config gelato
+  when: opensds_auth_strategy == "keystone" and deploy_project != "hotpot"
+  become: yes
+
+- name: set variables for docker-compose configuration
+  shell: |
+     sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }},"  docker-compose.yml
+  args:
+    chdir: "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
+
+- name: start service
+  shell: docker-compose up -d
+  args:
+    chdir: "{{ gelato_work_dir }}"
+  when: deploy_project != "hotpot"
+
+- name: wait for service to start normally
+  wait_for:
+    host: 127.0.0.1
+    port: 8089
+    delay: 15
+    timeout: 120
+  ignore: true
+  when: deploy_project != "hotpot"

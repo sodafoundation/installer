@@ -17,27 +17,31 @@
 ## This file is used to set global variables. 
 ## Before executing this file, please set the variables you need in the script/vars.sh file.
 
-source ./script/vars.sh
+source ./script/global_vars.sh
 var_path=./group_vars
 
-#etcd
-sed -i 's/^etcd_port: .*/etcd_port: '"$port"'/g' $var_path/osdsdb.yml
-sed -i 's/^etcd_peer_port: .*/etcd_peer_port: '"$etcd_peer_port"'/g' $var_path/osdsdb.yml
+# commom
+sed -i 's/^host_ip: .*/host_ip: '"$host_ip"'/g' $var_path/common.yml
+sed -i 's/^deploy_project: .*/deploy_project: '"$deploy_project"'/g' $var_path/common.yml
+sed -i 's/^install_from: .*/install_from: '"$install_from"'/g' $var_path/common.yml
 
-#commom
-sed -i 's/^opensds_endpoint: .*/opensds_endpoint: http:\/\/'"$opensds_ip"':'"$opensds_endpoint"'/g' $var_path/common.yml
-sed -i 's/^nbp_plugin_type: .*/nbp_plugin_type: '"$nbp_plugin_type"'/g' $var_path/common.yml
+# sushi
+sed -i 's/^sushi_plugin_type: .*/sushi_plugin_type: '"$sushi_plugin_type"'/g' $var_path/sushi.yml
 
-#dashboard.yml
+# dashboard.yml
 sed -i 's/^dashboard_installation_type: .*/dashboard_installation_type: '"$dashboard_installation_type"'/g' $var_path/dashboard.yml
 
-#osdsdock.yml
+# osdsdock.yml
 sed -i 's/^enabled_backend: .*/enabled_backend: '"$enabled_backend"'/g' $var_path/osdsdock.yml
 
-#lvm.yml
+# etcd
+sed -i 's/^etcd_port: .*/etcd_port: '"$etcd_port"'/g' $var_path/osdsdb.yml
+sed -i 's/^etcd_peer_port: .*/etcd_peer_port: '"$etcd_peer_port"'/g' $var_path/osdsdb.yml
+
+# lvm.yml
 sed -i 's/^tgtBindIp: .*/tgtBindIp: '"$tgtBindIp"'/g' $var_path/lvm/lvm.yaml
 
-#ceph/all.yml
+# ceph/all.yml
 sed -i 's/^public_network: .*\/*/public_network: '"$public_ip"'\/'"$public_br"'/g' $var_path/ceph/all.yml
 sed -i 's/^monitor_interface: .*/monitor_interface: '"$monitor_interface"'/g' $var_path/ceph/all.yml
 sed -i 's?^devices:.*?devices: '"$devices"'?g' $var_path/ceph/all.yml

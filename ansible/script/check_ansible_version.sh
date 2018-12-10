@@ -23,4 +23,3 @@ if [[ "$ansiblever" < '2.4.2' ]]; then
 fi
 
 exit 0
-

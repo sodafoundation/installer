@@ -33,7 +33,7 @@ gelato_work_dir: /opt/opensds-gelato-linux-amd64
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-gelato_repo_branch: master
+gelato_repo_branch: stable/bali
 
 # These fields are NOT suggested to be modified
 gelato_remote_url: https://github.com/opensds/multi-cloud.git

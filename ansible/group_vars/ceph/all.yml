@@ -30,7 +30,7 @@ public_network: "192.168.3.0/24"
 cluster_network: "{{ public_network }}"
 monitor_interface: eth1
 devices:
-  - '/dev/sda'
+  #- '/dev/sda'
   #- '/dev/sdb'
 osd_scenario: collocated
 

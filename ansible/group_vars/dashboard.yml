@@ -33,7 +33,7 @@ dashboard_work_dir: /opt/opensds-dashboard-linux-amd64
 # DOCKER #
 ##########
 
-dashboard_docker_image: opensdsio/dashboard:latest
+dashboard_docker_image: opensdsio/dashboard:bali
 
 
 ##############
@@ -42,7 +42,7 @@ dashboard_docker_image: opensdsio/dashboard:latest
 
 # If user specifies intalling from source code, then he can choose the specific
 # repository branch
-dashboard_repo_branch: master
+dashboard_repo_branch: stable/bali
 
 # These fields are NOT suggested to be modified
 dashboard_remote_url: https://github.com/opensds/opensds-dashboard.git

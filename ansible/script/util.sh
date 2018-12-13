@@ -90,4 +90,3 @@ get_default_host_ip() {
     fi
     echo "$host_ip"
 }
-

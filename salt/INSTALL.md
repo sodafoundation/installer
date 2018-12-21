@@ -66,6 +66,49 @@ $$ ./install.sh -i opensds;./install.sh -i opensds
 ```
 Note: We run twice to workaround upstream devstack/CentOS bug.
 
+## Example Output
+```
+$ ./install.sh -i salt
+  ... etc ...
+Summary for local
+-------------
+Succeeded: 31 (changed=22)
+Failed:     0
+-------------
+Total states run:     31
+Total run time:   60.999 s
+Accepted Keys:
+10.0.2.15
+Denied Keys:
+Unaccepted Keys:
+Rejected Keys:
+using [docker] fixes branch
+done
+  ... etc ...
+Summary for local
+-------------
+Succeeded: 11 (changed=6)
+Failed:     0
+-------------
+Total states run:     11
+Total run time:   76.144 s
+
+
+$ ./install.sh -i opensds
+  ... etc ...
+Summary for local
+--------------
+Succeeded: 197 (changed=107)
+Failed:      0
+--------------
+Total states run:     197
+Total run time:  2333.544 s
+local:
+    ----------
+    opensds:
+        - default
+```
+
 ## How to test opensds cluster
 
 Ensure openSDS services are running

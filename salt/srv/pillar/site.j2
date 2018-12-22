@@ -7,10 +7,10 @@
 {%- set sitedata = {} %}
 {%- do sitedata.update( {
 
-      'host_ipv4': grains.ipv4[-1],
-      'host_ipv6': grains.ipv6[-1],
-      'tgtBindIp': grains.ipv4[-1],
-      'db_host': grains.ipv4[-1],
+      'host_ipv6': '::1/128',
+      'host_ipv4': '127.0.0.1',
+      'tgtBindIp': '10.0.2.15',
+      'db_host'  : '127.0.0.1',
       'dns_host1': '8.8.8.8',
       'dns_host2': '64.6.64.6',
       'ipdomain': 'example.com',

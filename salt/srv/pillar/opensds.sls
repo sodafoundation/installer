@@ -8,7 +8,7 @@ resolver:
   ng:
     resolvconf:
       enabled: False
-  #domain: {{ site.ipdomain or 'example.com' }}
+  domain: {{ site.ipdomain or 'example.com' }}
   nameservers:
     - {{ site.dns_host1 or '8.8.8.8' }}
     - {{ site.dns_host2 or '64.6.64.6' }}
@@ -23,7 +23,7 @@ nginx:
   ng:
     servers:
       managed:
-        opensds-dashboard:
+        default:
           enabled: True
           overwrite: True
           config:
@@ -43,10 +43,12 @@ nginx:
           {%- if grains.os_family == 'Debian' %}
                 - index.nginx-debian.html
           {%- endif %}
+              - location /{{ site.hotpot_release }}/:
+                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_controller }}/{{ site.hotpot_release }}'
               - location /v3/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity/v3/'
+                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity/v3/'
               - location /v1beta/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:50040/{{ site.hotpot_release }}'
+                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_controller }}/{{ site.hotpot_release }}/'
 
 memcached:
   daemonize: True
@@ -63,15 +65,17 @@ mysql:
   server:
     root_password: {{ site.devstack_password }}
     mysqld:
-      bind_address: {{ site.db_host or site.host_ipv4 or site.host_ipv6 }}
+      bind_address: {{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
 
 etcd:
+  service:
+    etcd_endpoints: '{{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }},{{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:2380'
   dir:
-    tmp: /tmp/devstack
+    tmp: /tmp/etcd_tmp
   docker:
     image: {{ site.img_etcd }}
     version: {{ site.ver_etcd }}
-    container_name: osdsdb-etcd
+    container_name: osdsdb
     enabled: True
     skip_translate: None
     ports:
@@ -80,13 +84,14 @@ etcd:
       - 2379/udp
       - 2380/udp
     port_bindings:
-      - 0.0.0.0:2379:2379
-      - 0.0.0.0:2380:2380
+      - '0.0.0.0:2379:2379'
+      - '0.0.0.0:2380:2380'
+    binds:
+      - /usr/share/ca-certificates/:/etc/ssl/certs
     stop_local_etcd_service_first: True
 
-
 opensds:
-  host: {{ site.host_ipv4 or site.host_ipv6 }}
+  host: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
   ports:
     opensds: {{ site.port_controller }}
     dock: {{ site.port_dock }}
@@ -104,11 +109,13 @@ opensds:
         extras:
           advanced:
             a: 'b'
+
   auth:
     opensdsconf:
       keystone_authtoken:
-        memcached_servers: {{ site.host_ipv4 }}:11211
-        auth_url: http://{{ site.host_ipv4 or site.host_ipv6 }}/identity
+        memcached_servers: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1'  }}:11211
+        auth_uri: http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity
+        auth_url: http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity
         username: opensds
         password: {{ site.devstack_password }}
 
@@ -116,31 +123,47 @@ opensds:
     container:
       enabled: True
       build: True
+      ports:
+        - 2379
+        - 2379/udp
+        - 2380
+        - 2380/udp
+      port_bindings:
+        - '0.0.0.0:2379:2379'
+        - '0.0.0.0:2380:2380'
     opensdsconf:
       database:
-        db_endpoint: https://{{ site.host_ipv4 or site.host_ipv6 }}:2379,https://{{ site.host_ipv4 or site.host_ipv6 }}:2380
+        endpoint: https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:2379,https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:2380
+        credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or 127.0.0.1 }}:3306/dbname'
 
   let:
     container:
-      enabled: False
+      enabled: True
       image: {{ site.img_controller }}
       version: {{ site.ver_controller }}
       ports:
-        - {{ site.host_ipv4 or site.host_ipv6 }}:{{ site.port_controller }}:{{ site.port_controller }}
+        - {{ site.port_controller }}
+        - {{ site.port_controller }}/udp
+      port_bindings:
+        - '0.0.0.0:{{ site.port_controller }}:{{ site.port_controller }}'
+
     opensdsconf:
       osdslet:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '0.0.0.0' }}:{{ site.port_controller }}
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_controller }}
         auth_strategy: noauth
         graceful: True
 
   controller:
-    endpoint: {{ site.host_ipv4 or site.host_ipv6 or '0.0.0.0' }}:{{ site.port_controller }}
+    endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_controller }}
     container:
       enabled: False
       image: {{ site.img_controller }}
       version: {{ site.ver_controller }}
       ports:
-        - {{ site.host_ipv4 or site.host_ipv6 }}:{{ site.port_controller }}:{{ site.port_controller }}
+        - {{ site.port_controller }}
+        - {{ site.port_controller }}/udp
+      port_bindings:
+        - {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_controller }}:{{ site.port_controller }}
 
   dashboard:
     provider: repo       #or release
@@ -168,19 +191,25 @@ opensds:
       version: {{ site.ver_dock }}
       volumes:
         - /etc/opensds/:/etc/opensds
+      ports:
+        - {{ site.port_dock }}
+        - {{ site.port_dock }}/udp
+      port_bindings:
+        - '0.0.0.0:{{ site.port_dock }}:{{ site.port_dock }}'
     opensdsconf:
       osdsdock:
         api_endpoint: localhost:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
         enabled_backend: {{ site.enabled_backend }}
+
     block:
       provider: {{ site.enabled_backend }}
       opensdsconf:
         {{ site.enabled_backend }}:
-          {{ site.enabled_backend }}_name: {{ site.enabled_backend }} backend
-          {{ site.enabled_backend }}_description: This is a {{ site.enabled_backend }} backend service.
-          {{ site.enabled_backend }}_driver_name: {{ site.enabled_backend }}
-          {{ site.enabled_backend }}_config_path: /etc/opensds/driver/{{ site.enabled_backend }}.yaml
+          {{ site.enabled_backend }}_name: {{ site.enabled_backend }} backend!
+          {{ site.enabled_backend }}_description: {{ site.enabled_backend }} backend service!
+          {{ site.enabled_backend }}_driver_name: {{ site.enabled_backend }}!
+          {{ site.enabled_backend }}_config_path: /etc/opensds/driver/{{site.enabled_backend}}.yaml
       cinder:
         container:
           enabled: True
@@ -236,15 +265,13 @@ firewalld:
           - {{ site.port_dock }}
 
 devstack:
-  ##hide_output: False
-  ##disable_install_pip: True
   local:
     password: {{ site.devstack_password }}
     enabled_services: {{ site.devstack_enabled_services }}
     os_password: {{ site.devstack_password }}
     host_ip: {{ site.host_ipv4 }}
-    host_ipv6: {{ site.host_ipv6 }}
-    service_host: {{ site.host_ipv4 or site.host_ipv6 }}
+    host_ipv6: {{ site.host_ipv6 or '127.0.0.1' }}
+    service_host: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
     db_host: {{ site.db_host }}
   dir:
     dest: {{ site.devstack_dir }}
@@ -311,7 +338,6 @@ docker:
     skip_translate: ports
     force_present: False
     force_running: False   #maybe unsupported by python-py
-  compose: {}
 
 packages:
   pips:
@@ -398,7 +424,7 @@ salt:
         - /srv/pillar
   ssh_roster:
     controller1:
-      host: {{ site.host_ipv4 or site.host_ipv6 }}
+      host: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
       user: stack
       sudo: True
       priv: /etc/salt/ssh_keys/sshkey.pem
@@ -439,5 +465,5 @@ salt_formulas:
      - timezone-formula
      - resolver-formula
      - nginx-formula
+     - apache-formula
      - mongodb-formula
-

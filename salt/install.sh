@@ -42,7 +42,7 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="lvm docker"
+FORK_FORMULAS="opensds docker"
 FORK_BRANCH="fixes"
 
 usage()
@@ -60,7 +60,7 @@ usage()
     echo " auth|controller|dashboard|database|dock|envs|let|nbp" 1>&2
     echo "               Apply specific OpenSDS salt formula state" 1>&2
     echo 1>&2
-    echo "     docker    Configure docker-ce service" 1>&2
+    echo "     prereq    Install docker-ce and nginx;remove apache" 1>&2
     echo 1>&2
     echo "  See://github.com/saltstack-formulas/opensds-formula.git" 1>&2
     echo 1>&2
@@ -226,11 +226,11 @@ salt)       get-salt-master-hostname
             fi
             salt-master-service
             salt-minion-service
-            apply-salt-state-model salt ${FORK_BRANCH}
+            apply-salt-state-model salt
             salt-key -A --yes >/dev/null 2>&1
             salt-key -L
             [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead ${FORK_FORMULAS}
-            apply-salt-state-model "docker"
+            apply-salt-state-model "prereq"
             ;;
 
 opensds)    get-salt-master-hostname
@@ -239,7 +239,7 @@ opensds)    get-salt-master-hostname
             (( $? == 0 )) && opensds
             ;;
 
-auth|controller|dashboard|database|dock|envs|let|nbp|deepsea|docker)
+auth|controller|dashboard|database|dock|envs|let|nbp|deepsea|prereq)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model ${TARGET}

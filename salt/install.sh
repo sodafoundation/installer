@@ -42,7 +42,7 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="docker"
+FORK_FORMULAS="lvm docker"
 FORK_BRANCH="fixes"
 
 usage()
@@ -168,6 +168,13 @@ deepsea()
 opensds()
 {
     salt-call --local grains.append opensds default ${MASTER_HOST}
+    if [[ -d /etc/opensds ]]
+    then
+       echo "Copy opensds-installer/conf/policy.json to /etc/opensds/"
+       cp $(dirname $0)/../conf/policy.json /etc/opensds/
+    else
+       echo "Failed to copy policy.json because opensds is not installed"
+    fi
     return 0
 }
 

@@ -2,7 +2,7 @@
 # SITE & RELEASE DATA COLLECTION
 # Save file as /srv/pillar/site.j2
 # this is jinja not yaml!!
-# Set ip-address here using single quotes.
+# Set ipaddress here using single quotes.
 #*****************************************
 {%- set sitedata = {} %}
 {%- do sitedata.update( {
@@ -20,11 +20,11 @@
       'port_dock': '50050',
 
       'hotpot_release': 'v0.4.0',
-      'hotpot_hashsum': 'md5=fa144886b3ac67af47790d018bbfb3d9',
+      'hotpot_hashsum': 'md5=d9dee4acf9cfd8d29f99cd09c7669519',
       'hotpot_uri': 'https://github.com/opensds/opensds/releases/download',
 
       'sushi_release': 'v0.4.0',
-      'sushi_hashsum': 'md5=91969a17ca772851ddb80feec2aa7a7c',
+      'sushi_hashsum': 'md5=e774d5fe5851a4177175ba806eb87682',
       'sushi_uri': 'https://github.com/opensds/nbp/releases/download',
 
       'cinder_hashsum': 'md5=1751f8e4f6b4cddd8c4843a0f4473274',

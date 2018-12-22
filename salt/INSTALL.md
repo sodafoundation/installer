@@ -37,32 +37,32 @@ $ yum install git -y
 
 ## Install OpenSDS with Salt
 ```
-$$ sudo -s
-$$ rm -fr /srv/formulas/* /root/opensds-installer
-$$ cd /root && git clone https://github.com/opensds/opensds-installer.git
-$$ cd opensds-installer/salt
+$ sudo -s
+$ rm -fr /srv/formulas/* /root/opensds-installer
+$ cd /root && git clone https://github.com/opensds/opensds-installer.git
+$ cd opensds-installer/salt
 ```
 Cleandown loopback devices
 ```
-$$ losetup -D
+$ losetup -D
 ```
 
 You must set your primary host ip address now
 ```
-$$ vi site.j2
+$ vi site.j2
 ```
 
 Deploy OpenSDS
 ```
-$$ ./install.sh -i salt
+$ ./install.sh -i salt
 ```
 UBUNTU
 ```
-$$ ./install.sh -i opensds
+$ ./install.sh -i opensds
 ```
 CENTOS
 ```
-$$ ./install.sh -i opensds;./install.sh -i opensds
+$ ./install.sh -i opensds;./install.sh -i opensds
 ```
 Note: We run twice to workaround upstream devstack/CentOS bug.
 
@@ -113,38 +113,39 @@ local:
 
 Ensure openSDS services are running
 ```
-$$ ps -ef | grep 'osds'
-$$ sudo docker ps -a
+$ ps -ef | grep 'osds'
+$ sudo docker ps -a
 ```
 
 Firstly configure opensds CLI tool:
 ```
-$$ sudo cp /opt/opensds-linux-amd64/bin/osdsctl /usr/local/bin
-$$ export OPENSDS_ENDPOINT=http://<primary_host_ip>:50040
-$$ export OPENSDS_AUTH_STRATEGY=noauth
-$$ source /opt/opensds-linux-amd64-devstack/openrc admin admin
-
-$$ osdsctl pool list # Check if the pool resource is avaibable
+$ sudo cp /opt/opensds-linux-amd64/bin/osds* /usr/bin
+$ export OPENSDS_ENDPOINT=http://<primary_host_ip>:50040
+$ source /opt/opensds-linux-amd64-devstack/openrc admin admin
+```
+Check if the pool resource is avaibable
+```
+$ osdsctl pool list
 ```
 
 Then create a default profile:
 ```
-$$ osdsctl profile create '{"name": "default", "description": "default policy"}'
+$ osdsctl profile create '{"name": "default", "description": "default policy"}'
 ```
 
 Create a volume:
 ```
-$$ osdsctl volume create 1 --name=test-001
+$ osdsctl volume create 1 --name=test-001
 ```
 
 List all volumes:
 ```
-$$ osdsctl volume list
+$ osdsctl volume list
 ```
 
 Delete the volume:
 ```
-$$ osdsctl volume delete <your_volume_id>
+$ osdsctl volume delete <your_volume_id>
 ```
 
 ### OpenSDS UI
@@ -155,5 +156,5 @@ Logout of the dashboard as admin and login the dashboard again as a non-admin us
 ### How to purge and clean opensds cluster
 Run automation to clean the environment
 ```
-$$ sudo /root/opensds-installer/salt/install.sh -i opensds/clean
+$ sudo /root/opensds-installer/salt/install.sh -i opensds/clean
 ```

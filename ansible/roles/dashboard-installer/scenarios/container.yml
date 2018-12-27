@@ -26,6 +26,3 @@
     restart_policy: always
     env:
       OPENSDS_HOST_IP: "{{ host_ip }}"
-
-- name: login console
-  debug: msg="please use '{{ console_login_url }}' login console"

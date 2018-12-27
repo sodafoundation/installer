@@ -46,4 +46,6 @@
   service:
     name: nginx
     state: restarted
-  
+ 
+- name: login console
+  debug: msg="please use '{{ console_login_url }}' login console" 

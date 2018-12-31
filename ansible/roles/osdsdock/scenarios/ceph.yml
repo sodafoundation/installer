@@ -13,13 +13,24 @@
 # limitations under the License.
 
 ---
+- name: check ceph version
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/check_ceph_version.sh
+  become: yes
+  ignore_errors: true
+  register: res
+- debug:
+    var: res["results"][0]["rc"]
+
 - name: install ceph-common external package when ceph backend enabled
   apt:
     name: "{{ item }}"
     state: present
   with_items:
     - ceph-common
-
+  when: res["results"][0]["rc"] == 1
+ 
 - name: install notario package with pip when ceph backend enabled
   pip:
     name: "{{ item }}"
@@ -44,6 +55,20 @@
     src: ../../../group_vars/ceph/ceph.yaml
     dest: "{{ ceph_config_path }}"
 
+- name: check if ceph osd is running
+  shell: ps aux | grep ceph-osd | grep -v grep
+  ignore_errors: true
+  changed_when: false
+  register: service_ceph_osd_status
+  when: res["results"][0]["rc"] == 0
+
+- name: check if ceph mon is running
+  shell: ps aux | grep ceph-mon | grep -v grep
+  ignore_errors: true
+  changed_when: false
+  register: service_ceph_mon_status
+  when: res["results"][0]["rc"] == 0
+
 - name: check for ceph-ansible source code existed
   stat:
     path: /opt/ceph-ansible
@@ -62,16 +87,19 @@
   copy:
     src: ../../../group_vars/ceph/ceph.hosts
     dest: /opt/ceph-ansible/ceph.hosts
+  when: res["results"][0]["rc"] == 1
 
 - name: copy ceph all.yml file into ceph-ansible group_vars directory
   copy:
     src: ../../../group_vars/ceph/all.yml
     dest: /opt/ceph-ansible/group_vars/all.yml
+  when: res["results"][0]["rc"] == 1
 
 - name: copy site.yml.sample to site.yml in ceph-ansible
   copy:
     src: /opt/ceph-ansible/site.yml.sample
     dest: /opt/ceph-ansible/site.yml
+  when: res["results"][0]["rc"] == 1
 
 - name: ping all hosts and run ceph-ansible playbook
   shell: "{{ item }}"
@@ -80,26 +108,37 @@
     - ansible all -m ping -i ceph.hosts
     - ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
   args:
-    chdir: /opt/ceph-ansible
+    chdir: /opt/ceph-ansible 
+  when: res["results"][0]["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+
+- name: Configure Ceph-OSD
+  shell: "{{ item }}" 
+  become: true
+  ignore_errors: true
+  with_items:
+    - ceph-disk prepare --bluestore /dev/sdb #Change this device to your device for eg. /dev/sdv, /dev/sdc etc
+    - sleep 5
+  when: res["results"][0]["rc"] == 1
 
 - name: check if ceph osd is running
   shell: ps aux | grep ceph-osd | grep -v grep
   ignore_errors: true
   changed_when: false
   register: service_ceph_osd_status
-
+  
 - name: check if ceph mon is running
   shell: ps aux | grep ceph-mon | grep -v grep
   ignore_errors: true
   changed_when: false
   register: service_ceph_mon_status
-
+  
 - name: configure profile and disable some features in ceph for kernel compatible.
   shell: "{{ item }}"
   become: true
   ignore_errors: yes
   with_items:
     - ceph osd crush tunables hammer
+    - sleep 5 
     - grep -q "^rbd default features" /etc/ceph/ceph.conf || sed -i '/\[global\]/arbd default features = 1' /etc/ceph/ceph.conf
   when: service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0
 
@@ -109,3 +148,4 @@
   changed_when: false
   with_items: "{{ ceph_pools }}"
   when: service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0
+

@@ -30,7 +30,7 @@
   with_items:
     - ceph-common
   when: res["results"][0]["rc"] == 1
- 
+
 - name: install notario package with pip when ceph backend enabled
   pip:
     name: "{{ item }}"
@@ -108,30 +108,30 @@
     - ansible all -m ping -i ceph.hosts
     - ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
   args:
-    chdir: /opt/ceph-ansible 
+    chdir: /opt/ceph-ansible
   when: res["results"][0]["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
 
-- name: Configure Ceph-OSD
-  shell: "{{ item }}" 
-  become: true
-  ignore_errors: true
-  with_items:
-    - ceph-disk prepare --bluestore /dev/sdb #Change this device to your device for eg. /dev/sdv, /dev/sdc etc
-    - sleep 5
-  when: res["results"][0]["rc"] == 1
+#- name: Prepare disk for Ceph-OSD # Use this if you are using Clean and Empty hard disk and NOT LOOP DEVICES
+#  shell: "{{ item }}"
+#  become: true
+#  ignore_errors: true
+#  with_items:
+#    - ceph-disk prepare --bluestore "{{ devices }}"
+#    - sleep 5
+#  when: res["results"][0]["rc"] == 1
 
 - name: check if ceph osd is running
   shell: ps aux | grep ceph-osd | grep -v grep
   ignore_errors: true
   changed_when: false
   register: service_ceph_osd_status
-  
+
 - name: check if ceph mon is running
   shell: ps aux | grep ceph-mon | grep -v grep
   ignore_errors: true
   changed_when: false
   register: service_ceph_mon_status
-  
+
 - name: configure profile and disable some features in ceph for kernel compatible.
   shell: "{{ item }}"
   become: true

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright (c) 2019 Click2Cloud Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 cephver=$(ceph --version |grep -Eow '^ceph version [^ ]+' |gawk '{ print $3 }')
 echo "The actual version of Ceph is $cephver"
 
-if [[ "$cephver" <  10.0.0 ]]; then
+if [[ "$cephver" <  1.0.0 ]]; then
   echo "Ceph installation is required"
   exit 1
 fi

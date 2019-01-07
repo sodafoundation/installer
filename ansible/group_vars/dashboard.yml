@@ -28,6 +28,8 @@ dashboard_installation_type: container
 # These fields are NOT suggested to be modified
 dashboard_work_dir: /opt/opensds-dashboard-linux-amd64
 
+#Dashboard Console Login Address
+console_login_url: "{{ host_ip }}:8088"
 
 ##########
 # DOCKER #

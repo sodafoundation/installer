@@ -68,10 +68,19 @@ mysql:
       bind_address: {{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
 
 etcd:
-  service:
-    etcd_endpoints: '{{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }},{{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:2380'
   dir:
     tmp: /tmp/etcd_tmp
+  service:
+    name: osdsdb
+    data_dir: /var/lib/etcd/osdsdb
+    initial_cluster: 'osdsdb=http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2380'
+    initial_cluster_state: new
+    initial_cluster_token: osdsdb-1
+    initial_advertise_peer_urls: 'https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2380'
+    listen_peer_urls: 'https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2380'
+    listen_client_urls: 'https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2379'
+    advertise_client_urls: 'https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2379'
+    cmd_args: ''
   docker:
     image: {{ site.img_etcd }}
     version: {{ site.ver_etcd }}
@@ -84,8 +93,8 @@ etcd:
       - 2379/udp
       - 2380/udp
     port_bindings:
-      - '0.0.0.0:2379:2379'
-      - '0.0.0.0:2380:2380'
+      - '0.0.0.0:2379:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2379'
+      - '0.0.0.0:2380:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2380'
     binds:
       - /usr/share/ca-certificates/:/etc/ssl/certs
     stop_local_etcd_service_first: True
@@ -129,12 +138,12 @@ opensds:
         - 2380
         - 2380/udp
       port_bindings:
-        - '0.0.0.0:2379:2379'
-        - '0.0.0.0:2380:2380'
+        - '0.0.0.0:2379:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2379'
+        - '0.0.0.0:2380:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2380'
     opensdsconf:
       database:
-        endpoint: https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:2379,https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:2380
-        credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or 127.0.0.1 }}:3306/dbname'
+        endpoint: 'https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2379,https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:2380'
+        credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:3306/dbname'
 
   let:
     container:
@@ -145,7 +154,7 @@ opensds:
         - {{ site.port_controller }}
         - {{ site.port_controller }}/udp
       port_bindings:
-        - '0.0.0.0:{{ site.port_controller }}:{{ site.port_controller }}'
+        - '0.0.0.0:{{ site.port_controller }}:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_controller }}'
 
     opensdsconf:
       osdslet:
@@ -163,7 +172,7 @@ opensds:
         - {{ site.port_controller }}
         - {{ site.port_controller }}/udp
       port_bindings:
-        - {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_controller }}:{{ site.port_controller }}
+        - '0.0.0.0:{{ site.port_controller }}:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_controller }}'
 
   dashboard:
     provider: repo       #or release
@@ -195,7 +204,7 @@ opensds:
         - {{ site.port_dock }}
         - {{ site.port_dock }}/udp
       port_bindings:
-        - '0.0.0.0:{{ site.port_dock }}:{{ site.port_dock }}'
+        - '0.0.0.0:{{ site.port_dock }}:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}'
     opensdsconf:
       osdsdock:
         api_endpoint: localhost:{{ site.port_dock }}

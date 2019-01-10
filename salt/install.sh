@@ -42,7 +42,7 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="opensds docker"
+FORK_FORMULAS="opensds etcd docker"
 FORK_BRANCH="fixes"
 
 usage()

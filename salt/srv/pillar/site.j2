@@ -2,24 +2,29 @@
 # SITE & RELEASE DATA COLLECTION
 # Save file as /srv/pillar/site.j2
 # this is jinja not yaml!!
-# Set ipaddress here using single quotes.
+# Reference values
 #*****************************************
 {%- set sitedata = {} %}
 {%- do sitedata.update( {
 
+      'deploy_project': 'all',
+
       'host_ipv6': '::1/128',
-      'host_ipv4': '10.0.2.15',
-      'tgtBindIp': '10.0.2.15',
+      'host_ipv4': '127.0.0.1',
+      'tgtBindIp': '127.0.0.1',
       'db_host'  : '127.0.0.1',
       'dns_host1': '8.8.8.8',
       'dns_host2': '64.6.64.6',
       'ipdomain': 'example.com',
       'timezone': 'America/Denver',
 
-      'port_controller': '50040',
-      'port_dock': '50050',
+      'gelato_release': 'v1',
+      'gelato_service': 'multicloud',
+      'gelato_hashsum': 'sha256=bcd3e3cfe0c064f60ffbf1db58bf41a32fcc458bb7c4dcc9bdd395ba1251e2d5',
+      'gelato_url': 'https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml',
 
       'hotpot_release': 'v0.4.0',
+      'hotpot_service': 'opensds',
       'hotpot_hashsum': 'md5=d9dee4acf9cfd8d29f99cd09c7669519',
       'hotpot_uri': 'https://github.com/opensds/opensds/releases/download',
 
@@ -38,17 +43,25 @@
       'enabled_backend': 'lvm',
       'poolname': 'opensds-volumes',
 
-      'img_controller': 'opensdsio/opensds-controller',
-      'img_dock': 'opensdsio/opensds-dock',
-      'img_dashboard': 'opensdsio/dashboard',
-      'img_etcd': 'quay.io/coreos/etcd',
-
-      'ver_controller': 'latest',
-      'ver_dock': 'latest',
-      'ver_dashboard': 'latest',
-      'ver_etcd': 'latest',
+      'container_hotpot_img': 'opensdsio/opensds-controller',
+      'container_hotpot_version': 'bali',
+      'container_dock_img': 'opensdsio/opensds-dock',
+      'container_dock_version': 'latest',
+      'container_dashboard_img': 'opensdsio/dashboard',
+      'container_dashboard_version': 'latest',
+      'container_etcd_img': 'quay.io/coreos/etcd',
+      'container_etcd_version': 'latest',
 
       'devstack_enabled_services': 'mysql,key',
       'devstack_password': 'opensds@123',
       'devstack_dir': '/opt/opensds-linux-amd64-devstack',
+
+      'port_hotpot': '50040',
+      'port_dock': '50050',
+      'port_gelato': '8089',
+      'port_mysql': '3306',
+      'port_nginx': '8088',
+      'port_auth1': '2379',
+      'port_auth2': '2380',
+
 }) %}

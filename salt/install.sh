@@ -42,7 +42,7 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="opensds etcd docker"
+FORK_FORMULAS="opensds etcd iscsi devstack docker"
 FORK_BRANCH="fixes"
 
 usage()
@@ -57,8 +57,8 @@ usage()
     echo 1>&2
     echo "     opensds   Apply OpenSDS salt formula states" 1>&2
     echo 1>&2
-    echo " auth|controller|dashboard|database|dock|envs|let|nbp" 1>&2
-    echo "               Apply specific OpenSDS salt formula state" 1>&2
+    echo " auth|hotpot|dashboard|database|dock|infra|let|sushi|gelato" 1>&2
+    echo "               Apply specific OpenSDS state" 1>&2
     echo 1>&2
     echo "     prereq    Install docker-ce and nginx;remove apache" 1>&2
     echo 1>&2
@@ -239,7 +239,7 @@ opensds)    get-salt-master-hostname
             (( $? == 0 )) && opensds
             ;;
 
-auth|controller|dashboard|database|dock|envs|let|nbp|deepsea|prereq)
+gelato|auth|hotpot|dashboard|database|dock|infra|let|sushi|deepsea|prereq)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model ${TARGET}

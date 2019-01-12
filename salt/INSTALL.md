@@ -47,7 +47,7 @@ Cleandown loopback devices
  losetup -D
 ```
 
-You must set your primary host ip address now
+Review and set primary host ip addresses
 ```
  vi site.j2
 ```
@@ -58,6 +58,8 @@ Deploy OpenSDS
 ```
 UBUNTU
 ```
+ sysctl -w net.ipv6.conf.all.disable_ipv6=1
+ sysctl -w net.ipv6.conf.default.disable_ipv6=1
  ./install.sh -i opensds
 ```
 CENTOS
@@ -98,11 +100,11 @@ Total run time:   76.144 s
   ... etc ...
 Summary for local
 --------------
-Succeeded: 197 (changed=107)
+Succeeded: 249 (changed=157)
 Failed:      0
 --------------
-Total states run:     197
-Total run time:  2333.544 s
+Total states run:     249
+Total run time:  2643.544 s
 local:
     ----------
     opensds:

@@ -40,7 +40,7 @@ opensds:
         - '{{ site.port_auth2 }}:{{ site.port_auth2 }}'
     opensdsconf:
       database:
-        endpoint: 'https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
+        endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
         credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_mysql }}/dbname'
 
   let:
@@ -219,6 +219,7 @@ devstack:
   local:
     username: stack
     password: {{ site.devstack_password }}
+    #git_branch: 'stable/rocky'
     enabled_services: {{ site.devstack_enabled_services }}
     os_password: {{ site.devstack_password }}
     host_ipv4: {{ site.host_ipv4 or '127.0.0.1' }}

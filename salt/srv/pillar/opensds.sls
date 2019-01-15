@@ -8,12 +8,92 @@ opensds:
     dock: {{ site.port_dock }}
   dir:
     devstack: {{ site.devstack_dir }}
-  driver:
-    pool:
-      {{ site.poolname }}:
-        extras:
-          advanced:
-            a: 'b'
+
+  dock:
+    #provider: lvm
+    #################################################
+    #   OPENSDS DRIVERS SITE SPECIFIC VALUES
+    # Only section matching `dock.provider` is used.
+    #################################################
+    driver_custom_values:
+      lvm:
+        tgtBindIp: {{ site.tgtBindIp }}
+        pool:
+          {{ site.poolname }}:
+            extras:
+              advanced:
+                feature_a: 'b'
+      ceph:
+        configFile: /etc/ceph/ceph.conf
+        pool:
+          {{ site.poolname }}:
+            extras:
+              advanced:
+                feature_c: 'd'
+      huawei_fusionstorage:
+        authOptions:
+          fmIp: 192.168.0.200
+          fsaIp:
+            - 192.168.0.4
+            - 192.168.0.5
+            - 192.168.0.6
+        pool:
+          {{ site.poolname }}:
+            extras:
+              advanced:
+                feature_e: 'f'
+      drbd:
+        Hosts:
+          - Hostname: rckdeba
+            IP: 10.43.70.115
+            Node-ID: 0
+          - Hostname: rckdebb
+            IP: 10.43.70.116
+            Node-ID: 1
+      cinder:
+        authOptions:
+          #noAuth: true
+          endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity
+          #cinderEndpoint: "http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:8776/v2"
+          domainId: "Default"
+          domainName: "Default"
+          username: "admin"
+          password: "admin"
+          tenantName: "admin"
+          #tenantId: "myproject"
+        pool:
+          {{ site.poolname }}:
+            extras:
+              advanced:
+                feature_g: 'h'
+       ### DRIVER END ###
+    container:
+      image: {{ site.container_dock_img }}
+      version: {{ site.container_dock_version }}
+      volumes:
+        - /etc/opensds/:/etc/opensds
+      ports:
+        - {{ site.port_dock }}
+        - {{ site.port_dock }}/udp
+      port_bindings:
+        - '{{ site.port_dock }}:{{ site.port_dock }}'
+    opensdsconf:
+      osdsdock:
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_dock }}
+        dock_type: {{ site.dock_type }}
+        enabled_backend: {{ site.enabled_backend }}
+
+    block:
+      provider: {{ site.enabled_backend }}
+      opensdsconf:
+        {{ site.enabled_backend }}:
+          {{ site.enabled_backend }}_name: {{ site.enabled_backend }} backend!
+          {{ site.enabled_backend }}_description: {{ site.enabled_backend }} backend service!
+          {{ site.enabled_backend }}_driver_name: {{ site.enabled_backend }}!
+          {{ site.enabled_backend }}_config_path: /etc/opensds/driver/{{site.enabled_backend}}.yaml
+      cinder:
+        container:
+          enabled: True
 
   gelato:
     service: {{ site.gelato_service }}
@@ -86,38 +166,11 @@ opensds:
     provider: release  #or repo
     plugin_type: {{ site.dock_type }}
 
-  dock:
-    container:
-      image: {{ site.container_dock_img }}
-      version: {{ site.container_dock_version }}
-      volumes:
-        - /etc/opensds/:/etc/opensds
-      ports:
-        - {{ site.port_dock }}
-        - {{ site.port_dock }}/udp
-      port_bindings:
-        - '{{ site.port_dock }}:{{ site.port_dock }}'
-    opensdsconf:
-      osdsdock:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_dock }}
-        dock_type: {{ site.dock_type }}
-        enabled_backend: {{ site.enabled_backend }}
 
-    block:
-      provider: {{ site.enabled_backend }}
-      opensdsconf:
-        {{ site.enabled_backend }}:
-          {{ site.enabled_backend }}_name: {{ site.enabled_backend }} backend!
-          {{ site.enabled_backend }}_description: {{ site.enabled_backend }} backend service!
-          {{ site.enabled_backend }}_driver_name: {{ site.enabled_backend }}!
-          {{ site.enabled_backend }}_config_path: /etc/opensds/driver/{{site.enabled_backend}}.yaml
-      cinder:
-        container:
-          enabled: True
 
-ceph:
-  use_upstream_repo: true
-
+###################################
+## All non OpenSDS values go here 
+###################################
 lvm:
   files:
     loopbackdir: /tmp/opensds_loopdevs    #Where to create backing files
@@ -415,6 +468,9 @@ etcd:
     binds:
       - /usr/share/ca-certificates/:/etc/ssl/certs
     stop_local_etcd_service_first: True
+
+ceph:
+  use_upstream_repo: true
 
 packages:
   pips:

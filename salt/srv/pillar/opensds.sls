@@ -2,169 +2,212 @@
 
 opensds:
   deploy_project: {{ site.deploy_project }}
-  host: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
+  host: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
   ports:
     opensds: {{ site.port_hotpot }}
     dock: {{ site.port_dock }}
-  dir:
-    devstack: {{ site.devstack_dir }}
 
-  dock:
-    #provider: lvm
-    #################################################
-    #   OPENSDS DRIVERS SITE SPECIFIC VALUES
-    # Only section matching `dock.provider` is used.
-    #################################################
-    driver_custom_values:
+  ######### BACKENDS ##################
+  backend:
+    block:
+      instances: {{ site.enabled_backends }}
+      container:
+        cinder:
+          enabled: True
+
+  ######## BACKEND DRIVERS ###########
+    drivers:
       lvm:
         tgtBindIp: {{ site.tgtBindIp }}
         pool:
           {{ site.poolname }}:
             extras:
               advanced:
-                feature_a: 'b'
+                custom_feature_a: 'b'
       ceph:
-        configFile: /etc/ceph/ceph.conf
         pool:
           {{ site.poolname }}:
             extras:
               advanced:
-                feature_c: 'd'
-      huawei_fusionstorage:
+                custom_feature_c: 'd'
+
+      fusionstorage:
         authOptions:
-          fmIp: 192.168.0.200
-          fsaIp:
-            - 192.168.0.4
-            - 192.168.0.5
-            - 192.168.0.6
+          fmIp: {{ site.fusionstorage_fmip }}
+          fsaIp: {{ site.fusionstorage_fsaip }}
         pool:
           {{ site.poolname }}:
             extras:
               advanced:
-                feature_e: 'f'
+                custom_feature_e: 'f'
+      cinder:
+        pool:
+          {{ site.poolname }}:
+            extras:
+              advanced:
+                custom_feature_g: 'h'
+
       drbd:
         Hosts:
-          - Hostname: rckdeba
-            IP: 10.43.70.115
+          - Hostname: {{ site.drbd_host_0_name }}
+            IP: {{ site.drbd_host_0_ipv4 }}
             Node-ID: 0
-          - Hostname: rckdebb
-            IP: 10.43.70.116
+          - Hostname: {{ site.drbd_host_1_name }}
+            IP: {{ site.drbd_host_1_ipv4 }}
             Node-ID: 1
-      cinder:
-        authOptions:
-          #noAuth: true
-          endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity
-          #cinderEndpoint: "http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:8776/v2"
-          domainId: "Default"
-          domainName: "Default"
-          username: "admin"
-          password: "admin"
-          tenantName: "admin"
-          #tenantId: "myproject"
-        pool:
-          {{ site.poolname }}:
-            extras:
-              advanced:
-                feature_g: 'h'
-       ### DRIVER END ###
-    container:
-      image: {{ site.container_dock_img }}
-      version: {{ site.container_dock_version }}
-      volumes:
-        - /etc/opensds/:/etc/opensds
-      ports:
-        - {{ site.port_dock }}
-        - {{ site.port_dock }}/udp
-      port_bindings:
-        - '{{ site.port_dock }}:{{ site.port_dock }}'
+
+
+  ########### DOCKS ###############
+  dock:
+    instances:
+      - osdsdock
+      - osdsdockB     ##dummy service
     opensdsconf:
       osdsdock:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_dock }}
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
         enabled_backend: {{ site.enabled_backend }}
-
-    block:
-      provider: {{ site.enabled_backend }}
-      opensdsconf:
-        {{ site.enabled_backend }}:
-          {{ site.enabled_backend }}_name: {{ site.enabled_backend }} backend!
-          {{ site.enabled_backend }}_description: {{ site.enabled_backend }} backend service!
-          {{ site.enabled_backend }}_driver_name: {{ site.enabled_backend }}!
-          {{ site.enabled_backend }}_config_path: /etc/opensds/driver/{{site.enabled_backend}}.yaml
-      cinder:
-        container:
-          enabled: True
-
-  gelato:
-    service: {{ site.gelato_service }}
-    release: {{ site.gelato_release }}
+        enabled_backends: {{ site.enabled_backends }}
+      osdsdockB:
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock|int + 1 }}
+        dock_type: {{ site.dock_type }}
+        enabled_backend: {{ site.enabled_backend }}
+        enabled_backends: {{ site.enabled_backends }}
     container:
-      compose:
-        url:  {{ site.gelato_url }}
-        hashsum: {{ site.gelato_hashsum }}
+      osdsdock:
+        image: {{ site.container_dock_img }}
+        version: {{ site.container_dock_version }}
+        ports:
+          - {{ site.port_dock }}
+          - {{ site.port_dock }}/udp
+        port_bindings:
+          - '{{ site.port_dock }}:{{ site.port_dock }}'
+      osdsdockB:
+        image: {{ site.container_dock_img }}
+        version: {{ site.container_dock_version }}
+        ports:
+          - {{ site.port_dock|int + 1 }}
+          - {{ site.port_dock|int + 1 }}/udp
+        port_bindings:
+          - '{{ site.port_dock|int + 1 }}:{{ site.port_dock|int + 1 }}'
 
-  auth:
+
+  ############ GELATO #############
+  gelato:
+    release: {{ site.gelato_release }}
+    service: {{ site.gelato_service }}
+    instances:
+      - {{ site.gelato_service }}
     opensdsconf:
-      keystone_authtoken:
-        memcached_servers: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1'  }}:11211
-        auth_uri: http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity
-        auth_url: http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/identity
-        password: {{ site.devstack_password }}
+      {{ site.gelato_service }}:
+        endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}
+        port: {{ site.port_gelato }}
+    container:
+      {{ site.gelato_service }}:
+        enabled: False
+        build: False
+    daemon:
+      {{ site.gelato_service }}:
+        strategy: keystone-repo-systemd   ##or keystone-release-systemd, or keystone-compose-systemd
+        repo:
+          branch: stable/bali
 
+
+  ############ AUTH #############
+  auth:
+    instances:
+      - osdsauth
+    opensdsconf:
+      osdsauth:
+        keystone_authtoken:
+          memcached_servers: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}:11211'
+          auth_uri: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+          auth_url: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+          password: {{ site.devstack_password }}
+    daemon:
+      osdsauth:
+        strategy: keystone
+        endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        endpoint_port: {{ site.port_hotpot }}
+
+  ############ DATABASE #############
   database:
+    instances:
+      - database
     container:
       enabled: True
       build: True
-      port_bindings:
-        - '{{ site.port_auth1 }}:{{ site.port_auth1 }}'
-        - '{{ site.port_auth2 }}:{{ site.port_auth2 }}'
     opensdsconf:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
-        credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_mysql }}/dbname'
+        credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
 
-  let:
-    container:
-      enabled: True
-      image: {{ site.container_hotpot_img }}
-      version: {{ site.container_hotpot_version }}
-      ports:
-        - {{ site.port_hotpot }}
-        - {{ site.port_hotpot }}/udp
-      port_bindings:
-        - '{{ site.port_hotpot }}:{{ site.port_hotpot }}'
 
-    opensdsconf:
-      osdslet:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_hotpot }}
-        auth_strategy: noauth
-        graceful: True
-
+  ############### HOTPOT ################
   hotpot:
     release: {{ site.hotpot_release }}
     service: {{ site.hotpot_service }}
-    endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_hotpot }}
+    instances:
+      - opensds
+      - osdslet
+    opensdsconf:
+      osdslet:
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
+        auth_strategy: keystone
     container:
-      enabled: False
-      image: {{ site.container_hotpot_img }}
-      version: {{ site.container_hotpot_version }}
-      ports:
-        - {{ site.port_hotpot }}
-        - {{ site.port_hotpot }}/udp
-      port_bindings:
-        - '{{ site.port_hotpot }}:{{ site.port_hotpot }}'
+      opensds:
+        enabled: False
+        build: False
+        image: {{ site.container_hotpot_img }}
+        version: {{ site.container_hotpot_version }}
+        ports:
+          - {{ site.port_hotpot }}
+          - {{ site.port_hotpot }}/udp
+        port_bindings:
+          - {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}:{{ site.port_hotpot }}
+    daemon:
+      opensds:
+        strategy: repo-systemd
+        endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        endpoint_port: {{ site.port_hotpot }}
+        repo:
+          branch: stable/bali
 
+  ############### DASHBOARDS ################
   dashboard:
-    provider: repo       #or release
+    instances:
+      - dashboard
+    opensdsconf:
+      dashboard:
+        endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        port: {{ site.port_hotpot }}
     container:
-      enabled: True
-      image: {{ site.container_dashboard_img }}
-      version: {{ site.container_dashboard_version }}
+      dashboard:
+         enabled: True
+         image: {{ site.container_dashboard_img }}
+         version: {{ site.container_dashboard_version }}
+    daemon:
+      dashboard:
+        strategy: container-systemd     #or 'repo-systemd' or 'release-systemd'
+        build_cmd: make
+        start: {{ site.hotpot_path }}/bin/dashboard
+        repo:
+          branch: stable/bali
 
+
+  ############### SUSHI NORTH BOUND PLUGINS ################
   sushi:
     release: {{ site.sushi_release }}
-    provider: release  #or repo
     plugin_type: {{ site.dock_type }}
+    instances:
+      - nbp
+    daemon:
+      nbp:
+        strategy: repo-systemd
+        start: '/usr/local/bin/kubectl create -f {{ site.sushi_path }}/deploy/kubernetes'
+        stop: '/usr/local/bin/kubectl delete -f {{ site.sushi_path }}/deploy/kubernetes'
+        repo:
+          branch: {{ site.sushi_release }}
 
 
 
@@ -275,13 +318,12 @@ devstack:
     #git_branch: 'stable/rocky'
     enabled_services: {{ site.devstack_enabled_services }}
     os_password: {{ site.devstack_password }}
-    host_ipv4: {{ site.host_ipv4 or '127.0.0.1' }}
+    host_ipv4: {{ site.host_ipv4 or "127.0.0.1" }}
     host_ipv6: {{ site.host_ipv6 or '::1/128' }}
-    service_host: {{ site.host_ipv4 or '127.0.0.1' }}
-    db_host: {{ site.db_host or '127.0.0.1' }}
+    service_host: {{ site.host_ipv4 or "127.0.0.1" }}
+    db_host: {{ site.db_host or "127.0.0.1" }}
   dir:
-    dest: {{ site.devstack_dir }}
-    tmp: /tmp/devstack
+    dest: {{ site.devstack_path }}
   cli:
     service:
       create:
@@ -339,27 +381,27 @@ devstack:
             - service
     endpoint:
       create:
-        'opensds{{site.hotpot_release}} public https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
+        'opensds{{site.hotpot_release}} public https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        'opensds{{site.hotpot_release}} internal https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
+        'opensds{{site.hotpot_release}} internal https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        'opensds{{site.hotpot_release}} admin https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
+        'opensds{{site.hotpot_release}} admin https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        '{{ site.gelato_service }}{{ site.gelato_release }} public https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_gelato }}/{{ site.gelato_release }}/%\(tenant_id\)s':
+        '{{ site.gelato_service }}{{ site.gelato_release }} public https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_gelato }}/{{ site.gelato_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        '{{ site.gelato_service }}{{ site.gelato_release }} internal https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_gelato }}/{{ site.gelato_release }}/%\(tenant_id\)s':
+        '{{ site.gelato_service }}{{ site.gelato_release }} internal https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_gelato }}/{{ site.gelato_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        '{{ site.gelato_service }}{{ site.gelato_release }} admin https://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_gelato }}/{{ site.gelato_release }}/%\(tenant_id\)s':
+        '{{ site.gelato_service }}{{ site.gelato_release }} admin https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_gelato }}/{{ site.gelato_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
@@ -371,7 +413,10 @@ docker:
   containers:
     skip_translate: ports
     force_present: False
-    force_running: False   #maybe unsupported by python-py
+    force_running: False       #maybe unsupported by python-py
+    error_on_absent: False
+    restart_policy: always
+    network_mode: host
 
 timezone:
   name: {{ site.timezone or 'America/Denver' }}
@@ -417,20 +462,23 @@ nginx:
                 - index.nginx-debian.html
           {%- endif %}
               - location /{{ site.hotpot_release }}/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
+                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
               - location /v3/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity/v3/'
+                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
               - location /v1beta/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
+                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
 
 memcached:
   daemonize: True
-  listen_address: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
+  listen_address: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
 
 golang:
-  prefix: /usr/local
-  go_root: /usr/local/golang
-  go_path: /usr/local/go    #its symlinked to /usr/local/golang/<ver>/go/
+  lookup:
+    prefix: {{ site.go_prefix }}
+    go_root: {{ site.go_root }}           #symlink to 'go_root'/<ver>/go/
+    go_path: {{ site.go_path }}
+  linux:
+    altpriority: {{ range(10000, 50000)| random }}
 
 
 ### Note: we use devstack to deploy mysql not mysql-formula ###
@@ -439,7 +487,7 @@ mysql:
   server:
     root_password: {{ site.devstack_password }}
     mysqld:
-      bind_address: {{ site.db_host or site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
+      bind_address: {{ site.db_host or site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
 
 etcd:
   dir:
@@ -447,13 +495,13 @@ etcd:
   service:
     name: osdsdb
     data_dir: /var/lib/etcd/osdsdb
-    initial_cluster: 'osdsdb=http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_auth2 }}'
+    initial_cluster: 'osdsdb=http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
     initial_cluster_state: new
     initial_cluster_token: osdsdb-1
-    initial_advertise_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_auth2 }}'
-    listen_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_auth2 }}'
-    listen_client_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_auth1 }}'
-    advertise_client_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_auth1 }}'
+    initial_advertise_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
+    listen_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
+    listen_client_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }}'
+    advertise_client_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }}'
     #cmd_args: '--auto-tls --peer-auto-tls'
     cmd_args: ''
   docker:
@@ -514,30 +562,44 @@ packages:
           format: bin
           source: {{ site.kubectl_url }}
           hashsum: {{ site.kubectl_hashsum }}
+      gelato_compose_file:
+        dest: {{ site.gelato_path }}
+        dl:
+          format: yml
+          source: {{ site.gelato_compose_url }}
+          hashsum: {{ site.gelato_compose_hashsum }}
+      gelato_multi_cloud:
+        dest: {{ site.go_path }}/src/github.com/opensds/multi-cloud
+        options: '--strip-components=1'
+        dl:
+          format: tar
+          source: {{ site.gelato_uri }}/{{ site.gelato_release }}/opensds-multicloud-{{ site.gelato_release }}-linux-amd64.tar.gz
+          hashsum: {{ site.hotpot_hashsum }}
       hotpot:
-        dest: /opt/opensds-linux-amd64
+        dest: {{ site.go_path }}/src/github.com/opensds/opensds
         options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.hotpot_uri }}/{{ site.hotpot_release }}/opensds-hotpot-{{ site.hotpot_release }}-linux-amd64.tar.gz
           hashsum: {{ site.hotpot_hashsum }}
       sushi:
-        dest: /usr/local/go/bin/src/github.com/opensds/nbp
+        dest: {{ site.go_path }}/src/github.com/opensds/nbp
         options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.sushi_uri }}/{{ site.sushi_release }}/opensds-sushi-{{ site.sushi_release }}-linux-amd64.tar.gz
           hashsum: {{ site.sushi_hashsum }}
-      cinder:
-        dest: /opt/opensds-k8s-linux-amd64/cinder
+      cinder_compose:
+        dest: {{ site.sushi_path }}/cinder
         dl:
           format: yml
-          source: {{ site.cinder_url }}
-          hashsum: {{ site.cinder_hashsum }}
+          source: {{ site.cinder_compose_url }}
+          hashsum: {{ site.cinder_compose_hashsum }}
     unwanted:
-      - /usr/local/go/bin/src/github.com/opensds/nbp
-      - /opt/opensds-k8s-linux-amd64
-      - /opt/opensds-linux-amd64
+      - {{ site.go_path }}/src/github.com/opensds/nbp
+      - {{ site.go_path }}/src/github.com/opensds/opensds
+      - {{ site.sushi_path }}
+      - {{ site.hotpot_path }}
       # /var/lib/mysql/
 
 salt:
@@ -558,7 +620,7 @@ salt:
         - /srv/pillar
   ssh_roster:
     hotpot1:
-      host: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}
+      host: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
       user: stack
       sudo: True
       priv: /etc/salt/ssh_keys/sshkey.pem
@@ -599,6 +661,5 @@ salt_formulas:
      - timezone-formula
      - resolver-formula
      - nginx-formula
-     - apache-formula
      - mongodb-formula
      - node-formula

@@ -8,6 +8,17 @@
 {%- do sitedata.update( {
 
       'deploy_project': 'all',
+      'dock_type': 'provisioner',
+      'nbp_plugin_type': 'hotpot_only',
+      'enabled_backend': 'lvm',
+      'enabled_backends': ['sample', 'cinder', 'ceph', 'lvm', 'fusionstorage', 'drbd',],
+      'poolname': 'opensds-volumes',
+      'fusionstorage_fmip': '192.168.0.200',
+      'fusionstorage_fsaip': ['192.168.0.4', '192.168.0.5', '192.168.0.6',],
+      'drbd_host_0_name': 'rckdeba',
+      'drbd_host_0_ipv4': '10.43.70.115',
+      'drbd_host_1_name': 'rckdebb',
+      'drbd_host_1_ipv4': '10.43.70.116',
 
       'host_ipv6': '::1/128',
       'host_ipv4': '127.0.0.1',
@@ -18,10 +29,13 @@
       'ipdomain': 'example.com',
       'timezone': 'America/Denver',
 
-      'gelato_release': 'v1',
-      'gelato_service': 'multicloud',
-      'gelato_hashsum': 'sha256=bcd3e3cfe0c064f60ffbf1db58bf41a32fcc458bb7c4dcc9bdd395ba1251e2d5',
-      'gelato_url': 'https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml',
+      'gelato_release': 'v0.4.0',
+      'gelato_service': 'multi-cloud',
+      'gelato_uri': 'https://github.com/opensds/multi-cloud/releases/download',
+      'gelato_hashsum': 'md5=1932f7b92cdb8faba09ee312b68b87a8',
+
+      'gelato_compose_url': 'https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml',
+      'gelato_compose_hashsum': 'sha256=bcd3e3cfe0c064f60ffbf1db58bf41a32fcc458bb7c4dcc9bdd395ba1251e2d5',
 
       'hotpot_release': 'v0.4.0',
       'hotpot_service': 'opensds',
@@ -32,29 +46,32 @@
       'sushi_hashsum': 'md5=e774d5fe5851a4177175ba806eb87682',
       'sushi_uri': 'https://github.com/opensds/nbp/releases/download',
 
-      'cinder_hashsum': 'md5=1751f8e4f6b4cddd8c4843a0f4473274',
-      'cinder_url': 'https://raw.githubusercontent.com/openstack/cinder/master/contrib/block-box/docker-compose.yml',
+      'cinder_compose_hashsum': 'sha256=1d55a1d2a2b328904370d47b7837a94c96ef47aa9b4a7a61990b59442ee33d5f',
+      'cinder_compose_url': 'https://raw.githubusercontent.com/openstack/cinder/master/contrib/block-box/docker-compose.yml',
 
       'kubectl_hashsum': 'md5=b0629c3ca34bc043da2f5d3eb226fb9e',
       'kubectl_url': 'https://storage.googleapis.com/kubernetes-release/release/v1.12.3/bin/linux/amd64/kubectl',
 
-      'dock_type': 'provisioner',
-      'nbp_plugin_type': 'hotpot_only',
-      'enabled_backend': 'lvm',
-      'poolname': 'opensds-volumes',
-
       'container_hotpot_img': 'opensdsio/opensds-controller',
       'container_hotpot_version': 'bali',
       'container_dock_img': 'opensdsio/opensds-dock',
-      'container_dock_version': 'latest',
+      'container_dock_version': 'bali',
       'container_dashboard_img': 'opensdsio/dashboard',
-      'container_dashboard_version': 'latest',
+      'container_dashboard_version': 'bali',
       'container_etcd_img': 'quay.io/coreos/etcd',
       'container_etcd_version': 'latest',
 
       'devstack_enabled_services': 'mysql,key',
       'devstack_password': 'opensds@123',
-      'devstack_dir': '/opt/opensds-linux-amd64-devstack',
+
+      'devstack_path': '/opt/opensds-linux-amd64-devstack',
+      'hotpot_path': '/opt/opensds-linux-amd64',
+      'devstack_path': '/opt/opensds-linux-amd64-devstack',
+      'gelato_path': '/opt/opensds-gelato-linux-amd64',
+      'sushi_path': '/opt/opensds-sushi-linux-amd64',
+      'go_prefix': '/usr/local',
+      'go_root': '/usr/local/go',
+      'go_path': '/usr/local/golang/packages',
 
       'port_hotpot': '50040',
       'port_dock': '50050',

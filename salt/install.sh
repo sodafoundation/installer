@@ -42,8 +42,10 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="opensds etcd iscsi devstack docker"
+FORK_FORMULAS="opensds docker"
+FORK_FORMULAS2="golang"
 FORK_BRANCH="fixes"
+FORK_BRANCH2="fixes2"
 
 usage()
 {
@@ -148,7 +150,6 @@ apply-salt-state-model()
     cp ${MODELS}/pillar/* ${BASE}/pillar/
     ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${1}.sls 2>/dev/null
     [[ "${1}" == 'salt' ]] && clone_formula salt
-    [[ "${2}" == "${FORK_BRANCH}" ]] && use_branch_instead salt
 
     echo "run salt ..."
     salt-call state.show_top --local
@@ -181,16 +182,16 @@ opensds()
 ### use #FORKFIXES branch on args
 use_branch_instead()
 {
-  for f in $*
+  for f in $(echo -n ${1})
   do
-    echo "using [${f}] ${FORK_BRANCH} branch"
+    echo "using [${f}] ${2} branch"
     [[ -d "${BASE}/formulas/${f}-formula" ]] && rm -fr ${BASE}/formulas/${f}* 2>/dev/null
     git clone ${FORK_REPO}/${f}-formula.git ${BASE}/formulas/${f}-formula >/dev/null 2>&1
     if (( $? == 0 ))
     then
         cd ${BASE}/formulas/${f}-formula/
-        git checkout ${FORK_BRANCH} >/dev/null 2>&1
-        (( $? > 0 )) && echo "Failed to checkout ${f} ${FORK_BRANCH} branch" && return 1
+        git checkout ${2} >/dev/null 2>&1
+        (( $? > 0 )) && echo "Failed to checkout ${f} ${2} branch" && return 1
     fi
   done
   cd ${MODELS}
@@ -229,7 +230,8 @@ salt)       get-salt-master-hostname
             apply-salt-state-model salt
             salt-key -A --yes >/dev/null 2>&1
             salt-key -L
-            [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead ${FORK_FORMULAS}
+            [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead "${FORK_FORMULAS}" ${FORK_BRANCH}
+            [[ ! -z "${FORK_FORMULAS2}" ]] && use_branch_instead "${FORK_FORMULAS2}" ${FORK_BRANCH2}
             apply-salt-state-model "prereq"
             ;;
 

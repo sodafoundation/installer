@@ -1,4 +1,4 @@
-## opensds-installer/srv/salt/salt/dock.sls
+## opensds-installer/salt/srv/salt/install/dock.sls
 base:
   '*':
     - opensds.dock.clean

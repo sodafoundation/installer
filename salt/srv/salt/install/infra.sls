@@ -1,4 +1,4 @@
-## opensds-installer/srv/salt/salt/infra.sls
+## opensds-installer/salt/srv/salt/install/infra.sls
 base:
   '*':
     - opensds.infra.clean

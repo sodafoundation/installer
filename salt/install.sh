@@ -49,9 +49,10 @@ FORK_BRANCH2="fixes2"
 
 usage()
 {
-    echo "Usage: sudo $0 -i TARGET [ OPTIONS ]" 1>&2
+    echo "Usage: sudo $0 -i INSTALL_TARGET [ OPTIONS ]" 1>&2
+    echo "Usage: sudo $0 -r REMOVE_TARGET [ OPTIONS ]" 1>&2
     echo 1>&2
-    echo "  OPENSDS WORKFLOW" 1>&2
+    echo "  TARGETS" 1>&2
     echo 1>&2
     echo "  salt|opensds|deepsea" 1>&2
     echo 1>&2
@@ -66,19 +67,15 @@ usage()
     echo 1>&2
     echo "  See://github.com/saltstack-formulas/opensds-formula.git" 1>&2
     echo 1>&2
-    echo "  EXPERIMENTAL" 1>&2
-    echo 1>&2
-    echo "     deepsea   Install DeepSea formula (Ceph)" 1>&2
-    echo 1>&2
     echo "  OPTIONS" 1>&2
     echo 1>&2
-    echo "  [-m <name>]      Needed if /etc/salt/minion cannot be parsed" 1>&2
+    echo "   [ -l debug ]    Debug output (install/remove)." 1>&2
     echo 1>&2
-    echo "   [ -l debug ]    Debug output." 1>&2
+    echo "  [-m <name>]      Install; needed if /etc/salt/minion unparseable" 1>&2
     echo 1>&2
     echo "   [ -x python3 ]  Install the Python3 salt packages" 1>&2
     echo 1>&2
-    echo "   [ -r yyyy.m.n ] Specify salt release; i.e. 2017.7.2" 1>&2
+    echo "   [ -r yyyy.m.n ] Install specific salt release; i.e. 2017.7.2" 1>&2
     echo 1>&2
     exit ${1}
 }
@@ -145,7 +142,7 @@ salt-master-service()
 apply-salt-state-model()
 {
     echo "prepare salt ..."
-    cp ${MODELS}/salt/${1}.sls ${BASE}/salt/top.sls 2>/dev/null
+    cp ${MODELS}/salt/${1}/${2}.sls ${BASE}/salt/top.sls 2>/dev/null
     cp ${BASE}/pillar/site.j2 ${BASE}/pillar/site.bak 2>/dev/null
     cp ${MODELS}/pillar/* ${BASE}/pillar/
     ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${1}.sls 2>/dev/null
@@ -204,7 +201,12 @@ use_branch_instead()
 while getopts ":i:m:l:x:r:" option; do
     case "${option}" in
     m)  MASTER_HOST=${OPTARG} ;;
-    i)  TARGET=${OPTARG} ;;
+    i)  INSTALL_TARGET=${OPTARG}
+        REMOVE_TARGET=""
+        ;;
+    r)  REMOVE_TARGET=${OPTARG}
+        INSTALL_TARGET=""
+        ;;
     l)  DEBUGG_ON="-ldebug" ;;
     x)  SALT_OPTS="-x python3" ;;
     r)  SALT_RELEASE="git v${OPTARG}" ;;
@@ -215,9 +217,11 @@ shift $((OPTIND-1))
 #trying workaround for https://github.com/saltstack/salt/issues/44062 noise
 ${PACKAGE_MGR} -r python2-botocore >/dev/null 2>&1
 
-
-case "${TARGET}" in
-salt)       get-salt-master-hostname
+if [[ -z "${REMOVE_TARGET" ]]
+then
+    case "${INSTALL_TARGET}" in
+    salt)   losetup -D 2>/dev/null
+            get-salt-master-hostname
             if [[ -z "${SALT_RELEASE}" ]]
             then
                 salt-bootstrap "${SALT_OPTS}"
@@ -227,27 +231,43 @@ salt)       get-salt-master-hostname
             fi
             salt-master-service
             salt-minion-service
-            apply-salt-state-model salt
+            apply-salt-state-model install salt
             salt-key -A --yes >/dev/null 2>&1
             salt-key -L
             [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead "${FORK_FORMULAS}" ${FORK_BRANCH}
             [[ ! -z "${FORK_FORMULAS2}" ]] && use_branch_instead "${FORK_FORMULAS2}" ${FORK_BRANCH2}
-            apply-salt-state-model "prereq"
+            apply-salt-state-model install "prereq"
             ;;
 
-opensds)    get-salt-master-hostname
+    opensds)
+            losetup -D 2>/dev/null
+            get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
-            apply-salt-state-model opensds
+            apply-salt-state-model install opensds
             (( $? == 0 )) && opensds
             ;;
 
-gelato|auth|hotpot|dashboard|database|dock|infra|let|sushi|deepsea|prereq)
+    gelato|auth|hotpot|dashboard|database|dock|infra|let|sushi|deepsea|prereq)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
-            apply-salt-state-model ${TARGET}
-            (( $? == 0 )) && [[ "${TARGET}" == "deepsea" ]] && deepsea
+            apply-salt-state-model install ${INSTALL_TARGET}
+            (( $? == 0 )) && [[ "${INSTALL_TARGET}" == "deepsea" ]] && deepsea
             ;;
 
-*)         usage 1;;
-esac
+    *)      usage 1;;
+    esac
+elif [[ -z "${INSTALL_TARGET}" ]]
+
+    case "${REMOVE_TARGET}" in
+    opensds|gelato|auth|hotpot|backend|dashboard|database|dock|infra|sushi)
+            get-salt-master-hostname
+            salt-key -A --yes >/dev/null 2>&1
+            apply-salt-state-model remove ${REMOVE_TARGET}
+            ;;
+    *)      usage 1 ;;
+    esac
+
+else
+    usage 1;;
+fi
 exit ${?}

@@ -1,4 +1,4 @@
-## opensds-installer/srv/salt/salt.sls
+## opensds-installer/salt/srv/salt/salt.sls
 base:
   '*':
     {{ '- salt.pkgrepo' if grains.os_family not in ('Suse',) else '' }} #Is suse fixed yet?

@@ -42,10 +42,6 @@ Note: On CentOS install git
  cd /root && git clone https://github.com/opensds/opensds-installer.git
  cd opensds-installer/salt
 ```
-Cleandown loopback devices
-```
- losetup -D
-```
 
 Review and set primary host ip addresses
 ```
@@ -158,5 +154,5 @@ Logout of the dashboard as admin and login the dashboard again as a non-admin us
 ### How to purge and clean opensds cluster
 Run automation to clean the environment
 ```
- sudo /root/opensds-installer/salt/install.sh -i opensds/clean
+ sudo /root/opensds-installer/salt/install.sh -r opensds
 ```

@@ -1,4 +1,4 @@
-## opensds-installer/srv/salt/salt/database.sls
+## opensds-installer/salt/srv/salt/install/database.sls
 base:
   '*':
     - opensds.database.clean

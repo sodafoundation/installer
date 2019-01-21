@@ -574,7 +574,7 @@ packages:
         dl:
           format: tar
           source: {{ site.gelato_uri }}/{{ site.gelato_release }}/opensds-multicloud-{{ site.gelato_release }}-linux-amd64.tar.gz
-          hashsum: {{ site.hotpot_hashsum }}
+          hashsum: {{ site.gelato_hashsum }}
       hotpot:
         dest: {{ site.go_path }}/src/github.com/opensds/opensds
         options: '--strip-components=1'
@@ -663,3 +663,4 @@ salt_formulas:
      - nginx-formula
      - mongodb-formula
      - node-formula
+     - apache-formula

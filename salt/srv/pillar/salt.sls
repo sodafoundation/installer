@@ -60,3 +60,4 @@ salt_formulas:
      - resolver-formula
      - nginx-formula
      - mongodb-formula
+     - apache-formula

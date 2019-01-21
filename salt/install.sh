@@ -71,11 +71,11 @@ usage()
     echo 1>&2
     echo "   [ -l debug ]    Debug output (install/remove)." 1>&2
     echo 1>&2
-    echo "  [-m <name>]      Install; needed if /etc/salt/minion unparseable" 1>&2
+    echo "   [ -m <name>]    Install; needed if /etc/salt/minion unparseable" 1>&2
     echo 1>&2
     echo "   [ -x python3 ]  Install the Python3 salt packages" 1>&2
     echo 1>&2
-    echo "   [ -r yyyy.m.n ] Install specific salt release; i.e. 2017.7.2" 1>&2
+    echo "   [ -v yyyy.m.n ] Install specific salt release; i.e. 2017.7.2" 1>&2
     echo 1>&2
     exit ${1}
 }
@@ -141,12 +141,17 @@ salt-master-service()
 ### Prepare salt deployment model for salt middleware and formulas
 apply-salt-state-model()
 {
+    if [[ ! -d "${BASE}/salt" ]]
+    then
+       echo "error"
+       exit 32
+    fi
     echo "prepare salt ..."
     cp ${MODELS}/salt/${1}/${2}.sls ${BASE}/salt/top.sls 2>/dev/null
     cp ${BASE}/pillar/site.j2 ${BASE}/pillar/site.bak 2>/dev/null
     cp ${MODELS}/pillar/* ${BASE}/pillar/
-    ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${1}.sls 2>/dev/null
-    [[ "${1}" == 'salt' ]] && clone_formula salt
+    ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${2}.sls 2>/dev/null
+    [[ "${2}" == 'salt' ]] && clone_formula salt
 
     echo "run salt ..."
     salt-call state.show_top --local
@@ -198,7 +203,7 @@ use_branch_instead()
 
 #*** MAIN
 
-while getopts ":i:m:l:x:r:" option; do
+while getopts ":i:m:l:x:r:v:" option; do
     case "${option}" in
     m)  MASTER_HOST=${OPTARG} ;;
     i)  INSTALL_TARGET=${OPTARG}
@@ -209,7 +214,7 @@ while getopts ":i:m:l:x:r:" option; do
         ;;
     l)  DEBUGG_ON="-ldebug" ;;
     x)  SALT_OPTS="-x python3" ;;
-    r)  SALT_RELEASE="git v${OPTARG}" ;;
+    v)  SALT_VERSION="git v${OPTARG}" ;;
     esac
 done
 shift $((OPTIND-1))
@@ -217,17 +222,17 @@ shift $((OPTIND-1))
 #trying workaround for https://github.com/saltstack/salt/issues/44062 noise
 ${PACKAGE_MGR} -r python2-botocore >/dev/null 2>&1
 
-if [[ -z "${REMOVE_TARGET" ]]
+if [[ -z "${REMOVE_TARGET}" ]]
 then
     case "${INSTALL_TARGET}" in
     salt)   losetup -D 2>/dev/null
             get-salt-master-hostname
-            if [[ -z "${SALT_RELEASE}" ]]
+            if [[ -z "${SALT_VERSION}" ]]
             then
                 salt-bootstrap "${SALT_OPTS}"
                 ${PACKAGE_MGR} -i salt-api
             else
-                salt-bootstrap "${SALT_OPTS} -M ${SALT_RELEASE}"
+                salt-bootstrap "${SALT_OPTS} -M ${SALT_VERSION}"
             fi
             salt-master-service
             salt-minion-service
@@ -257,7 +262,7 @@ then
     *)      usage 1;;
     esac
 elif [[ -z "${INSTALL_TARGET}" ]]
-
+then
     case "${REMOVE_TARGET}" in
     opensds|gelato|auth|hotpot|backend|dashboard|database|dock|infra|sushi)
             get-salt-master-hostname
@@ -268,6 +273,6 @@ elif [[ -z "${INSTALL_TARGET}" ]]
     esac
 
 else
-    usage 1;;
+    usage 1
 fi
 exit ${?}

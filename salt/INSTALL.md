@@ -2,8 +2,13 @@
 
 Provision one or more GNU/Linux hosts so we can deploy OpenSDS.
 
-## Vagrant environment
+Architectural View
+===================
 
+<a href="https://github.com/opensds/opensds">![Solution Overview Diagram](solutionDesign.png)</a>
+
+Vagrant Setup
+=============
 Allow minimum of 2GB+2CPU for virutalized host (12GB+6CPU is verified).
 ```
 Download https://www.virtualbox.org/wiki/Downloads
@@ -29,13 +34,16 @@ Configure Vagrantfile with public network, and sufficient cpu/ram resources.
  vagrant up            # select 'bridge' or 'internet' interface
  vagrant ssh 
 ```
-Note: On CentOS install git
+
+On CentOS install git
 ```
  yum install git -y
 ```
 
+OpenSDS deployed with Salt
+==========================
+The duration of this procedure ranges from 20 to 35 minutes.
 
-## Install OpenSDS with Salt
 ```
  sudo -s
  rm -fr /srv/formulas/* /root/opensds-installer
@@ -43,7 +51,7 @@ Note: On CentOS install git
  cd opensds-installer/salt
 ```
 
-Review and set primary host ip addresses
+Review site details applying to the installation. Use caution when making edits to syntax errors breaking solution.
 ```
  vi site.j2
 ```
@@ -54,45 +62,54 @@ Deploy OpenSDS
 ```
 UBUNTU
 ```
- sysctl -w net.ipv6.conf.all.disable_ipv6=1
- sysctl -w net.ipv6.conf.default.disable_ipv6=1
  ./install.sh -i opensds
 ```
-CENTOS
+CENTOS (repeat command twice due to upstream openstack-devstack bug)
 ```
  ./install.sh -i opensds;./install.sh -i opensds
 ```
-Note: We run twice to workaround upstream devstack/CentOS bug.
 
-## Example Output
+Review example output
+=====================
+
 ```
  ./install.sh -i salt
   ... etc ...
 Summary for local
 -------------
-Succeeded: 31 (changed=22)
+Succeeded: 32 (changed=27)
 Failed:     0
 -------------
-Total states run:     31
-Total run time:   60.999 s
+Total states run:     32
+Total run time:   65.047 s
 Accepted Keys:
-10.0.2.15
+ubuntu1804.localdomain
 Denied Keys:
 Unaccepted Keys:
 Rejected Keys:
-using [docker] fixes branch
 done
   ... etc ...
+
+
 Summary for local
 -------------
-Succeeded: 11 (changed=6)
+Succeeded: 24 (changed=10)
 Failed:     0
 -------------
-Total states run:     11
-Total run time:   76.144 s
+Total states run:     24
+Total run time:  145.313 s
 
 
  ./install.sh -i opensds
+prepare salt ...
+run salt ...
+local:
+    ----------
+    base:
+        - opensds
+ ... please be patient ...
+
+
   ... etc ...
 Summary for local
 --------------
@@ -107,12 +124,15 @@ local:
         - default
 ```
 
-## How to test opensds cluster
+How to test opensds cluster
+===========================
 
 Ensure openSDS services are running
 ```
  ps -ef | grep 'osds'
  sudo docker ps -a
+ systemctl list-unit-files | grep opensds
+ systemctl status opensds-<name>
 ```
 
 Firstly configure opensds CLI tool:
@@ -146,13 +166,14 @@ Delete the volume:
  osdsctl volume delete <your_volume_id>
 ```
 
-### OpenSDS UI
-OpenSDS UI dashboard is available at http://{your_host_ip}:8088, please login the dashboard using the default admin credentials: admin/opensds@123. Create tenant, user, and profiles as admin. Multi-Cloud is also supported by dashboard.  
+### Dashboard
+The OpenSDS dashboard is available at http://{your_host_ip}:8088, please login the dashboard using the default admin credentials: admin/opensds@123. Create tenant, user, and profiles as admin. Multi-Cloud is also supported by dashboard.  
 
 Logout of the dashboard as admin and login the dashboard again as a non-admin user to create volume, snapshot, expand volume, create volume from snapshot, create volume group.
 
-### How to purge and clean opensds cluster
-Run automation to clean the environment
+
+How to purge and clean opensds cluster
+========================================
 ```
  sudo /root/opensds-installer/salt/install.sh -r opensds
 ```

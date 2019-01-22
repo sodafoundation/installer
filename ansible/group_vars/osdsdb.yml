@@ -30,7 +30,7 @@ db_endpoint: "{{ etcd_host }}:{{ etcd_port }},{{ etcd_host }}:{{ etcd_peer_port 
 #  ETCD   #
 ###########
 
-etcd_release: v3.2.0
+etcd_release: v3.2.25
 etcd_host: 127.0.0.1
 etcd_port: 2379
 etcd_peer_port: 2380
@@ -45,4 +45,7 @@ etcd_dir: /opt/etcd-{{ etcd_release }}-linux-amd64
 # DOCKER  #
 ###########
 
+etcd_container_enabled: false
+
+# These fields are NOT suggested to be modified
 etcd_docker_image: quay.io/coreos/etcd:latest

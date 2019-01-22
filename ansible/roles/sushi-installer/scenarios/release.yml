@@ -13,26 +13,28 @@
 # limitations under the License.
 
 ---
-- name: check for opensds release files existed
+- name: check for sushi release files existed
   stat:
-    path: "{{ opensds_tarball_dir }}"
+    path: "{{ sushi_tarball_dir }}"
   ignore_errors: yes
-  register: opensdsreleasesexisted
+  register: sushireleasesexisted
 
-- name: download and extract the opensds release tarball if not exists
+- name: download and extract the sushi release tarball if not exists
   unarchive:
-    src={{ opensds_download_url }}
-    dest=/tmp/
+    src: "{{ sushi_download_url }}"
+    dest: /tmp/
+    remote_src: yes
   when:
-    - opensdsreleasesexisted.stat.exists is undefined or opensdsreleasesexisted.stat.exists == false
+    - sushireleasesexisted.stat.exists is undefined or sushireleasesexisted.stat.exists == false
 
-- name: change the mode of all binary files in opensds release
+- name: change the mode of all binary files in sushi release
   file:
-    path: "{{ opensds_tarball_dir }}/bin"
+    path: "{{ sushi_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
 
-- name: copy opensds tarball into opensds work directory
+- name: copy sushi tarball into sushi work directory
   copy:
-    src: "{{ opensds_tarball_dir }}/"
-    dest: "{{ opensds_work_dir }}"
+    src: "{{ sushi_tarball_dir }}/"
+    dest: "{{ sushi_work_dir }}"
+    mode: 0755

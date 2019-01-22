@@ -19,6 +19,6 @@
     state: absent
     force: yes
   with_items:
-    - "{{ opensds_tarball_dir }}"
-    - "{{ nbp_tarball_dir }}"
+    - "{{ hotpot_tarball_dir }}"
+    - "{{ sushi_tarball_dir }}"
   ignore_errors: yes

@@ -15,7 +15,7 @@
 ---
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:
@@ -23,35 +23,28 @@
       - /bin/false
   when: go_path == ""
 
-- name: check for opensds source code existed
+- name: check for gelato source code existed
   stat:
-    path: "{{ go_path }}/src/github.com/opensds/opensds"
+    path: "{{ go_path }}/src/github.com/opensds/multi-cloud"
   ignore_errors: yes
-  register: opensdsexisted
+  register: gelatoexisted
 
-- name: download opensds source code if not exists
+- name: download gelato source code if not exists
   git:
-    repo: "{{ opensds_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/opensds"
-    version: "{{ opensds_repo_branch }}"
+    repo: "{{ gelato_remote_url }}"
+    dest: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    version: "{{ gelato_repo_branch }}"
   when:
-    - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
+    - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false
 
-- name: build opensds binary file
-  shell: make
+- name: build gelato docker images
+  shell: make docker
   environment:
     GOPATH: "{{ go_path }}"
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds"
+    chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
 
-- name: copy opensds binary files into opensds work directory
+- name: copy gelato docker-compose.yml file into gelato work directory
   copy:
-    src: "{{ go_path }}/src/github.com/opensds/opensds/build/out/"
-    dest: "{{ opensds_work_dir }}"
-
-- name: change the permissions of opensds executable files
-  file:
-    path: "{{ opensds_work_dir }}/bin"
-    state: directory
-    mode: 0755
-    recurse: yes
+    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/docker-compose.yml"
+    dest: "{{ gelato_work_dir }}"

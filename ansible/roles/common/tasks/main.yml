@@ -31,69 +31,12 @@
   apt:
     update_cache: yes
 
-- name: install make, gcc and pip external packages
-  apt:
+- name: install system packages
+  package:
     name: "{{ item }}"
     state: present
   with_items:
     - make
     - gcc
     - python-pip
-
-- name: create opensds work directory if it doesn't exist
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0755
-  with_items:
-    - "{{ opensds_work_dir }}"
-    - "{{ opensds_config_dir }}"
-    - "{{ opensds_driver_config_dir }}"
-    - "{{ opensds_log_dir }}"
-
-- name: include scenarios/repository.yml when installing from repository
-  include: scenarios/repository.yml
-  when: install_from == "repository"
-
-- name: include scenarios/release.yml when installing from release
-  include: scenarios/release.yml
-  when: install_from == "release"
-
-- name: include scenarios/container.yml when installing from container
-  include: scenarios/container.yml
-  when: install_from == "container"
-
-- name: copy config templates into opensds global config folder
-  copy:
-    src: ../../../../conf/
-    dest: "{{ opensds_config_dir }}"
-
-- name: configure opensds global info
-  shell: |
-    cat > opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
-    [osdslet]
-    api_endpoint = {{ controller_endpoint }}
-    graceful = True
-    log_file = {{ controller_log_file }}
-    socket_order = inc
-    auth_strategy = {{ opensds_auth_strategy }}
-
-    [osdsdock]
-    api_endpoint = {{ dock_endpoint }}
-    log_file = {{ dock_log_file }}
-    # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
-    dock_type = {{ dock_type }}
-    # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
-    enabled_backends = {{ enabled_backend }}
-
-    [database]
-    endpoint = {{ db_endpoint }}
-    driver = {{ db_driver }}
-  args:
-    chdir: "{{ opensds_config_dir }}"
-  ignore_errors: yes
-
-- name: include nbp-installer role if nbp_plugin_type != hotpot_only
-  include_role:
-    name: nbp-installer
-  when: nbp_plugin_type != "hotpot_only"
+    - open-iscsi

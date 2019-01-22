@@ -30,6 +30,8 @@ spec:
         - name: osdslet
           image: {{ .Values.image.osdslet }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          command: ["bin/sh"]
+          args: ["-c", "/usr/bin/osdslet -logtostderr"]
           volumeMounts:
             - name: opensds-conf-dir
               mountPath: /etc/opensds
@@ -41,17 +43,30 @@ spec:
             allowPrivilegeEscalation: true
           image: {{ .Values.image.osdsdock }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          command: ["bin/sh"]
+          args: ["-c", "/usr/sbin/tgtd; /usr/bin/osdsdock -logtostderr"]
+          ports:
+          - containerPort: 3260
           volumeMounts:
             - name: opensds-conf-dir
               mountPath: /etc/opensds
-              mountPropagation: "Bidirectional"
-            - name: lvm-socket-dir
-              mountPath: /run/lvm
-            - name: tgt-socket-dir
-              mountPath: /var/run/tgtd
+            - name: ceph-conf-dir
+              mountPath: /etc/ceph
             - name: tgt-conf-dir
               mountPath: /etc/tgt
               mountPropagation: "Bidirectional"
+            - name: run-dir
+              mountPath: /run
+              mountPropagation: "Bidirectional"
+            - name: dev-dir
+              mountPath: /dev
+              mountPropagation: "HostToContainer"
+            - name: local-time-file
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: lib-modules-dir
+              mountPath: /lib/modules
+              readOnly: true
       volumes:
         - name: etcd-cert-dir
           hostPath:
@@ -61,15 +76,27 @@ spec:
           hostPath:
             path: /etc/opensds
             type: Directory
-        - name: lvm-socket-dir
+        - name: ceph-conf-dir
           hostPath:
-            path: /run/lvm
-            type: Directory
-        - name: tgt-socket-dir
-          hostPath:
-            path: /var/run/tgtd
-            type: Directory
+            path: /etc/ceph
+            type: DirectoryOrCreate
         - name: tgt-conf-dir
           hostPath:
             path: /etc/tgt
-            type: Directory     
+            type: Directory
+        - name: run-dir
+          hostPath:
+            path: /run
+            type: Directory
+        - name: dev-dir
+          hostPath:
+            path: /dev
+            type: Directory
+        - name: local-time-file
+          hostPath:
+            path: /etc/localtime
+            type: File
+        - name: lib-modules-dir
+          hostPath:
+            path: /lib/modules
+            type: Directory

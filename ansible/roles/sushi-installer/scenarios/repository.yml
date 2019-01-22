@@ -15,7 +15,7 @@
 ---
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:
@@ -23,56 +23,56 @@
       - /bin/false
   when: go_path == ""
 
-- name: check for nbp source code existed
+- name: check for sushi source code existed
   stat:
     path: "{{ go_path }}/src/github.com/opensds/nbp"
   ignore_errors: yes
-  register: nbpexisted
+  register: sushiexisted
 
-- name: download nbp source code if not exists
+- name: download sushi source code if not exists
   git:
-    repo: "{{ nbp_remote_url }}"
+    repo: "{{ sushi_remote_url }}"
     dest: "{{ go_path }}/src/github.com/opensds/nbp"
-    version: "{{ nbp_repo_branch }}"
+    version: "{{ sushi_repo_branch }}"
   when:
-    - nbpexisted.stat.exists is undefined or nbpexisted.stat.exists == false
+    - sushiexisted.stat.exists is undefined or sushiexisted.stat.exists == false
 
-- name: build nbp binary file
+- name: build sushi binary file
   shell: make
   environment:
     GOPATH: "{{ go_path }}"
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/nbp"
 
-- name: create nbp install directory if it doesn't exist
+- name: create sushi install directory if it doesn't exist
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
   with_items:
-    - "{{ nbp_work_dir }}/csi"
-    - "{{ nbp_work_dir }}/flexvolume"
-    - "{{ nbp_work_dir }}/provisioner"
+    - "{{ sushi_work_dir }}/csi"
+    - "{{ sushi_work_dir }}/flexvolume"
+    - "{{ sushi_work_dir }}/provisioner"
 
-- name: copy nbp csi deploy scripts into nbp work directory
+- name: copy sushi csi deploy scripts into sushi work directory
   copy:
     src: "{{ item }}"
-    dest: "{{ nbp_work_dir }}/csi/"
+    dest: "{{ sushi_work_dir }}/csi/"
     directory_mode: yes
   with_items:
     - "{{ go_path }}/src/github.com/opensds/nbp/csi/server/deploy"
     - "{{ go_path }}/src/github.com/opensds/nbp/csi/server/examples"
 
-- name: copy nbp flexvolume binary file into nbp work directory
+- name: copy sushi flexvolume binary file into sushi work directory
   copy:
     src: "{{ go_path }}/src/github.com/opensds/nbp/.output/flexvolume.server.opensds"
-    dest: "{{ nbp_work_dir }}/flexvolume/opensds"
+    dest: "{{ sushi_work_dir }}/flexvolume/opensds"
     mode: 0755
 
-- name: copy nbp provisioner deploy scripts into nbp work directory
+- name: copy sushi provisioner deploy scripts into sushi work directory
   copy:
     src: "{{ item }}"
-    dest: "{{ nbp_work_dir }}/provisioner/"
+    dest: "{{ sushi_work_dir }}/provisioner/"
     directory_mode: yes
   with_items:
     - "{{ go_path }}/src/github.com/opensds/nbp/opensds-provisioner/deploy"

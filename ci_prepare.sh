@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: Create flexvolume plugin directory if not existed
-  file:
-    path: "{{ flexvolume_plugin_dir }}"
-    state: directory
-    mode: 0755
-
-- name: Copy opensds flexvolume plugin binary file into flexvolume plugin dir
-  copy:
-    src: "{{ nbp_work_dir }}/flexvolume/opensds"
-    dest: "{{ flexvolume_plugin_dir }}/opensds"
+sed -i 's/^opensds_auth_strategy: .*/opensds_auth_strategy: '"noauth"'/g' ansible/group_vars/auth.yml
+sed -i 's/^dashboard_installation_type: .*/dashboard_installation_type: '"source_code"'/g' ansible/group_vars/dashboard.yml

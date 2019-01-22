@@ -20,3 +20,6 @@
 - name: use source code to install dashboard
   include_tasks: scenarios/source-code.yml
   when: dashboard_installation_type == "source_code"
+
+- name: login console
+  debug: msg="please use '{{ console_login_url }}' login console"

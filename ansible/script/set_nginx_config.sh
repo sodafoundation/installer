@@ -31,7 +31,9 @@ cat > /etc/nginx/sites-available/default <<EOF
         location /v1beta/ {
             proxy_pass http://$HOST_IP:50040/$OPENSDS_VERSION/;
         }
+        location /v1/ {
+            proxy_pass http://$HOST_IP:8089/v1/;
+	        client_max_body_size 10240m;
+        }
     }
 EOF
-
-

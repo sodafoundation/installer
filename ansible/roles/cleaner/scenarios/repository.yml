@@ -27,18 +27,16 @@
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds"
-  when: install_from == "repository"
+  when: install_from == "repository" and deploy_project != "gelato"
+
+- name: clean opensds multi-cloud engine data
+  shell: make clean
+  args:
+    chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+  when: install_from == "repository" and deploy_project != "hotpot"
 
 - name: clean opensds northbound plugin data
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/nbp"
-  when: install_from == "repository" and nbp_plugin_type != "hotpot_only"
-
-- name: clean opensds dashboard data
-  shell: make clean
-  args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds/dashboard"
-  when: dashboard_installation_type == "source_code"
-  become: yes
-  ignore_errors: yes
+  when: install_from == "repository" and sushi_plugin_type != "hotpot_only"

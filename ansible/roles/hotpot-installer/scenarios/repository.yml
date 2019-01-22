@@ -1,0 +1,56 @@
+# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- set_fact:
+    go_path: "{{ lookup('env', 'GOPATH') }}"
+  
+- name: check go_path
+  shell: "{{ item }}"
+  with_items:
+      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+      - /bin/false
+  when: go_path == ""
+
+- name: check for hotpot source code existed
+  stat:
+    path: "{{ go_path }}/src/github.com/opensds/opensds"
+  ignore_errors: yes
+  register: hotpotexisted
+
+- name: download hotpot source code if not exists
+  git:
+    repo: "{{ hotpot_remote_url }}"
+    dest: "{{ go_path }}/src/github.com/opensds/opensds"
+    version: "{{ hotpot_repo_branch }}"
+  when: hotpotexisted.stat.exists is undefined or hotpotexisted.stat.exists == false
+
+- name: build hotpot binary file
+  shell: make
+  environment:
+    GOPATH: "{{ go_path }}"
+  args:
+    chdir: "{{ go_path }}/src/github.com/opensds/opensds"
+
+- name: copy hotpot binary files into hotpot work directory
+  copy:
+    src: "{{ go_path }}/src/github.com/opensds/opensds/build/out/"
+    dest: "{{ hotpot_work_dir }}"
+
+- name: change the permissions of hotpot executable files
+  file:
+    path: "{{ hotpot_work_dir }}/bin"
+    state: directory
+    mode: 0755
+    recurse: yes

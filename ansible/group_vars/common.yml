@@ -22,63 +22,17 @@ dummy:
 # GENERAL #
 ###########
 
+# This field indicates local machine host ip
+host_ip: 127.0.0.1
+
+# This field indicates which project should be deploy
+# 'hotpot', 'gelato' or 'all'
+deploy_project: all
+
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: repository
+install_from: release
 
-# These fields are NOT suggested to be modifie
-opensds_work_dir: /opt/opensds-linux-amd64
-nbp_work_dir: /opt/opensds-k8s-linux-amd64
-opensds_config_dir: /etc/opensds
-opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
-opensds_log_dir: /var/log/opensds
-
-
-##############
-# REPOSITORY #
-##############
-
-# If user specifies intalling from repository, then he can choose the specific
-# repository branch
-opensds_repo_branch: master
-nbp_repo_branch: master
-
-# These fields are NOT suggested to be modified
-opensds_remote_url: https://github.com/opensds/opensds.git
-nbp_remote_url: https://github.com/opensds/nbp.git
-
-
-###########
-# RELEASE #
-###########
-
-# If user specifies intalling from release,then he can choose the specific version
-opensds_release: v0.2.0 # The version should be at least v0.2.0
-nbp_release: v0.2.0 # The version should be at least v0.2.0
-
-# These fields are NOT suggested to be modified
-opensds_download_url: https://github.com/opensds/opensds/releases/download/{{ opensds_release }}/opensds-{{ opensds_release }}-linux-amd64.tar.gz
-opensds_tarball_dir: /tmp/opensds-{{ opensds_release }}-linux-amd64
-nbp_download_url: https://github.com/opensds/nbp/releases/download/{{ nbp_release }}/opensds-k8s-{{ nbp_release }}-linux-amd64.tar.gz
-nbp_tarball_dir: /tmp/opensds-k8s-{{ nbp_release }}-linux-amd64
-
-
-#############
-# CONTAINER #
-#############
-
-container_enabled: false
-
-
-###########
-# PLUGIN  #
-###########
-
-# 'hotpot_only' is the default integration way, but you can change it to 'csi'
-# or 'flexvolume'
-nbp_plugin_type: hotpot_only
-# The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
-opensds_endpoint: http://127.0.0.1:50040
-
-# These fields are NOT suggested to be modified
-flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opensds.io~opensds
+# This field indicates which os family the system will be running, currently
+# support 'Debian' and 'RedHat'
+ansible_os_family: Debian

@@ -26,14 +26,7 @@ dummy:
 opensds_auth_strategy: keystone
 
 # The URL should be replaced with the keystone actual URL
-keystone_os_auth_url: http://127.0.0.1/identity
+keystone_os_auth_url: "http://{{ host_ip }}/identity"
 
-############
-# KEYSTONE #
-############
-
-# Execute the unstack.sh
-uninstall_keystone: true
-
-# Execute the stack.sh
-cleanup_keystone: true
+# delete all keystone packages
+keystone_uninstall_purge: false

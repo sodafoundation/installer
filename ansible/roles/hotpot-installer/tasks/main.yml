@@ -68,6 +68,12 @@
     dest: "{{ opensds_config_dir }}"
   when: deploy_project != "gelato"
 
+- name: generate certificates
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/create_cert.sh
+  become: yes	  
+
 - name: configure opensds global info
   shell: |
     cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC

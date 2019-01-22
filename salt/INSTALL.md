@@ -5,15 +5,15 @@ Provision one or more GNU/Linux hosts so we can deploy OpenSDS.
 Solution View
 =============
 
-<a href="https://github.com/opensds/opensds">![Solution Overview Diagram](solutionDesign.png)</a>
+<a href="https://github.com/opensds/opensds">![Solution overview](solutionDesign.png)</a>
 
 Example Vagrant setup
 =====================
 Allow minimum of 2GB+2CPU for virutalized host (12GB+6CPU is verified).
 
-Download VirtualBox <a href="https://www.virtualbox.org/wiki/Downloads">
-Download Vagrant <a href="https://www.vagrantup.com/downloads.html">
-```
+Download [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+Download [Vagrant](https://www.vagrantup.com/downloads.html)
+
 Choose Linux Image
 ```
  mkdir ~/vagrant && cd ~/vagrant
@@ -23,7 +23,7 @@ Choose Linux Image
  vagrant init geerlingguy/centos7   #CENTOS
 ```
 
-Configure a public network and sufficient cpu/ram resources.
+Configure a public network and sufficient compute resources.
 ```
  vi Vagrantfile
 
@@ -39,7 +39,7 @@ Configure a public network and sufficient cpu/ram resources.
 
 OpenSDS deployed with Salt
 ==========================
-Now deploy OpenSDS using the procedure below (expected run duration is 20-35 minutes).
+Now deploy OpenSDS as follows (expected run duration is 20-35 minutes).
 
 ```
  sudo -s
@@ -47,23 +47,25 @@ Now deploy OpenSDS using the procedure below (expected run duration is 20-35 min
  cd /root && git clone https://github.com/opensds/opensds-installer.git
  cd opensds-installer/salt
 ```
-Review site details applying to the installation.
+
+Review site deployment data-
 ```
  vi site.j2
 ```
 
-Deploy OpenSDS on UBUNTU
+Deploy on UBUNTU
 ```
  ./install.sh -i salt; ./install.sh -i opensds
 ```
 
-Deploy OpenSDS on CENTOS (repeat command twice due to upstream bug)
+Deploy on CENTOS (repeat command twice due to upstream bug)
 ```
   yum install git -y; ./install.sh -i salt; ./install.sh -i opensds;./install.sh -i opensds
 ```
 
-Example output
-==============
+
+Sample output (of interest)
+============================
 
 ```
  ./install.sh -i salt

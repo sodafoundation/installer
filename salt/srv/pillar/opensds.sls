@@ -10,7 +10,12 @@ opensds:
   ######### BACKENDS ##################
   backend:
     block:
-      instances: {{ site.enabled_backends }}
+       {%- if "enabled_backends" in site and site.enabled_backends %}
+      instances:
+         {%- for backend in site.enabled_backends %}
+        - {{ backend }}
+         {%- endfor %}
+       {%- endif %}
       container:
         cinder:
           enabled: True
@@ -67,12 +72,22 @@ opensds:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
         enabled_backend: {{ site.enabled_backend }}
-        enabled_backends: {{ site.enabled_backends }}
+       {%- if "enabled_backends" in site and site.enabled_backends %}
+        enabled_backends:
+         {%- for backend in site.enabled_backends %}
+          - {{ backend }}
+         {%- endfor %}
+       {%- endif %}
       osdsdockB:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock|int + 1 }}
         dock_type: {{ site.dock_type }}
         enabled_backend: {{ site.enabled_backend }}
-        enabled_backends: {{ site.enabled_backends }}
+       {%- if "enabled_backends" in site and site.enabled_backends %}
+        enabled_backends:
+         {%- for backend in site.enabled_backends %}
+          - {{ backend }}
+         {%- endfor %}
+       {%- endif %}
     container:
       osdsdock:
         image: {{ site.container_dock_img }}

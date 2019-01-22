@@ -25,7 +25,12 @@ CUR_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 export OPENSSL_CONF="${CUR_DIR}"/openssl.cnf
 
 COMPONENT=("opensds" "nbp")
-OPENSDS_CERT_DIR=${OPENSDS_CERT_DIR:-/opt/opensds-security}
+
+OPENSDS_CERT_DIR=$1
+
+if [ -z "${OPENSDS_CERT_DIR}" ];then
+    OPENSDS_CERT_DIR="/opt/opensds-security"
+fi
 
 # Clean up installation context
 if [ -d "${OPENSDS_CERT_DIR}" ];then

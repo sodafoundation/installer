@@ -121,7 +121,7 @@ opensds:
         password: {{ site.devstack_password }}
     daemon:
       osdsauth:
-        strategy: keystone
+        strategy: noauth
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 

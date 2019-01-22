@@ -10,12 +10,7 @@ opensds:
   ######### BACKENDS ##################
   backend:
     block:
-       {%- if "enabled_backends" in site and site.enabled_backends %}
-      instances:
-         {%- for backend in site.enabled_backends %}
-        - {{ backend }}
-         {%- endfor %}
-       {%- endif %}
+      instances: {{ site.enabled_backends }}
       container:
         cinder:
           enabled: True
@@ -66,28 +61,18 @@ opensds:
   dock:
     instances:
       - osdsdock
-      - osdsdockB     ##dummy service
+      - osdsdockB     ##dummy 2nd dock instance
     opensdsconf:
       osdsdock:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
         enabled_backend: {{ site.enabled_backend }}
-       {%- if "enabled_backends" in site and site.enabled_backends %}
-        enabled_backends:
-         {%- for backend in site.enabled_backends %}
-          - {{ backend }}
-         {%- endfor %}
-       {%- endif %}
+        enabled_backends: {{ site.enabled_backends }}
       osdsdockB:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock|int + 1 }}
         dock_type: {{ site.dock_type }}
         enabled_backend: {{ site.enabled_backend }}
-       {%- if "enabled_backends" in site and site.enabled_backends %}
-        enabled_backends:
-         {%- for backend in site.enabled_backends %}
-          - {{ backend }}
-         {%- endfor %}
-       {%- endif %}
+        enabled_backends: {{ site.enabled_backends }}
     container:
       osdsdock:
         image: {{ site.container_dock_img }}
@@ -97,15 +82,10 @@ opensds:
           - {{ site.port_dock }}/udp
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
-      osdsdockB:
-        image: {{ site.container_dock_img }}
-        version: {{ site.container_dock_version }}
-        ports:
-          - {{ site.port_dock|int + 1 }}
-          - {{ site.port_dock|int + 1 }}/udp
-        port_bindings:
-          - '{{ site.port_dock|int + 1 }}:{{ site.port_dock|int + 1 }}'
-
+    daemon:
+      osdsdockB:        ##dummy 2nd dock instance
+        strategy: repo-systemd
+        start: /bin/sleep 200000000000000000
 
   ############ GELATO #############
   gelato:
@@ -132,13 +112,13 @@ opensds:
   auth:
     instances:
       - osdsauth
+      - keystone_authtoken
     opensdsconf:
-      osdsauth:
-        keystone_authtoken:
-          memcached_servers: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}:11211'
-          auth_uri: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
-          auth_url: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
-          password: {{ site.devstack_password }}
+      keystone_authtoken:
+        memcached_servers: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}:11211'
+        auth_uri: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+        auth_url: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+        password: {{ site.devstack_password }}
     daemon:
       osdsauth:
         strategy: keystone
@@ -149,9 +129,11 @@ opensds:
   database:
     instances:
       - database
+      - etcd
     container:
-      enabled: True
-      build: True
+      etcd:
+        enabled: True
+        build: True
     opensdsconf:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'

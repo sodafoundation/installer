@@ -72,7 +72,8 @@
   shell: "{{ item }}"
   with_items:
     - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
-  become: yes	  
+  become: yes	
+  when: deploy_project != "gelato"
 
 - name: configure opensds global info
   shell: |

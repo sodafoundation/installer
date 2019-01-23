@@ -150,7 +150,7 @@ opensds:
     opensdsconf:
       osdslet:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
-        auth_strategy: keystone
+        auth_strategy: noauth
     container:
       opensds:
         enabled: False

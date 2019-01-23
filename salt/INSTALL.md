@@ -9,9 +9,9 @@ Solution View
 
 Example Vagrant setup
 =====================
-Allow minimum of 2GB+2CPU for virutalized host (12GB+6CPU is verified).
+Allow minimum of 2GB+2CPU for virutalized host (8GB+4CPU was verified).
 
-Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and download [Vagrant](https://www.vagrantup.com/downloads.html) and choose a vagrant Linux image.
+Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html). Next choose a vagrant Linux image.
 ```
  mkdir ~/vagrant && cd ~/vagrant
 
@@ -42,7 +42,6 @@ Now deploy OpenSDS as follows - expected run duration is 20-55 minutes depending
 ```
  sudo -s
  # yum install git -y ### centos only
- rm -fr /srv/formulas/* /root/opensds-installer
  cd /root && git clone https://github.com/opensds/opensds-installer.git
  cd opensds-installer/salt
 ```

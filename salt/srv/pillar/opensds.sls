@@ -121,7 +121,7 @@ opensds:
         password: {{ site.devstack_password }}
     daemon:
       osdsauth:
-        strategy: noauth
+        strategy: keystone   #Verified on Ubuntu salt installer
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
@@ -150,7 +150,7 @@ opensds:
     opensdsconf:
       osdslet:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
-        auth_strategy: noauth
+        auth_strategy: noauth  ## verified on ubuntu salt installer
     container:
       opensds:
         enabled: False

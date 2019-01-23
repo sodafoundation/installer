@@ -50,3 +50,44 @@ To request upstream enhancements or bug fixes please raise a github issue for co
 
 Code contributions are welcome!
 
+
+Example Installer output
+========================
+
+```
+ ./install.sh -i salt
+  ... etc ...
+Summary for local
+-------------
+Succeeded: 32 (changed=27)
+Failed:     0
+-------------
+
+... etc ...
+
+Summary for local
+-------------
+Succeeded: 24 (changed=10)
+Failed:     0
+-------------
+
+
+ ./install.sh -i opensds
+ ... please be patient ...
+Summary for local
+--------------
+Succeeded: 231 (changed=152)
+Failed:      0
+--------------
+Copy opensds-installer/conf/policy.json to /etc/opensds/
+
+
+./install.sh -r opensds  #removal
+...
+
+Summary for local
+--------------
+Succeeded: 144 (changed=70)
+Failed:      2
+--------------
+```

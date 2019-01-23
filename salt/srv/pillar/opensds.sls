@@ -439,6 +439,9 @@ nginx:
     servers:
       managed:
         default:
+          {%- if grains.os_family in ('RedHat',) %}
+          available_dir: /etc/nginx/sites-available
+          {%- endif %}
           enabled: True
           overwrite: True
           config:

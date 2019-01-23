@@ -17,7 +17,7 @@
 openssl version >& /dev/null
 if [ $? -ne 0 ];then
     echo "Failed to run openssl. Please ensure openssl is installed."
-	exit 1
+    exit 1
 fi
 
 CUR_DIR=$(cd "$(dirname "$0")" || exit; pwd)
@@ -55,6 +55,9 @@ for com in ${COMPONENT[*]};do
 	openssl genrsa -aes256 -passout pass:xxxxx -out "${ROOT_CERT_DIR}"/"${com}"-key.pem 2048
 	openssl req -new -sha256 -key "${ROOT_CERT_DIR}"/"${com}"-key.pem -out "${ROOT_CERT_DIR}"/"${com}"-csr.pem -days 365 -subj "/CN=component" -passin pass:xxxxx
 	openssl ca -batch -in "${ROOT_CERT_DIR}"/"${com}"-csr.pem -cert "${ROOT_CERT_DIR}"/ca-cert.pem -keyfile "${ROOT_CERT_DIR}"/ca-key.pem -out "${ROOT_CERT_DIR}"/"${com}"-cert.pem -md sha256 -days 365 -passin pass:xxxxx
+	
+	# Cancel the password for the private key
+    openssl rsa -in "${ROOT_CERT_DIR}"/"${com}"-key.pem -out "${ROOT_CERT_DIR}"/"${com}"-key.pem -passin pass:xxxxx
 	
 	mkdir -p "${OPENSDS_CERT_DIR}"/"${com}"
 	mv "${ROOT_CERT_DIR}"/"${com}"-key.pem "${OPENSDS_CERT_DIR}"/"${com}"/

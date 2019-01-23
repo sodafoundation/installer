@@ -90,6 +90,7 @@
     - "{{ opensds_log_dir }}"
     - "{{ dashboard_work_dir }}"
     - "{{ gelato_work_dir }}"
+    - "{{ opensds_certs_dir }}"
   ignore_errors: yes
 
 - name: include scenarios/auth-keystone.yml when keystone specified

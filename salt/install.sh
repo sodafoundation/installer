@@ -54,13 +54,11 @@ usage()
     echo 1>&2
     echo "  TARGETS" 1>&2
     echo 1>&2
-    echo "  salt|opensds|deepsea" 1>&2
-    echo 1>&2
     echo "     salt      Apply salt formula (infra-as-code)" 1>&2
     echo 1>&2
-    echo "     opensds   Apply OpenSDS salt formula states" 1>&2
+    echo "     opensds   Apply all OpenSDS states" 1>&2
     echo 1>&2
-    echo " auth|hotpot|dashboard|database|dock|infra|let|sushi|gelato" 1>&2
+    echo " auth|hotpot|dashboard|database|dock|infra|backend|sushi|gelato" 1>&2
     echo "               Apply specific OpenSDS state" 1>&2
     echo 1>&2
     echo "     prereq    Install docker-ce and nginx;remove apache" 1>&2
@@ -252,7 +250,7 @@ then
             (( $? == 0 )) && opensds
             ;;
 
-    gelato|auth|hotpot|dashboard|database|dock|infra|let|sushi|deepsea|prereq)
+    gelato|auth|hotpot|dashboard|database|dock|infra|backend|sushi|deepsea|prereq)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install ${INSTALL_TARGET}

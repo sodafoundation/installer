@@ -10,7 +10,7 @@ opensds:
   ######### BACKENDS ##################
   backend:
     block:
-      instances: {{ site.enabled_backends }}
+      instances: {{ site.enabled_backends|string }}
       container:
         cinder:
           enabled: True
@@ -65,7 +65,7 @@ opensds:
       osdsdock:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
-        enabled_backends: {{ site.enabled_backends }}
+        enabled_backends: {{ site.enabled_backends|string }}
     container:
       osdsdock:
         image: {{ site.container_dock_img }}

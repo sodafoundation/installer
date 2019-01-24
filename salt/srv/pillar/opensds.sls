@@ -202,27 +202,27 @@ opensds:
 ###################################
 lvm:
   files:
-    loopbackdir: /tmp/opensds_loopdevs    #Where to create backing files
+    loopbackdir: {{ site.hotpot_path }}/volumegroups    #Where to create backing files
     remove:
-      - /tmp/opensds_loopdevs/cinder-volumes.img
-      - /tmp/opensds_loopdevs/opensds-volumes.img
+      - {{ site.hotpot_path }}/volumegroups/cinder-volumes.img
+      - {{ site.hotpot_path }}/volumegroups/opensds-volumes.img
     create:
       truncate:    #Shrink or extend the size of each FILE to the specified size
-        /tmp/opensds_loopdevs/cinder-volumes.img:
+        {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
           options:
             size: 100M
       dd:     #copy a file, converting and formatting according to the operands
-        /tmp/opensds_loopdevs/opensds-volumes.img:
+        {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
           options:
             if: /dev/urandom
             bs: 1024
             count: 20480
       losetup:          #set up and control loop devices
-        /tmp/opensds_loopdevs/cinder-volumes.img:
+        {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
           options:
             show: True
             find: True
-        /tmp/opensds_loopdevs/opensds-volumes.img:
+        {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
   pv:
     create:
       /dev/loop0:

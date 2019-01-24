@@ -61,17 +61,10 @@ opensds:
   dock:
     instances:
       - osdsdock
-      - osdsdockB     ##dummy 2nd dock instance
     opensdsconf:
       osdsdock:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
-        enabled_backend: {{ site.enabled_backend }}
-        enabled_backends: {{ site.enabled_backends }}
-      osdsdockB:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock|int + 1 }}
-        dock_type: {{ site.dock_type }}
-        enabled_backend: {{ site.enabled_backend }}
         enabled_backends: {{ site.enabled_backends }}
     container:
       osdsdock:
@@ -82,10 +75,6 @@ opensds:
           - {{ site.port_dock }}/udp
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
-    daemon:
-      osdsdockB:        ##dummy 2nd dock instance
-        strategy: repo-systemd
-        start: /bin/sleep 200000000000000000
 
   ############ GELATO #############
   gelato:

@@ -41,6 +41,33 @@ The following commands are provided (or -r for removal).
 ```
 However the fastest, verified, and recommend approach remains the `./install.sh -i opensds` command.
 
+Vagrant Reference for Testing
+=============================
+
+Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html). Next choose a vagrant Linux image.
+```
+ mkdir ~/vagrant && cd ~/vagrant
+
+ vagrant init generic/ubuntu1804    #UBUNTU
+
+ vagrant init geerlingguy/centos7   #CENTOS
+```
+Configure a public network and sufficient compute resources.
+```
+ vi Vagrantfile
+
+   config.vm.provider "virtualbox" do |vb|
+     vb.memory = "12127"
+     vb.cpus = 6
+   end
+   config.vm.network "public_network"
+```
+Start the virtual environment.
+```
+ vagrant up            # select 'bridge' or 'internet' interface
+ vagrant ssh
+```
+
 Upstream support
 ================
 

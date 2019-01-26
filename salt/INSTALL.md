@@ -7,33 +7,10 @@ Solution View
 
 <a href="https://github.com/opensds/opensds">![Solution overview](solutionDesign.png)</a>
 
-Example Vagrant setup
-=====================
-Allow minimum of 2GB+2CPU for virutalized host (8GB+4CPU was verified).
+Reference Vagrant setup
+=======================
+Refer to HACKING.md. Allow minimum of 2GB+2CPU for virutalized host.
 
-Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html). Next choose a vagrant Linux image.
-```
- mkdir ~/vagrant && cd ~/vagrant
-
- vagrant init generic/ubuntu1804    #UBUNTU
-
- vagrant init geerlingguy/centos7   #CENTOS
-```
-Configure a public network and sufficient compute resources.
-```
- vi Vagrantfile
-
-   config.vm.provider "virtualbox" do |vb|
-     vb.memory = "12127"
-     vb.cpus = 6
-   end
-   config.vm.network "public_network"
-```
-Start the virtual environment.
-```
- vagrant up            # select 'bridge' or 'internet' interface
- vagrant ssh 
-```
 
 OpenSDS deployed via Salt
 =========================

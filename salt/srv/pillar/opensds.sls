@@ -68,6 +68,7 @@ opensds:
         enabled_backends: {{ site.enabled_backends|string }}
     container:
       osdsdock:
+        enabled: False
         image: {{ site.container_dock_img }}
         version: {{ site.container_dock_version }}
         ports:
@@ -75,6 +76,10 @@ opensds:
           - {{ site.port_dock }}/udp
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
+    daemon:
+      osdsdock:
+        strategy: release-systemd            ### unless container.enabled
+        start: /usr/local/bin/osdsdock
 
   ############ GELATO #############
   gelato:
@@ -214,9 +219,7 @@ lvm:
       dd:     #copy a file, converting and formatting according to the operands
         {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
           options:
-            if: /dev/urandom
-            bs: 1024
-            count: 20480
+            size: 100M
       losetup:          #set up and control loop devices
         {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
           options:

@@ -216,7 +216,7 @@ lvm:
         {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
           options:
             size: 100M
-      dd:     #copy a file, converting and formatting according to the operands
+      truncate:     #copy a file, converting and formatting according to the operands
         {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
           options:
             size: 100M

@@ -10,7 +10,7 @@ opensds:
   ######### BACKENDS ##################
   backend:
     block:
-      instances: {{ site.enabled_backends|string }}
+      #instances: {{ site.enabled_backends|string }} #or default to all driver types
       container:
         cinder:
           enabled: True
@@ -216,10 +216,12 @@ lvm:
         {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
           options:
             size: 100M
-      truncate:     #copy a file, converting and formatting according to the operands
+      dd:     #copy a file, converting and formatting according to the operands
         {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
           options:
-            size: 100M
+            if: /dev/urandom
+            bs: 1024
+            count: 204800
       losetup:          #set up and control loop devices
         {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
           options:

@@ -237,13 +237,13 @@ lvm:
       /dev/loop1:
   vg:
     remove:
-      cinder_volumes:
-      opensds_volumes:
+      cinder-volumes:
+      opensds-volumes:
     create:
-      cinder_volumes:
+      cinder-volumes:
         devices:
           - /dev/loop0
-      opensds_volumes:
+      opensds-volumes:
         devices:
           - /dev/loop1
 

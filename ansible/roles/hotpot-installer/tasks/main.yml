@@ -90,7 +90,7 @@
     https_enabled = False
     beego_https_cert_file =
     beego_https_key_file =
-	
+
     [osdsdock]
     api_endpoint = {{ dock_endpoint }}
     log_file = {{ dock_log_file }}

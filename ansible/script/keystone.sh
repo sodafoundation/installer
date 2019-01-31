@@ -64,6 +64,15 @@ chown stack:stack "$DEV_STACK_LOCAL_CONF"
 }
 
 hotpot_conf() {
+	export OPENSDS_ENDPOINT=$2
+	export OPENSDS_AUTH_STRATEGY=$3
+    local cmdDir=$1
+    local pwd=$("${cmdDir}"/osdsctl aes "${STACK_PASSWORD}" | grep -v 'use default(noauth)' | grep -v 'NoAuthOptions')
+    if [ $? -ne 0 ];then
+	    echo "Encryption failed."
+		exit 1
+	fi
+
 mkdir -p $OPENSDS_CONFIG_DIR
 cat > "$OPENSDS_CONFIG_DIR/opensds.conf" << OPENSDS_GLOBAL_CONFIG_DOC
 [keystone_authtoken]
@@ -74,7 +83,7 @@ auth_uri = http://$HOST_IP/identity
 project_domain_name = Default
 project_name = service
 user_domain_name = Default
-password = $STACK_PASSWORD
+password = $pwd
 username = $OPENSDS_SERVER_NAME
 auth_url = http://$HOST_IP/identity
 auth_type = password
@@ -167,7 +176,7 @@ uninstall_purge() {
 }
 
 config_hotpot() {
-    hotpot_conf
+    hotpot_conf $1 $2 $3
     create_user_and_endpoint_for_hotpot
 }
 
@@ -196,10 +205,10 @@ case "$# $1" in
     echo "Starting uninstall keystone..."
     uninstall
     ;;
-    "2 config")
+    "5 config")
     [[ X$2 != Xhotpot && X$2 != Xgelato ]] && echo "config type must be hotpot or gelato" && exit 1
     echo "Starting config $2 ..."
-    config_$2
+    config_$2 $3 $4 $5
     ;;
     "1 uninstall_purge")
     echo "Starting uninstall purge keystone..."

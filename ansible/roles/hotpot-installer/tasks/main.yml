@@ -13,13 +13,6 @@
 # limitations under the License.
 
 ---
-- name: hotpot keystone configuration
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone.sh config hotpot
-  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
-  become: yes
-
 - name: install Red Hat system packages
   package:
     name: "{{ item }}"
@@ -62,6 +55,13 @@
   include: scenarios/container.yml
   when: install_from == "container" and deploy_project != "gelato"
 
+- name: hotpot keystone configuration
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config hotpot "{{ hotpot_work_dir }}/bin" "{{ opensds_endpoint }}" "{{ opensds_auth_strategy }}"
+  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
+  become: yes
+
 - name: copy config templates into opensds global config folder
   copy:
     src: ../../../../conf/
@@ -90,6 +90,8 @@
     https_enabled = False
     beego_https_cert_file =
     beego_https_key_file =
+    # Encryption and decryption tool. Default value is aes.
+    password_decrypt_tool = aes
 
     [osdsdock]
     api_endpoint = {{ dock_endpoint }}

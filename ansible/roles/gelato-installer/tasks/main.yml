@@ -40,7 +40,7 @@
 - name: gelato keystone configuration
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh config gelato "" "" ""
+    - bash ./script/keystone.sh config gelato
   when: opensds_auth_strategy == "keystone" and deploy_project != "hotpot"
   become: yes
 

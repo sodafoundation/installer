@@ -24,7 +24,6 @@ dummy:
 
 controller_endpoint: "{{ host_ip }}:50040"
 dock_endpoint: localhost:50050
-opensds_endpoint: "http://localhost:50040" 
 
 # These fields are NOT suggested to be modifie
 hotpot_work_dir: /opt/opensds-hotpot-linux-amd64

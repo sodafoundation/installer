@@ -58,7 +58,7 @@
 - name: hotpot keystone configuration
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh config hotpot "{{ hotpot_work_dir }}/bin" "{{ opensds_endpoint }}" "{{ opensds_auth_strategy }}"
+    - bash ./script/keystone.sh config hotpot
   when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
   become: yes
 

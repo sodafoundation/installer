@@ -58,7 +58,7 @@ for com in ${COMPONENT[*]};do
 	
 	# Cancel the password for the private key
     openssl rsa -in "${ROOT_CERT_DIR}"/"${com}"-key.pem -out "${ROOT_CERT_DIR}"/"${com}"-key.pem -passin pass:xxxxx
-	
+
 	mkdir -p "${OPENSDS_CERT_DIR}"/"${com}"
 	mv "${ROOT_CERT_DIR}"/"${com}"-key.pem "${OPENSDS_CERT_DIR}"/"${com}"/
 	mv "${ROOT_CERT_DIR}"/"${com}"-cert.pem "${OPENSDS_CERT_DIR}"/"${com}"/

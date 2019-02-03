@@ -42,10 +42,10 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="docker"
-FORK_FORMULAS2="golang"
+FORK_FORMULAS="opensds docker"
+FORK_FORMULAS2=""
 FORK_BRANCH="fixes"
-FORK_BRANCH2="fixes2"
+FORK_BRANCH2=""
 
 usage()
 {

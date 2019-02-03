@@ -6,43 +6,61 @@ opensds:
   ports:
     opensds: {{ site.port_hotpot }}
     dock: {{ site.port_dock }}
+  dir:
+    go: {{ site.golang }}/src/github.com/opensds
 
   ######### BACKENDS ##################
   backend:
     block:
-      #instances: {{ site.enabled_backends|string }} #or default to all driver types
+      ids: {{ site.enabled_backends|string }} #default 'all'
       container:
         cinder:
-          enabled: True
+         image: {{ site.container_cinder_img }}
+          version: {{ site.container_cinder_version }}
+          custom:
+            dbports: '3307:3306'
+      daemon:
+        cinder:
+          strategy: repo-compose-config-build-systemd
+          repo:
+            branch: {{ site.container_cinder_version }}
 
   ######## BACKEND DRIVERS ###########
     drivers:
       lvm:
         tgtBindIp: {{ site.tgtBindIp }}
         pool:
-          {{ site.poolname }}:
+          {{ site.lvm_poolname }}:
             extras:
               advanced:
                 custom_feature_a: 'b'
       ceph:
         pool:
-          {{ site.poolname }}:
+          {{ site.ceph_poolname }}:
             extras:
               advanced:
                 custom_feature_c: 'd'
+
+      cinder:
+        pool:
+          {{ site.cinder_poolname }}:
+            extras:
+              advanced:
+                custom_feature_g: 'h'
 
       fusionstorage:
         authOptions:
           fmIp: {{ site.fusionstorage_fmip }}
           fsaIp: {{ site.fusionstorage_fsaip }}
         pool:
-          {{ site.poolname }}:
+          {{ site.fusionstorage_poolname }}:
             extras:
               advanced:
                 custom_feature_e: 'f'
-      cinder:
+
+      dorado:
         pool:
-          {{ site.poolname }}:
+          {{ site.dorado_poolname }}:
             extras:
               advanced:
                 custom_feature_g: 'h'
@@ -59,7 +77,7 @@ opensds:
 
   ########### DOCKS ###############
   dock:
-    instances:
+    ids:
       - osdsdock
     opensdsconf:
       osdsdock:
@@ -68,7 +86,6 @@ opensds:
         enabled_backends: {{ site.enabled_backends|string }}
     container:
       osdsdock:
-        enabled: False
         image: {{ site.container_dock_img }}
         version: {{ site.container_dock_version }}
         ports:
@@ -81,11 +98,11 @@ opensds:
         strategy: release-systemd            ### unless container.enabled
         start: /usr/local/bin/osdsdock
 
-  ############ GELATO #############
+  ############ OPENSDS GELATO #############
   gelato:
     release: {{ site.gelato_release }}
     service: {{ site.gelato_service }}
-    instances:
+    ids:
       - {{ site.gelato_service }}
     opensdsconf:
       {{ site.gelato_service }}:
@@ -93,18 +110,16 @@ opensds:
         port: {{ site.port_gelato }}
     container:
       {{ site.gelato_service }}:
-        enabled: False
-        build: False
     daemon:
       {{ site.gelato_service }}:
-        strategy: keystone-repo-systemd   ##or keystone-release-systemd, or keystone-compose-systemd
+        strategy: keystone-repo-config-build-systemd
         repo:
           branch: stable/bali
 
 
-  ############ AUTH #############
+  ############ OPENSDS AUTH #############
   auth:
-    instances:
+    ids:
       - osdsauth
       - keystone_authtoken
     opensdsconf:
@@ -115,30 +130,26 @@ opensds:
         password: {{ site.devstack_password }}
     daemon:
       osdsauth:
-        strategy: keystone   #Verified on Ubuntu salt installer
+        strategy: keystone   #verified on Ubuntu opensds-installer/salt
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
-  ############ DATABASE #############
+  ############ OPENSDS DATABASE #############
   database:
-    instances:
+    ids:
       - database
       - etcd
-    container:
-      etcd:
-        enabled: True
-        build: True
     opensdsconf:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
         credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
 
 
-  ############### HOTPOT ################
+  ############### OPENSDS HOTPOT ################
   hotpot:
     release: {{ site.hotpot_release }}
     service: {{ site.hotpot_service }}
-    instances:
+    ids:
       - opensds
       - osdslet
     opensdsconf:
@@ -147,26 +158,22 @@ opensds:
         auth_strategy: noauth  ## verified on ubuntu salt installer
     container:
       opensds:
-        enabled: False
-        build: False
         image: {{ site.container_hotpot_img }}
         version: {{ site.container_hotpot_version }}
         ports:
           - {{ site.port_hotpot }}
           - {{ site.port_hotpot }}/udp
         port_bindings:
-          - {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}:{{ site.port_hotpot }}
+          - {{site.host_ipv4 or site.host_ipv6 or '127.0.0.1'}}:{{site.port_hotpot}}:{{site.port_hotpot}}
     daemon:
       opensds:
-        strategy: repo-systemd
+        strategy: repo-config-systemd
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
-        repo:
-          branch: stable/bali
 
-  ############### DASHBOARDS ################
+  ############### OPENSDS DASHBOARD(S) ################
   dashboard:
-    instances:
+    ids:
       - dashboard
     opensdsconf:
       dashboard:
@@ -174,60 +181,82 @@ opensds:
         port: {{ site.port_hotpot }}
     container:
       dashboard:
-         enabled: True
          image: {{ site.container_dashboard_img }}
          version: {{ site.container_dashboard_version }}
     daemon:
       dashboard:
-        strategy: container-systemd     #or 'repo-systemd' or 'release-systemd'
-        build_cmd: make
-        start: {{ site.hotpot_path }}/bin/dashboard
+        strategy: repo-container-config-build-systemd
         repo:
           branch: stable/bali
+        build_cmd: make
+        build_subdir: ''
+        start: {{ site.hotpot_path }}/bin/dashboard
 
 
-  ############### SUSHI NORTH BOUND PLUGINS ################
+  ############### OPENSDS SUSHI NORTH-BOUND-PLUGINS ################
   sushi:
     release: {{ site.sushi_release }}
     plugin_type: {{ site.dock_type }}
-    instances:
+    ids:
       - nbp
     daemon:
       nbp:
-        strategy: repo-systemd
-        start: '/usr/local/bin/kubectl create -f {{ site.sushi_path }}/deploy/kubernetes'
-        stop: '/usr/local/bin/kubectl delete -f {{ site.sushi_path }}/deploy/kubernetes'
+        strategy: repo-config-systemd
         repo:
           branch: {{ site.sushi_release }}
 
 
 
-###################################
-## All non OpenSDS values go here 
-###################################
+################################
+## upstrem formula pillar data
+################################
+
 lvm:
   files:
     loopbackdir: {{ site.hotpot_path }}/volumegroups    #Where to create backing files
     remove:
-      - {{ site.hotpot_path }}/volumegroups/cinder-volumes.img
-      - {{ site.hotpot_path }}/volumegroups/opensds-volumes.img
+      - {{ site.hotpot_path }}/volumegroups/{{ site.cinder_poolname }}.img
+      - {{ site.hotpot_path }}/volumegroups/{{ site.ceph_poolname }}.img
+      - {{ site.hotpot_path }}/volumegroups/{{ site.lvm_poolname }}.img
+      - {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img
+      - {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img
     create:
-      truncate:    #Shrink or extend the size of each FILE to the specified size
-        {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
-          options:
-            size: 100M
-      dd:     #copy a file, converting and formatting according to the operands
-        {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
+      ### dd: copy a file, converting and formatting according to the operands
+      dd:
+        {{ site.hotpot_path }}/volumegroups/{{ site.lvm_poolname }}.img:
           options:
             if: /dev/urandom
             bs: 1024
             count: 204800
-      losetup:          #set up and control loop devices
-        {{ site.hotpot_path }}/volumegroups/cinder-volumes.img:
+
+      ### or truncate: Shrink or extend the size of each FILE to the specified size
+      truncate:
+        {{ site.hotpot_path }}/volumegroups/{{ site.cinder_poolname }}.img:
+          options:
+            size: 100M
+      'truncate ':
+        {{ site.hotpot_path }}/volumegroups/{{ site.ceph_poolname }}.img:
+          options:
+            size: 10M
+      'truncate  ':
+        {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img:
+          options:
+            size: 10M
+      'truncate   ':
+        {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img:
+          options:
+            size: 10M
+
+      ### setup backing devices
+      losetup:
+        {{ site.hotpot_path }}/volumegroups/{{ site.lvm_poolname }}.img:
           options:
             show: True
             find: True
-        {{ site.hotpot_path }}/volumegroups/opensds-volumes.img:
+        {{ site.hotpot_path }}/volumegroups/{{ site.cinder_poolname }}.img:
+          options:
+            show: True
+            find: True
   pv:
     create:
       /dev/loop0:
@@ -556,13 +585,7 @@ packages:
           format: bin
           source: {{ site.kubectl_url }}
           hashsum: {{ site.kubectl_hashsum }}
-      gelato_compose_file:
-        dest: {{ site.gelato_path }}
-        dl:
-          format: yml
-          source: {{ site.gelato_compose_url }}
-          hashsum: {{ site.gelato_compose_hashsum }}
-      gelato_multi_cloud:
+      gelato:
         dest: {{ site.go_path }}/src/github.com/opensds/multi-cloud
         options: '--strip-components=1'
         dl:
@@ -576,19 +599,19 @@ packages:
           format: tar
           source: {{ site.hotpot_uri }}/{{ site.hotpot_release }}/opensds-hotpot-{{ site.hotpot_release }}-linux-amd64.tar.gz
           hashsum: {{ site.hotpot_hashsum }}
-      sushi:
+      nbp:
         dest: {{ site.go_path }}/src/github.com/opensds/nbp
         options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.sushi_uri }}/{{ site.sushi_release }}/opensds-sushi-{{ site.sushi_release }}-linux-amd64.tar.gz
           hashsum: {{ site.sushi_hashsum }}
-      cinder_compose:
-        dest: {{ site.sushi_path }}/cinder
+      cinder:
+        dest: /tmp/{{ site.sushi_path }}/cinder
         dl:
-          format: yml
-          source: {{ site.cinder_compose_url }}
-          hashsum: {{ site.cinder_compose_hashsum }}
+          format: tar
+          source: {{ site.cinder_url }}
+          hashsum: {{ site.cinder_hashsum }}
     unwanted:
       - {{ site.go_path }}/src/github.com/opensds/nbp
       - {{ site.go_path }}/src/github.com/opensds/opensds

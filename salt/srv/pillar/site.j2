@@ -10,8 +10,6 @@
       'deploy_project': 'all',
       'dock_type': 'provisioner',
       'nbp_plugin_type': 'hotpot_only',
-      'enabled_backends': 'lvm',
-      'poolname': 'opensds-volumes',
       'fusionstorage_fmip': '192.168.0.200',
       'fusionstorage_fsaip': ['192.168.0.4', '192.168.0.5', '192.168.0.6',],
       'drbd_host_0_name': 'rckdeba',
@@ -27,6 +25,13 @@
       'dns_host2': '64.6.64.6',
       'ipdomain': 'example.com',
       'timezone': 'America/Denver',
+
+      'enabled_backends': 'lvm, cinder',
+      'lvm_poolname': 'opensds-volumes',
+      'ceph_poolname': 'ceph-volumes',
+      'cinder_poolname': 'cinder-volumes',
+      'dorado_poolname': 'dorado-volumes',
+      'fusionstorage_poolname': 'fusionstorage-volumes',
 
       'gelato_release': 'v0.4.0',
       'gelato_service': 'multi-cloud',
@@ -45,8 +50,9 @@
       'sushi_hashsum': 'md5=e774d5fe5851a4177175ba806eb87682',
       'sushi_uri': 'https://github.com/opensds/nbp/releases/download',
 
-      'cinder_compose_hashsum': 'sha256=1d55a1d2a2b328904370d47b7837a94c96ef47aa9b4a7a61990b59442ee33d5f',
-      'cinder_compose_url': 'https://raw.githubusercontent.com/openstack/cinder/master/contrib/block-box/docker-compose.yml',
+      'cinder_release': '13.0.2',
+      'cinder_hashsum': 'md5=dcacbed12750238dac1dbd7a7957dc54',
+      'cinder_url': 'https://github.com/openstack/cinder/archive/13.0.2.tar.gz',
 
       'kubectl_hashsum': 'md5=b0629c3ca34bc043da2f5d3eb226fb9e',
       'kubectl_url': 'https://storage.googleapis.com/kubernetes-release/release/v1.12.3/bin/linux/amd64/kubectl',
@@ -59,6 +65,8 @@
       'container_dashboard_version': 'bali',
       'container_etcd_img': 'quay.io/coreos/etcd',
       'container_etcd_version': 'latest',
+      'container_cinder_img': 'openstack/cinder-blockbox',
+      'container_cinder_version': 'stable/rocky',
 
       'devstack_enabled_services': 'mysql,key',
       'devstack_password': 'opensds@123',

@@ -2,7 +2,7 @@
 # which are necessary to run csi nodeplugin for opensds.
 
 kind: DaemonSet
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 metadata:
   name: csi-nodeplugin-opensdsplugin
 spec:
@@ -18,10 +18,14 @@ spec:
       hostNetwork: true
       containers:
         - name: driver-registrar
-          image: quay.io/k8scsi/driver-registrar:v0.4.0
+          # TODO: replace the following with official image when available
+          image: quay.io/k8scsi/driver-registrar:v1.0-canary #v1.0.0
           args:
             - "--v=5"
-            - "--csi-address=$(ADDRESS)"
+            - "--csi-address=/csi/csi.sock"
+            - "--mode=node-register"
+            - "--driver-requires-attachment=true"
+            - "--pod-info-mount-version=v1"
             - "--kubelet-registration-path=$(ADDRESS)"
           env:
             - name: ADDRESS
@@ -33,7 +37,7 @@ spec:
           imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
-              mountPath: /var/lib/kubelet/plugins/csi-opensdsplugin
+              mountPath: /csi
             - name: registration-dir
               mountPath: /registration
         - name: opensds
@@ -42,7 +46,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: {{ .Values.image }}
+          image: opensdsio/csiplugin:latest
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
@@ -91,7 +95,7 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: osuserdomainid
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/kubelet/plugins/csi-opensdsplugin
@@ -109,7 +113,7 @@ spec:
         - name: socket-dir
           hostPath:
             path: /var/lib/kubelet/plugins/csi-opensdsplugin
-            type: DirectoryOrCreate		
+            type: DirectoryOrCreate
         - name: pods-mount-dir
           hostPath:
             path: /var/lib/kubelet/pods
@@ -128,5 +132,5 @@ spec:
             type: DirectoryOrCreate
         - name: registration-dir
           hostPath:
-            path: /var/lib/kubelet/plugins
-            type: Directory
+            path: /var/lib/kubelet/plugins_registry
+            type: DirectoryOrCreate

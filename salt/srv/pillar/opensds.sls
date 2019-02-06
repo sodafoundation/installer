@@ -7,7 +7,7 @@ opensds:
     opensds: {{ site.port_hotpot }}
     dock: {{ site.port_dock }}
   dir:
-    go: {{ site.golang }}/src/github.com/opensds
+    go: {{ site.go_path }}/src/github.com/opensds
 
   ######### BACKENDS ##################
   backend:
@@ -15,13 +15,13 @@ opensds:
       ids: {{ site.enabled_backends|string }} #default 'all'
       container:
         cinder:
-         image: {{ site.container_cinder_img }}
+          image: {{ site.container_cinder_img }}
           version: {{ site.container_cinder_version }}
           custom:
             dbports: '3307:3306'
       daemon:
         cinder:
-          strategy: repo-compose-config-build-systemd
+          strategy: repo-config-compose-build-systemd
           repo:
             branch: {{ site.container_cinder_version }}
 
@@ -95,7 +95,7 @@ opensds:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
     daemon:
       osdsdock:
-        strategy: release-systemd            ### unless container.enabled
+        strategy: release-config-build-binaries-systemd
         start: /usr/local/bin/osdsdock
 
   ############ OPENSDS GELATO #############
@@ -112,7 +112,7 @@ opensds:
       {{ site.gelato_service }}:
     daemon:
       {{ site.gelato_service }}:
-        strategy: keystone-repo-config-build-systemd
+        strategy: keystone-repo-config-compose-build-systemd
         repo:
           branch: stable/bali
 
@@ -130,7 +130,7 @@ opensds:
         password: {{ site.devstack_password }}
     daemon:
       osdsauth:
-        strategy: keystone   #verified on Ubuntu opensds-installer/salt
+        strategy: config-keystone   #verified on Ubuntu opensds-installer/salt
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
@@ -143,6 +143,9 @@ opensds:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
         credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
+    daemon:
+      database:
+        strategy: config-etcd-formula-container
 
 
   ############### OPENSDS HOTPOT ################
@@ -167,7 +170,7 @@ opensds:
           - {{site.host_ipv4 or site.host_ipv6 or '127.0.0.1'}}:{{site.port_hotpot}}:{{site.port_hotpot}}
     daemon:
       opensds:
-        strategy: repo-config-systemd
+        strategy: repo-config-build-binaries-systemd
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
@@ -185,7 +188,7 @@ opensds:
          version: {{ site.container_dashboard_version }}
     daemon:
       dashboard:
-        strategy: repo-container-config-build-systemd
+        strategy: repo-config-build-binaries-systemd
         repo:
           branch: stable/bali
         build_cmd: make
@@ -201,14 +204,16 @@ opensds:
       - nbp
     daemon:
       nbp:
-        strategy: repo-config-systemd
+        strategy: release-config ##repo-config
         repo:
           branch: {{ site.sushi_release }}
+
+    ###plugin:
 
 
 
 ################################
-## upstrem formula pillar data
+## upstream formula pillar data
 ################################
 
 lvm:
@@ -549,7 +554,7 @@ packages:
       - tox
       - click
   pkgs:
-    wanted: []  ## map.jinja will populate this from opensds-formula
+    wanted: []  ## populated by opensds-formula in map.jinja
     unwanted:
       - unattended-upgrades
      {%- if grains.os_family in ('RedHat',) %}
@@ -585,29 +590,33 @@ packages:
           format: bin
           source: {{ site.kubectl_url }}
           hashsum: {{ site.kubectl_hashsum }}
-      gelato:
-        dest: {{ site.go_path }}/src/github.com/opensds/multi-cloud
+
+      {{ site.gelato_service }}:
+        dest: {{ site.gelato_path }}/{{ site.gelato_service }}
         options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.gelato_uri }}/{{ site.gelato_release }}/opensds-multicloud-{{ site.gelato_release }}-linux-amd64.tar.gz
           hashsum: {{ site.gelato_hashsum }}
+
       hotpot:
-        dest: {{ site.go_path }}/src/github.com/opensds/opensds
+        dest: {{ site.hotpot_path }}/opensds
         options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.hotpot_uri }}/{{ site.hotpot_release }}/opensds-hotpot-{{ site.hotpot_release }}-linux-amd64.tar.gz
           hashsum: {{ site.hotpot_hashsum }}
+
       nbp:
-        dest: {{ site.go_path }}/src/github.com/opensds/nbp
+        dest: {{ site.sushi_path }}/nbp
         options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.sushi_uri }}/{{ site.sushi_release }}/opensds-sushi-{{ site.sushi_release }}-linux-amd64.tar.gz
           hashsum: {{ site.sushi_hashsum }}
+
       cinder:
-        dest: /tmp/{{ site.sushi_path }}/cinder
+        dest: {{ site.sushi_path }}/cinder
         dl:
           format: tar
           source: {{ site.cinder_url }}

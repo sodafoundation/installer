@@ -41,7 +41,10 @@ Deploy on CENTOS (repeat command twice due to upstream bug)
 
 How to test opensds cluster
 ===========================
-
+Ensure apache is dead.
+```
+systemctl stop apache2 && systemctl disable apache2
+```
 Ensure openSDS services are running
 ```
  sudo -s

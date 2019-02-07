@@ -43,9 +43,9 @@ MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
 FORK_FORMULAS="docker"
-FORK_FORMULAS2=""
+FORK_FORMULAS2="opensds"
 FORK_BRANCH="fixes"
-FORK_BRANCH2=""
+FORK_BRANCH2="develop"
 
 usage()
 {

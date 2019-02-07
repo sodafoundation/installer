@@ -12,7 +12,7 @@ opensds:
   ######### BACKENDS ##################
   backend:
     block:
-      ids: {{ site.enabled_backends|string }} #default 'all'
+      ids: {{ site.enabled_backends|string|split(',') }}
       container:
         cinder:
           image: {{ site.container_cinder_img }}

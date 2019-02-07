@@ -78,7 +78,11 @@ opensds:
   ########### DOCKS ###############
   dock:
     ids:
+      - opensds
       - osdsdock
+    binaries:
+      opensds:
+        - osdsdock
     opensdsconf:
       osdsdock:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
@@ -94,8 +98,10 @@ opensds:
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
     daemon:
+      opensds:
+        strategy: binaries
       osdsdock:
-        strategy: release-config-build-binaries-systemd
+        strategy: config-systemd
         start: /usr/local/bin/osdsdock
 
   ############ OPENSDS GELATO #############
@@ -188,12 +194,9 @@ opensds:
          version: {{ site.container_dashboard_version }}
     daemon:
       dashboard:
-        strategy: repo-config-build-binaries-systemd
+        strategy: config-container
         repo:
           branch: stable/bali
-        build_cmd: make
-        build_subdir: ''
-        start: {{ site.hotpot_path }}/bin/dashboard
 
 
   ############### OPENSDS SUSHI NORTH-BOUND-PLUGINS ################
@@ -204,11 +207,11 @@ opensds:
       - nbp
     daemon:
       nbp:
-        strategy: release-config ##repo-config
+        strategy: repo-config-systemd
         repo:
           branch: {{ site.sushi_release }}
 
-    ###plugin:
+    #plugin:
 
 
 

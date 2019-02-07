@@ -10,9 +10,10 @@ opensds:
     go: {{ site.go_path }}/src/github.com/opensds
 
   ######### BACKENDS ##################
+  {%- set backend_list = site.enabled_backends.split(',') %}
   backend:
     block:
-      ids: {{ site.enabled_backends|string|split(',') }}
+      ids: {{ backend_list }}
       container:
         cinder:
           image: {{ site.container_cinder_img }}

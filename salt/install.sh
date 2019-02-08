@@ -38,6 +38,8 @@ else
 fi
 
 PACKAGE_MGR=$( dirname $0 )/ea/package_ea.sh
+LOGDIR=/tmp/opensds-installer-salt
+LOG=""
 BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
@@ -135,6 +137,25 @@ salt-master-service()
 }
 
 #**** OPENSDS-INSTALLER
+setup_logger()
+{
+    #### SETUP LOG
+    cd ${CWD}
+    LOGDIR=/tmp/opensds-installer-salt/${1}-${2}
+    mkdir -p ${LOGDIR} 2>/dev/null
+    LOG=${LOGDIR}/log.$( date '+%Y%m%d%H%M' )
+    echo "Logging to [ $LOG ]"
+    cat ${BASE}/pillar/site.j2 >>${LOG} 2>&1
+    cat ${BASE}/pillar/${2}.sls >>${LOG} 2>&1
+}
+
+show_logger()
+{
+    #### DISPLAY LOGO
+    tail -8 ${LOG}
+    echo "See full log in [ $LOG ]"
+    echo
+}
 
 ### Prepare salt deployment model for salt middleware and formulas
 apply-salt-state-model()
@@ -151,10 +172,16 @@ apply-salt-state-model()
     ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${2}.sls 2>/dev/null
     [[ "${2}" == 'salt' ]] && clone_formula salt
 
+    setup_logger $1 $2
     echo "run salt ..."
-    salt-call state.show_top --local
-    echo " ... please be patient ..."
-    salt-call state.highstate --local ${DEBUGG_ON}
+    echo >>${LOG} 2>&1
+    salt-call pillar.items --local >> ${LOG} 2>&1
+    echo >>${LOG} 2>&1
+    salt-call state.show_top --local | tee -a ${LOG} 2>&1
+    echo >>${LOG} 2>&1
+    echo " ... this takes a while ... please be patient ..." | tee -a ${LOG} 2>&1
+    salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
+    show_logger
 }
 
 ### Prepare things for DeepSea README workflow
@@ -172,7 +199,12 @@ opensds()
     if [[ -d /etc/opensds ]]
     then
        echo "Copy opensds-installer/conf/policy.json to /etc/opensds/"
-       cp $(dirname $0)/../conf/policy.json /etc/opensds/
+       if [[ -f "/root/opensds-installer/conf/policy.json" ]]
+       then
+           cp /root/opensds-installer/conf/policy.json /etc/opensds/
+       else
+           cp $(dirname $0)/../conf/policy.json /etc/opensds/
+       fi
     else
        echo "Failed to copy policy.json because opensds is not installed"
     fi

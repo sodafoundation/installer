@@ -94,7 +94,7 @@
 
 # Tested successfully in this version `ab0185bfc6e8797a35a2274c2a5ee03afb03dd60`
 # git checkout -b ab0185bfc6e8797a35a2274c2a5ee03afb03dd60
-- name: pip install cinderclinet
+- name: pip install cinderclient
   shell: |
     pip install -e .
   become: true

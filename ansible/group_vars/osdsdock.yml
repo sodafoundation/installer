@@ -31,6 +31,12 @@ enabled_backend:
 # 'provisioner', 'attacher'
 dock_type: provisioner
 
+#If you are using clean and not defined hard disk for osd enable and mention devices ( Do not use it if you are using loop device or losetup command to configure disk for osd
+
+#devices:
+# - '/dev/sdb'
+#osd_objectstore: bluestore
+
 
 ###########
 #   LVM   #

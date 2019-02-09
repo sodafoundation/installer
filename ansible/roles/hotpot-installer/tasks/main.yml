@@ -13,13 +13,6 @@
 # limitations under the License.
 
 ---
-- name: hotpot keystone configuration
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone.sh config hotpot
-  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
-  become: yes
-
 - name: install Red Hat system packages
   package:
     name: "{{ item }}"
@@ -62,10 +55,24 @@
   include: scenarios/container.yml
   when: install_from == "container" and deploy_project != "gelato"
 
+- name: hotpot keystone configuration
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config hotpot
+  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
+  become: yes
+
 - name: copy config templates into opensds global config folder
   copy:
     src: ../../../../conf/
     dest: "{{ opensds_config_dir }}"
+  when: deploy_project != "gelato"
+
+- name: generate certificates
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
+  become: yes	
   when: deploy_project != "gelato"
 
 - name: configure opensds global info
@@ -77,6 +84,14 @@
     log_file = {{ controller_log_file }}
     socket_order = inc
     auth_strategy = {{ opensds_auth_strategy }}
+    # If https is enabled, the default value of cert file
+    # is /opt/opensds-security/opensds/opensds-cert.pem, 
+    # and key file is /opt/opensds-security/opensds/opensds-key.pem
+    https_enabled = False
+    beego_https_cert_file =
+    beego_https_key_file =
+    # Encryption and decryption tool. Default value is aes.
+    password_decrypt_tool = aes
 
     [osdsdock]
     api_endpoint = {{ dock_endpoint }}

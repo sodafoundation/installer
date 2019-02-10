@@ -10,10 +10,9 @@ opensds:
     go: {{ site.go_path }}/src/github.com/opensds
 
   ######### BACKENDS ##################
-  {%- set backend_list = site.enabled_backends.split(',') %}
   backend:
     block:
-      ids: {{ backend_list }}
+      ids: {{ site.enabled_backends }}
       container:
         cinder:
           image: {{ site.container_cinder_img }}
@@ -22,7 +21,6 @@ opensds:
             dbports: '3307:3306'
       daemon:
         cinder:
-          strategy: repo-config-compose-build-systemd
           repo:
             branch: {{ site.container_cinder_version }}
 
@@ -78,17 +76,11 @@ opensds:
 
   ########### DOCKS ###############
   dock:
-    ids:
-      - opensds
-      - osdsdock
-    binaries:
-      opensds:
-        - osdsdock
     opensdsconf:
       osdsdock:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
-        enabled_backends: {{ site.enabled_backends|string }}
+        enabled_backends: {{ site.enabled_backends }}
     container:
       osdsdock:
         image: {{ site.container_dock_img }}
@@ -98,12 +90,6 @@ opensds:
           - {{ site.port_dock }}/udp
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
-    daemon:
-      opensds:
-        strategy: binaries
-      osdsdock:
-        strategy: config-systemd
-        start: /usr/local/bin/osdsdock
 
   ############ OPENSDS GELATO #############
   gelato:
@@ -119,7 +105,6 @@ opensds:
       {{ site.gelato_service }}:
     daemon:
       {{ site.gelato_service }}:
-        strategy: keystone-repo-config-compose-build-systemd
         repo:
           branch: stable/bali
 
@@ -137,7 +122,6 @@ opensds:
         password: {{ site.devstack_password }}
     daemon:
       osdsauth:
-        strategy: config-keystone   #verified on Ubuntu opensds-installer/salt
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
@@ -150,18 +134,12 @@ opensds:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
         credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
-    daemon:
-      database:
-        strategy: config-etcd-formula-container
 
 
   ############### OPENSDS HOTPOT ################
   hotpot:
     release: {{ site.hotpot_release }}
     service: {{ site.hotpot_service }}
-    ids:
-      - opensds
-      - osdslet
     opensdsconf:
       osdslet:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
@@ -177,14 +155,11 @@ opensds:
           - {{site.host_ipv4 or site.host_ipv6 or '127.0.0.1'}}:{{site.port_hotpot}}:{{site.port_hotpot}}
     daemon:
       opensds:
-        strategy: repo-config-build-binaries-systemd
         endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
   ############### OPENSDS DASHBOARD(S) ################
   dashboard:
-    ids:
-      - dashboard
     opensdsconf:
       dashboard:
         endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
@@ -193,22 +168,19 @@ opensds:
       dashboard:
          image: {{ site.container_dashboard_img }}
          version: {{ site.container_dashboard_version }}
+         env:
+           OPENSDS_HOST_IP: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
     daemon:
       dashboard:
-        strategy: config-container
         repo:
           branch: stable/bali
-
 
   ############### OPENSDS SUSHI NORTH-BOUND-PLUGINS ################
   sushi:
     release: {{ site.sushi_release }}
     plugin_type: {{ site.dock_type }}
-    ids:
-      - nbp
     daemon:
       nbp:
-        strategy: repo-config-systemd
         repo:
           branch: {{ site.sushi_release }}
 

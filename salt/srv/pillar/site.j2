@@ -8,6 +8,8 @@
 {%- do sitedata.update( {
 
       'deploy_project': 'all',
+      'auth_strategy': 'keystone',
+
       'dock_type': 'provisioner',
       'nbp_plugin_type': 'hotpot_only',
       'fusionstorage_fmip': '192.168.0.200',
@@ -55,18 +57,22 @@
       'kubectl_url': 'https://storage.googleapis.com/kubernetes-release/release/v1.12.3/bin/linux/amd64/kubectl',
 
       'container_hotpot_img': 'opensdsio/opensds-controller',
-      'container_hotpot_version': 'latest',
       'container_dock_img': 'opensdsio/opensds-dock',
-      'container_dock_version': 'latest',
       'container_dashboard_img': 'opensdsio/dashboard',
-      'container_dashboard_version': 'latest',
       'container_etcd_img': 'quay.io/coreos/etcd',
-      'container_etcd_version': 'latest',
       'container_cinder_img': 'openstack/cinder-blockbox',
-      'container_cinder_version': 'stable/rocky',
+
+      'hotpot_version': 'latest',
+      'dock_version': 'latest',
+      'dashboard_version': 'latest',
+      'etcd_version': 'latest',
+      'cinder_version': 'stable/rocky',
 
       'devstack_enabled_services': 'mysql,key',
       'devstack_password': 'opensds@123',
+      'project_domain_name': 'Default',
+      'project_name': 'service',
+      'user_domain_name': 'Default',
 
       'devstack_path': '/opt/opensds-linux-amd64-devstack',
       'hotpot_path': '/opt/opensds-linux-amd64',
@@ -79,6 +85,7 @@
 
       'port_hotpot': '50040',
       'port_dock': '50050',
+      'port_csi': '50051',
       'port_gelato': '8089',
       'port_mysql': '3306',
       'port_nginx': '8088',

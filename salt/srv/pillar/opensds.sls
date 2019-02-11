@@ -8,6 +8,10 @@ opensds:
     dock: {{ site.port_dock }}
   dir:
     go: {{ site.go_path }}/src/github.com/opensds
+  environ:
+    opensds_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}
+    opensds_auth_strategy: {{ site.auth_strategy }}
+    csi_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_csi }}
 
   ######### BACKENDS ##################
   backend:
@@ -16,13 +20,16 @@ opensds:
       container:
         cinder:
           image: {{ site.container_cinder_img }}
-          version: {{ site.container_cinder_version }}
+          version: {{ site.cinder_version }}
           custom:
             dbports: '3307:3306'
       daemon:
         cinder:
+          strategy: repo-compose-config-build-systemd
           repo:
-            branch: {{ site.container_cinder_version }}
+            branch: {{ site.cinder_version }}
+        lvm:
+          strategy: saltstack-formulas/lvm-formula
 
   ######## BACKEND DRIVERS ###########
     drivers:
@@ -78,18 +85,23 @@ opensds:
   dock:
     opensdsconf:
       osdsdock:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
+        api_endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
         enabled_backends: {{ site.enabled_backends }}
     container:
       osdsdock:
         image: {{ site.container_dock_img }}
-        version: {{ site.container_dock_version }}
+        version: {{ site.dock_version }}
         ports:
           - {{ site.port_dock }}
           - {{ site.port_dock }}/udp
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
+    daemon:
+      opensds:
+        strategy: binaries
+      osdsdock:
+        strategy: config-systemd
 
   ############ OPENSDS GELATO #############
   gelato:
@@ -99,14 +111,15 @@ opensds:
       - {{ site.gelato_service }}
     opensdsconf:
       {{ site.gelato_service }}:
-        endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}
+        endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}
         port: {{ site.port_gelato }}
     container:
       {{ site.gelato_service }}:
     daemon:
       {{ site.gelato_service }}:
+        strategy: keystone-repo-config-compose-build-systemd
         repo:
-          branch: stable/bali
+          branch: {{ site.gelato_release }}
 
 
   ############ OPENSDS AUTH #############
@@ -117,12 +130,17 @@ opensds:
     opensdsconf:
       keystone_authtoken:
         memcached_servers: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}:11211'
-        auth_uri: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
         auth_url: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+        username: {{ site.hotpot_service }}
         password: {{ site.devstack_password }}
+        auth_type: password
+        project_domain_name: {{ site.project_domain_name }}
+        project_name: {{ site.project_name }}
+        user_domain_name: {{ site.user_domain_name }}
     daemon:
       osdsauth:
-        endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        strategy: config-keystone   ##verified on Ubuntu opensds-installer/salt
+        endpoint_ipv4: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
   ############ OPENSDS DATABASE #############
@@ -134,6 +152,9 @@ opensds:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
         credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
+    daemon:
+      database:
+        strategy: config-etcd-formula/container
 
 
   ############### OPENSDS HOTPOT ################
@@ -142,12 +163,12 @@ opensds:
     service: {{ site.hotpot_service }}
     opensdsconf:
       osdslet:
-        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
-        auth_strategy: noauth  ## verified on ubuntu salt installer
+        api_endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
+        auth_strategy: {{ site.auth_strategy }}   ### note: noauth verified on ubuntu salt installer
     container:
       opensds:
         image: {{ site.container_hotpot_img }}
-        version: {{ site.container_hotpot_version }}
+        version: {{ site.hotpot_version }}
         ports:
           - {{ site.port_hotpot }}
           - {{ site.port_hotpot }}/udp
@@ -155,25 +176,27 @@ opensds:
           - {{site.host_ipv4 or site.host_ipv6 or '127.0.0.1'}}:{{site.port_hotpot}}:{{site.port_hotpot}}
     daemon:
       opensds:
-        endpoint_ipv4: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        strategy: repo-config-build-binaries-systemd
+        endpoint_ipv4: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
   ############### OPENSDS DASHBOARD(S) ################
   dashboard:
     opensdsconf:
       dashboard:
-        endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         port: {{ site.port_hotpot }}
     container:
       dashboard:
          image: {{ site.container_dashboard_img }}
-         version: {{ site.container_dashboard_version }}
+         version: {{ site.dashboard_version }}
          env:
            OPENSDS_HOST_IP: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
     daemon:
       dashboard:
+        strategy: config-container
         repo:
-          branch: stable/bali
+          branch: {{ site.dashboard_version }}
 
   ############### OPENSDS SUSHI NORTH-BOUND-PLUGINS ################
   sushi:
@@ -181,11 +204,9 @@ opensds:
     plugin_type: {{ site.dock_type }}
     daemon:
       nbp:
+        strategy: repo-config-systemd
         repo:
           branch: {{ site.sushi_release }}
-
-    #plugin:
-
 
 
 ################################
@@ -314,7 +335,7 @@ firewalld:
 
 devstack:
   local:
-    username: stack
+    username: {{ site.hotpot_service }}
     password: {{ site.devstack_password }}
     #git_branch: 'stable/rocky'
     enabled_services: {{ site.devstack_enabled_services }}
@@ -326,60 +347,60 @@ devstack:
   dir:
     dest: {{ site.devstack_path }}
   cli:
-    service:
+    {{ site.project_name }}:
       create:
-        opensds{{ site.hotpot_release }}:
+        {{ site.hotpot_service }}{{ site.hotpot_release }}:
           options:
-            name: opensds{{ site.hotpot_release }}
-            description: "opensds Service"
+            name: {{ site.hotpot_service }}{{ site.hotpot_release }}
+            description: "{{ site.hotpot_service }} Service"
             enable: True
         {{ site.gelato_service }}{{ site.gelato_release }}:
           options:
             name: "{{ site.gelato_service }}{{ site.gelato_release }}"
-            description: "Multi-cloud Block Storage"
+            description: "{{ site.gelato_service }} service"
             enable: True
     user:
       create:
-        opensds{{ site.hotpot_release }}:
+        {{ site.hotpot_service }}{{ site.hotpot_release }}:
           options:
-            domain: default
+            domain: {{ site.user_domain_name }}
             password: {{ site.devstack_password }}
-            project: service
+            project: {{ site.project_name }}
             enable: True
         {{ site.gelato_service }}{{ site.gelato_release }}:
           options:
-            domain: default
+            domain: {{ site.user_domain_name }}
             password: {{ site.devstack_password }}
-            project: service
+            project: {{ site.project_name }}
             enable: True
     group:
       create:
-        service:
+        {{ site.project_name }}:
           options:
-            domain: default
+            domain: {{ site.user_domain_name }}
       add user:
-        service:
+        {{ site.project_name }}:
           target:
-            - opensds{{ site.hotpot_release }}
+            - {{ site.hotpot_service }}{{ site.hotpot_release }}
             - {{ site.gelato_service }}{{ site.gelato_release }}
         admins:
           options:
-            domain: default
+            domain: {{ site.user_domain_name }}
           target:
             - admin
     role:
       add:
         admin:
           options:
-            project: service
+            project: {{ site.project_name }}
           user:
             - opensds{{ site.hotpot_release }}
             - {{ site.gelato_service }}{{ site.gelato_release }}
-        service:
+        {{ site.project_name }}:
           options:
-            project: service
+            project: {{ site.project_name }}
           group:
-            - service
+            - {{ site.project_name }}
     endpoint:
       create:
         'opensds{{site.hotpot_release}} public https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
@@ -502,7 +523,7 @@ etcd:
     initial_cluster: 'osdsdb=http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
     initial_cluster_state: new
     initial_cluster_token: osdsdb-1
-    initial_advertise_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
+    initial_advertise_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{site.port_auth2}}'
     listen_peer_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
     listen_client_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }}'
     advertise_client_urls: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }}'
@@ -511,7 +532,7 @@ etcd:
   docker:
     enabled: True
     image: {{ site.container_etcd_img }}
-    version: {{ site.container_etcd_version }}
+    version: {{ site.etcd_version }}
     container_name: osdsdb
     skip_translate: None
     port_bindings:

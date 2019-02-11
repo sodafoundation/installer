@@ -41,7 +41,7 @@ dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-hotpot_repo_branch: stable/bali
+hotpot_repo_branch: master
 
 # These fields are NOT suggested to be modified
 hotpot_remote_url: https://github.com/opensds/opensds.git
@@ -51,7 +51,7 @@ hotpot_remote_url: https://github.com/opensds/opensds.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-hotpot_release: v0.4.0 # The version should be at least v0.2.1
+hotpot_release: v0.5.0 # The version should be at least v0.2.1
 
 # These fields are NOT suggested to be modified
 hotpot_download_url: https://github.com/opensds/opensds/releases/download/{{ hotpot_release }}/opensds-hotpot-{{ hotpot_release }}-linux-amd64.tar.gz
@@ -62,7 +62,7 @@ hotpot_tarball_dir: /tmp/opensds-hotpot-{{ hotpot_release }}-linux-amd64
 # CONTAINER #
 #############
 
-hotpot_image_tag: bali
+hotpot_image_tag: latest
 
 # These fields are NOT suggested to be modified
 controller_docker_image: opensdsio/opensds-controller:{{ hotpot_image_tag }}

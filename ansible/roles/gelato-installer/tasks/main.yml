@@ -63,5 +63,5 @@
     port: 8089
     delay: 15
     timeout: 120
-  ignore: true
+  ignore_errors: yes
   when: deploy_project != "hotpot"

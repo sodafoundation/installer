@@ -1,4 +1,6 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#!/usr/bin/env bash
+
+# Copyright (c) 2019 Click2Cloud Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: use container to install dashboard
-  include_tasks: scenarios/container.yml
-  when: dashboard_installation_type == "container"
+cephver=$(ceph --version |grep -Eow '^ceph version [^ ]+' |gawk '{ print $3 }')
+echo "The actual version of Ceph is $cephver"
 
-- name: use source code to install dashboard
-  include_tasks: scenarios/source-code.yml
-  when: dashboard_installation_type == "source_code"
+if [[ "$cephver" <  1.0.0 ]]; then
+  echo "Ceph installation is required"
+  exit 1
+fi
 
-- name: login console
-  debug: msg="please use '{{ console_login_url }}' login console"
+exit 0
+

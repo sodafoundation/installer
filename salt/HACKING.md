@@ -22,6 +22,8 @@ The following commands are provided (or -r for removal).
 
  ./install.sh -i infra             ### docker, packages, etc
 
+ ./install.sh -i keystone          ### devstack
+
  ./install.sh -i database
 
  ./install.sh -i sushi
@@ -39,7 +41,6 @@ The following commands are provided (or -r for removal).
  ./install.sh -i dashboard
 
 ```
-However the fastest, verified, and recommend approach remains the `./install.sh -i opensds` command.
 
 Vagrant Reference for Testing
 =============================

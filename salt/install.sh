@@ -17,6 +17,7 @@
 ##############################################
 # Adapt salt-bootstrap saltstack
 ##############################################
+trap exit SIGINT SIGTERM
 
 [[ `id -u` != 0 ]] && echo && echo "Run script with sudo, exiting" && echo && exit 1
 
@@ -142,7 +143,6 @@ setup_logger()
     LOGDIR=/tmp/opensds-installer-salt/${1}-${2}
     mkdir -p ${LOGDIR} 2>/dev/null
     LOG=${LOGDIR}/log.$( date '+%Y%m%d%H%M' )
-    echo "Logging to [ $LOG ]"
     cat ${BASE}/pillar/site.j2 >>${LOG} 2>&1
     cat ${BASE}/pillar/${2}.sls >>${LOG} 2>&1
 }
@@ -171,7 +171,7 @@ apply-salt-state-model()
     [[ "${2}" == 'salt' ]] && clone_formula salt
 
     setup_logger $1 $2
-    echo "run salt ..."
+    echo "run state ..."
     echo >>${LOG} 2>&1
     salt-call pillar.items --local >> ${LOG} 2>&1
     echo >>${LOG} 2>&1

@@ -63,8 +63,6 @@ usage()
     echo " auth|hotpot|dashboard|database|dock|infra|backend|sushi|gelato" 1>&2
     echo "               Apply specific OpenSDS state" 1>&2
     echo 1>&2
-    echo "     prereq    Install docker-ce and nginx;remove apache" 1>&2
-    echo 1>&2
     echo "  See://github.com/saltstack-formulas/opensds-formula.git" 1>&2
     echo 1>&2
     echo "  OPTIONS" 1>&2
@@ -271,7 +269,6 @@ then
             salt-key -L
             [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead "${FORK_FORMULAS}" ${FORK_BRANCH}
             [[ ! -z "${FORK_FORMULAS2}" ]] && use_branch_instead "${FORK_FORMULAS2}" ${FORK_BRANCH2}
-            apply-salt-state-model install "prereq"
             ;;
 
     opensds)
@@ -282,7 +279,7 @@ then
             (( $? == 0 )) && opensds
             ;;
 
-    gelato|auth|hotpot|dashboard|database|dock|infra|backend|sushi|deepsea|prereq)
+    gelato|auth|hotpot|dashboard|database|dock|infra|backend|sushi|deepsea)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install ${INSTALL_TARGET}

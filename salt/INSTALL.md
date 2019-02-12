@@ -42,11 +42,7 @@ Deploy on CENTOS (repeat command twice due to upstream bug)
 
 How to test opensds cluster
 ===========================
-Ensure apache is dead.
-```
-systemctl stop apache2 && systemctl disable apache2
-```
-Ensure openSDS services are running (check logs/status if necessary)
+Check openSDS services are running (check logs/status if necessary)
 ```
  sudo -s
  docker ps -a
@@ -85,7 +81,7 @@ Delete the volume:
 ```
 
 ### Dashboard
-The OpenSDS dashboard is available at http://127.0.0.1:8088 or http://<primary_host_ip>:8080. 
+The OpenSDS dashboard is available at http://127.0.0.1:8088 or http://<primary_host_ip>:8088. 
 
 Please login to the dashboard using the default admin credentials: admin/opensds@123. Create tenant, user, and profiles as admin. Multi-Cloud is also supported by dashboard.
 

@@ -46,7 +46,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: opensdsio/csiplugin:latest
+          image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
@@ -95,7 +95,7 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: osuserdomainid
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/kubelet/plugins/csi-opensdsplugin

@@ -48,7 +48,7 @@ Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and
 ```
  mkdir ~/vagrant && cd ~/vagrant
 
- vagrant init generic/ubuntu1804    #UBUNTU
+ vagrant init ubuntu/bionic64       #UBUNTU
 
  vagrant init geerlingguy/centos7   #CENTOS
 ```

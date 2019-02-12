@@ -52,6 +52,9 @@ spec:
               mountPath: /etc/opensds
             - name: ceph-conf-dir
               mountPath: /etc/ceph
+            - name: tgt-conf-dir
+              mountPath: /etc/tgt
+              mountPropagation: "Bidirectional"
             - name: run-dir
               mountPath: /run
               mountPropagation: "Bidirectional"
@@ -76,6 +79,10 @@ spec:
         - name: ceph-conf-dir
           hostPath:
             path: /etc/ceph
+            type: DirectoryOrCreate
+        - name: tgt-conf-dir
+          hostPath:
+            path: /etc/tgt
             type: DirectoryOrCreate
         - name: run-dir
           hostPath:

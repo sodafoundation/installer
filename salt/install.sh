@@ -275,7 +275,16 @@ then
             losetup -D 2>/dev/null
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
-            apply-salt-state-model install opensds
+            apply-salt-state-model install infra
+            apply-salt-state-model install config
+            apply-salt-state-model install database
+            apply-salt-state-model install auth
+            apply-salt-state-model install hotpot
+            apply-salt-state-model install sushi
+            apply-salt-state-model install backend
+            apply-salt-state-model install dock
+            apply-salt-state-model install dashboard
+            apply-salt-state-model install gelato
             (( $? == 0 )) && opensds
             ;;
 

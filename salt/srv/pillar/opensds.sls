@@ -33,6 +33,21 @@ opensds:
 
   ######## BACKEND DRIVERS ###########
     drivers:
+      cinder:
+        pool:
+          {{ site.cinder_poolname }}:
+            extras:
+              advanced:
+                custom_feature_g: 'h'
+        authOptions:
+          endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+          domainId: {{ site.project_domain_name }}
+          projectName: {{ site.project_name }}
+          domainName: {{ site.user_domain_name }}
+          username: {{ site.hotpot_service }}
+          password: {{ site.devstack_password }}
+          tenantName: {{ site.hotpot_service }}
+
       lvm:
         tgtBindIp: {{ site.tgtBindIp }}
         pool:
@@ -46,13 +61,6 @@ opensds:
             extras:
               advanced:
                 custom_feature_c: 'd'
-
-      cinder:
-        pool:
-          {{ site.cinder_poolname }}:
-            extras:
-              advanced:
-                custom_feature_g: 'h'
 
       fusionstorage:
         authOptions:
@@ -151,7 +159,7 @@ opensds:
     opensdsconf:
       database:
         endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
-        credential: 'opensds:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
+        credential: '{{ site.hotpot_service }}:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
     daemon:
       database:
         strategy: config-etcd-formula/container
@@ -614,6 +622,7 @@ packages:
 
       cinder:
         dest: {{ site.sushi_path }}/cinder
+        options: '--strip-components=1'
         dl:
           format: tar
           source: {{ site.cinder_url }}

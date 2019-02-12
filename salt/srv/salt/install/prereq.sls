@@ -2,5 +2,3 @@
 base:
   '*':
     - docker
-    - apache.uninstall
-    - nginx.ng

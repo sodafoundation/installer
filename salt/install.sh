@@ -60,7 +60,7 @@ usage()
     echo 1>&2
     echo "     opensds   Apply all OpenSDS states" 1>&2
     echo 1>&2
-    echo " auth|hotpot|dashboard|database|dock|infra|backend|sushi|gelato" 1>&2
+    echo " infra|keystone|database|auth|hotpot|dashboard|backend|dock|sushi|gelato" 1>&2
     echo "               Apply specific OpenSDS state" 1>&2
     echo 1>&2
     echo "  See://github.com/saltstack-formulas/opensds-formula.git" 1>&2
@@ -276,6 +276,7 @@ then
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install infra
+            apply-salt-state-model install keystone
             apply-salt-state-model install config
             apply-salt-state-model install database
             apply-salt-state-model install auth
@@ -288,7 +289,7 @@ then
             (( $? == 0 )) && opensds
             ;;
 
-    gelato|auth|hotpot|dashboard|database|dock|infra|backend|sushi|deepsea)
+    gelato|auth|hotpot|dashboard|database|dock|keystone|infra|backend|sushi|deepsea)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install ${INSTALL_TARGET}
@@ -300,7 +301,7 @@ then
 elif [[ -z "${INSTALL_TARGET}" ]]
 then
     case "${REMOVE_TARGET}" in
-    opensds|gelato|auth|hotpot|backend|dashboard|database|dock|infra|sushi)
+    opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|infra|sushi)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model remove ${REMOVE_TARGET}

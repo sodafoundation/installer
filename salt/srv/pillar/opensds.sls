@@ -41,6 +41,7 @@ opensds:
                 custom_feature_g: 'h'
         authOptions:
           endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
+          cinderEndpoint: 'http:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:8776/v2'
           domainId: {{ site.project_domain_name }}
           projectName: {{ site.project_name }}
           domainName: {{ site.user_domain_name }}
@@ -93,7 +94,7 @@ opensds:
   dock:
     opensdsconf:
       osdsdock:
-        api_endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
         enabled_backends: {{ site.enabled_backends }}
     container:
@@ -119,7 +120,7 @@ opensds:
       - {{ site.gelato_service }}
     opensdsconf:
       {{ site.gelato_service }}:
-        endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}
+        endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}
         port: {{ site.port_gelato }}
     container:
       {{ site.gelato_service }}:
@@ -138,6 +139,7 @@ opensds:
     opensdsconf:
       keystone_authtoken:
         memcached_servers: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}:11211'
+        auth_uri: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
         auth_url: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
         username: {{ site.hotpot_service }}
         password: {{ site.devstack_password }}

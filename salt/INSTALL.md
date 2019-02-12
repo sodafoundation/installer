@@ -18,7 +18,8 @@ Now deploy OpenSDS as follows - expected run duration is 20-55 minutes depending
 
 ```
  sudo -s
- yum install git libffi-devel -y || apt-get install git libffi-dev -y
+ yum check-update -y || apt-get update -y
+ yum install git libffi-devel -y || apt-get install git libffi-dev openssh-server -y
  cd /root && git clone https://github.com/opensds/opensds-installer.git
  cd opensds-installer/salt
 ```
@@ -45,10 +46,12 @@ Ensure apache is dead.
 ```
 systemctl stop apache2 && systemctl disable apache2
 ```
-Ensure openSDS services are running
+Ensure openSDS services are running (check logs/status if necessary)
 ```
  sudo -s
  docker ps -a
+ ps -ef | grep osds
+ systemctl list-unit-files | grep opensds
 ```
 
 Firstly configure opensds CLI tool:

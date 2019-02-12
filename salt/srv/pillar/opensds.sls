@@ -173,7 +173,7 @@ opensds:
     service: {{ site.hotpot_service }}
     opensdsconf:
       osdslet:
-        api_endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
+        api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
         auth_strategy: {{ site.auth_strategy }}   ### note: noauth verified on ubuntu salt installer
     container:
       opensds:

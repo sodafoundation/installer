@@ -9,7 +9,7 @@ Solution View
 
 Reference Vagrant setup
 =======================
-Refer to HACKING.md. Allow minimum of 2GB+2CPU for virutalized host.
+Refer to HACKING.md. Prefer a minimum of 6GB+4CPU per virutalized hosts.
 
 
 OpenSDS deployed via Salt

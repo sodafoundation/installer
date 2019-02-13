@@ -354,10 +354,11 @@ devstack:
     host_ipv6: {{ site.host_ipv6 or '::1/128' }}
     service_host: {{ site.host_ipv4 or "127.0.0.1" }}
     db_host: {{ site.db_host or "127.0.0.1" }}
+    project_name: {{ site.project_name }}
   dir:
     dest: {{ site.devstack_path }}
   cli:
-    {{ site.project_name }}:
+    service:
       create:
         {{ site.hotpot_service }}{{ site.hotpot_release }}:
           options:

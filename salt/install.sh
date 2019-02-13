@@ -163,15 +163,14 @@ apply-salt-state-model()
        echo "error"
        exit 32
     fi
-    echo "prepare salt ..."
     cp ${MODELS}/salt/${1}/${2}.sls ${BASE}/salt/top.sls 2>/dev/null
     cp ${BASE}/pillar/site.j2 ${BASE}/pillar/site.bak 2>/dev/null
     cp ${MODELS}/pillar/* ${BASE}/pillar/
     ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${2}.sls 2>/dev/null
     [[ "${2}" == 'salt' ]] && clone_formula salt
 
+    echo "run salt ..."
     setup_logger $1 $2
-    echo "run state ..."
     echo >>${LOG} 2>&1
     salt-call pillar.items --local >> ${LOG} 2>&1
     echo >>${LOG} 2>&1
@@ -225,7 +224,6 @@ use_branch_instead()
     fi
   done
   cd ${MODELS}
-  echo "done"
 }
 
 

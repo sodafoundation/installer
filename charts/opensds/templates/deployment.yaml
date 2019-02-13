@@ -27,6 +27,14 @@ spec:
           volumeMounts:
             - name: etcd-cert-dir
               mountPath: /etc/ssl/certs
+        - name: osdsapiserver
+          image: {{ .Values.image.osdsapiserver }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          command: ["bin/sh"]
+          args: ["-c", "/usr/bin/osdsapiserver -logtostderr"]
+          volumeMounts:
+            - name: opensds-conf-dir
+              mountPath: /etc/opensds
         - name: osdslet
           image: {{ .Values.image.osdslet }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}

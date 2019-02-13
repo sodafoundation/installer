@@ -4,6 +4,7 @@
 replicaCount: 1
 image:
   osdsdb: quay.io/coreos/etcd:latest
+  osdsapiserver: opensdsio/opensds-apiserver:latest
   osdslet: opensdsio/opensds-controller:latest
   osdsdock: opensdsio/opensds-dock:latest
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"

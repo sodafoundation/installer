@@ -345,9 +345,10 @@ firewalld:
 
 devstack:
   local:
+    os_project_name: {{ site.project_name }}
     os_username: {{ site.hotpot_service }}
     os_password: {{ site.devstack_password }}
-    os_project_name: {{ site.project_name }}
+    admin_password: {{ site.devstack_password }}
     #git_branch: 'stable/rocky'
     enabled_services: {{ site.devstack_enabled_services }}
     host_ipv4: {{ site.host_ipv4 or "127.0.0.1" }}

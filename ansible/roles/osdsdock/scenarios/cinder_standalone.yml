@@ -21,6 +21,7 @@
     - python-pip
     - lvm2
     - thin-provisioning-tools
+    - libffi-dev
     - docker-compose
 
 - name: configure cinder section in opensds global info if specify cinder backend

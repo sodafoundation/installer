@@ -345,16 +345,15 @@ firewalld:
 
 devstack:
   local:
-    username: {{ site.hotpot_service }}
-    password: {{ site.devstack_password }}
+    os_username: {{ site.hotpot_service }}
+    os_password: {{ site.devstack_password }}
+    os_project_name: {{ site.project_name }}
     #git_branch: 'stable/rocky'
     enabled_services: {{ site.devstack_enabled_services }}
-    os_password: {{ site.devstack_password }}
     host_ipv4: {{ site.host_ipv4 or "127.0.0.1" }}
     host_ipv6: {{ site.host_ipv6 or '::1/128' }}
     service_host: {{ site.host_ipv4 or "127.0.0.1" }}
     db_host: {{ site.db_host or "127.0.0.1" }}
-    project_name: {{ site.project_name }}
   dir:
     dest: {{ site.devstack_path }}
   cli:

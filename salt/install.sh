@@ -45,7 +45,7 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="docker devstack"
+FORK_FORMULAS="docker opensds"
 FORK_FORMULAS2=""
 FORK_BRANCH="fixes"
 FORK_BRANCH2=""
@@ -87,6 +87,11 @@ salt-bootstrap()
 {
     ${PACKAGE_MGR} update 2>/dev/null
     ${PACKAGE_MGR} -i wget 2>/dev/null
+    if (( $? > 0 ))
+    then
+       echo "Failed to install wget"
+       exit 1
+    fi
     wget -O install_salt.sh https://bootstrap.saltstack.com || exit 10
     (sh install_salt.sh ${1} && rm -f install_salt.sh) || exit 10
     return 0
@@ -150,9 +155,9 @@ setup_logger()
 
 show_logger()
 {
-    #### DISPLAY LOGO
-    tail -8 ${LOG}
-    echo "See full log in [ $LOG ]"
+    #### DISPLAY LOG
+    tail -8 ${1} 2>/dev/null
+    echo "See full log in [ ${1} ]"
     echo
 }
 
@@ -179,7 +184,7 @@ apply-salt-state-model()
     echo >>${LOG} 2>&1
     echo " ... this takes a while ... please be patient ..." | tee -a ${LOG} 2>&1
     salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
-    show_logger
+    show_logger ${LOG}
 }
 
 ### Prepare things for DeepSea README workflow
@@ -276,6 +281,7 @@ then
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install infra
             apply-salt-state-model install keystone
+            show_logger /tmp/devstack/stack.sh.log
             apply-salt-state-model install config
             apply-salt-state-model install database
             apply-salt-state-model install auth

@@ -33,9 +33,9 @@ Deploy on UBUNTU
  ./install.sh -i salt; ./install.sh -i opensds
 ```
 
-Deploy on CENTOS (repeat command twice due to upstream bug)
+Deploy on CENTOS (we run keystone twice due to upstream bug)
 ```
-  ./install.sh -i salt; ./install.sh -i opensds;./install.sh -i opensds
+  ./install.sh -i salt; ./install.sh -i keystone;./install.sh -i opensds
 ```
 
 

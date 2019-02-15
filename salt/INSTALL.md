@@ -18,7 +18,6 @@ Now deploy OpenSDS as follows - expected run duration is 20-55 minutes depending
 
 ```
  sudo -s
- yum check-update -y || apt-get update -y
  yum install git libffi-devel -y || apt-get install git libffi-dev openssh-server -y
  cd /root && git clone https://github.com/opensds/opensds-installer.git
  cd opensds-installer/salt

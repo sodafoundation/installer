@@ -12,33 +12,33 @@ All other files should be left alone.
 Flexible Deployments
 =====================
 
-You can install OpenSDS in a more modular fashion. By default all components are installed on the local machine; however Salt has powerful features for distributed deployment management so the shipped solution could be extend for flexible deployments (salt integration knowledge is useful).
+You can install OpenSDS in a more modular fashion. Salt has powerful features for distributed deployment management so the shipped solution could be extended for flexible deployment (salt integration knowledge is useful).
 
 The following commands are provided (or -r for removal).
 ```
- vi ./srv/pillar/opensds.sls       ### Tweak something
+ vi ./srv/pillar/opensds.sls       ### Tweak something (advanced)
 
- vi site.js                        ### Tweak IP Addresses
+ vi site.js                        ### Set IP addresses (easy)
 
- ./install.sh -i infra             ### docker, packages, etc
+ ./install.sh -i infra             ### This installs packages, docker, nginx, etc.
 
- ./install.sh -i keystone          ### devstack
+ ./install.sh -i keystone          ### Runs devstack-formula
 
- ./install.sh -i database
+ ./install.sh -i config            ### Creates directories and /etc/opensds/opensds.conf file
 
- ./install.sh -i sushi
+ ./install.sh -i database          ### Installs ETCD
 
- ./install.sh -i let
+ ./install.sh -i hotpot            ### Installs the HotPot
 
- ./install.sh -i gelato
+ ./install.sh -i sushi             ### Configures drivers in opensds.conf and /etc/opensds/driver directory
 
- ./install.sh -i hotpot
+ ./install.sh -i backend           ### Installs Backends (lvm, iscsi, cinder, etc)
 
- ./install.sh -i dock
+ ./install.sh -i dock              ### Installs Dock(s)
 
- ./install.sh -i gelato
+ ./install.sh -i dashboard         ### Installs the Dashboard
 
- ./install.sh -i dashboard
+ ./install.sh -i gelato            ### Installs Multi-Cloud
 
 ```
 

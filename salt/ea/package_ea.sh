@@ -36,6 +36,7 @@ while getopts ":i:u:r:" action; do
                  done
                  ;;
         linux*)  if [[ -f "/usr/bin/apt-get" ]]; then
+                     /usr/bin/apt-get update -y || exit 1
                      /usr/bin/apt-get install -y python-msgpack ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/dnf" ]; then
                      /usr/bin/dnf install -y --best --allowerasing ${PACKAGES} || exit 1
@@ -44,8 +45,10 @@ while getopts ":i:u:r:" action; do
                  elif [ -f "/usr/bin/pacman" ]; then
                      /usr/bin/pacman -S --noconfirm ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/zypper" ]; then
+                     /usr/bin/zypper update -y || exit 1
                      /usr/bin/zypper --non-interactive install ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/yum" ]; then
+                     /usr/bin/yum check-update -y || exit 1 
                      /usr/bin/yum install -y ${PACKAGES} || exit 1 
                  fi
                  ;;

@@ -45,7 +45,7 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="docker devstack opensds"
+FORK_FORMULAS="docker devstack"
 FORK_FORMULAS2=""
 FORK_BRANCH="fixes"
 FORK_BRANCH2=""
@@ -85,7 +85,8 @@ usage()
 ### Install Salt agent software on host (using wget, instead of 'salt-ssh')
 salt-bootstrap()
 {
-    ${PACKAGE_MGR} -i git wget patch 2>/dev/null
+    ${PACKAGE_MGR} update 2>/dev/null
+    ${PACKAGE_MGR} -i wget 2>/dev/null
     wget -O install_salt.sh https://bootstrap.saltstack.com || exit 10
     (sh install_salt.sh ${1} && rm -f install_salt.sh) || exit 10
     return 0

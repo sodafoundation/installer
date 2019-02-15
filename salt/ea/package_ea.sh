@@ -48,7 +48,7 @@ while getopts ":i:u:r:" action; do
                      /usr/bin/zypper update -y || exit 1
                      /usr/bin/zypper --non-interactive install ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/yum" ]; then
-                     /usr/bin/yum check-update -y || exit 1 
+                     /usr/bin/yum update -y || exit 1 
                      /usr/bin/yum install -y ${PACKAGES} || exit 1 
                  fi
                  ;;

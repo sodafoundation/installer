@@ -13,7 +13,6 @@ opensds:
     opensds_auth_strategy: {{ site.auth_strategy }}
     csi_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_csi }}
     gopath: {{ site.go_path }}
-    docker_opts: "--dns {{ site.dns_host1 or '8.8.8.8' }} --dns {{ site.dns_host2 or '64.6.64.6' }}"
 
   ######### BACKENDS ##################
   backend:
@@ -463,8 +462,8 @@ resolver:
       enabled: False
   domain: {{ site.ipdomain or 'example.com' }}
   nameservers:
-    - {{ site.dns_host1 or '8.8.8.8' }}
-    - {{ site.dns_host2 or '64.6.64.6' }}
+    - {{ site.dns_host1  }}
+    - {{ site.dns_host2 }}
   #searchpaths:
   #- {{ site.ipdomain or 'example.com' }}
   options:

@@ -12,6 +12,8 @@ opensds:
     opensds_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}
     opensds_auth_strategy: {{ site.auth_strategy }}
     csi_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_csi }}
+    gopath: {{ site.go_path }}
+    docker_opts: "--dns {{ site.dns_host1 or '8.8.8.8' }} --dns {{ site.dns_host2 or '64.6.64.6' }}"
 
   ######### BACKENDS ##################
   backend:
@@ -41,7 +43,7 @@ opensds:
                 custom_feature_g: 'h'
         authOptions:
           endpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
-          cinderEndpoint: 'http:{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:8776/v2'
+          cinderEndpoint: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:8776/v2'
           domainId: {{ site.project_domain_name }}
           projectName: {{ site.project_name }}
           domainName: {{ site.user_domain_name }}

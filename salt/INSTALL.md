@@ -27,16 +27,10 @@ Review site deployment data-
  vi site.j2
 ```
 
-Deploy on UBUNTU
+Deploy on UBUNTU/CENTOS
 ```
  ./install.sh -i salt; ./install.sh -i opensds
 ```
-
-Deploy on CENTOS (we run keystone twice due to upstream bug)
-```
-  ./install.sh -i salt; ./install.sh -i keystone;./install.sh -i opensds
-```
-
 
 How to test opensds cluster
 ===========================
@@ -80,6 +74,11 @@ Delete the volume:
 
 ### Dashboard
 The OpenSDS dashboard is available at http://127.0.0.1:8088 or http://<primary_host_ip>:8088. 
+
+If firewalld or iptables is running open the port.
+```
+iptables -I INPUT 1 -i eth1 -p tcp --dport 8088 -j ACCEPT
+```
 
 Please login to the dashboard using the default admin credentials: admin/opensds@123. Create tenant, user, and profiles as admin. Multi-Cloud is also supported by dashboard.
 

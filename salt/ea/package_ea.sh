@@ -35,21 +35,21 @@ while getopts ":i:u:r:" action; do
                      su ${USER} -c "brew unlink ${p} 2>/dev/null && brew link ${p} 2>/dev/null"
                  done
                  ;;
-        linux*)  if [[ -f "/usr/bin/apt-get" ]]; then
-                     /usr/bin/apt-get update -y || exit 1
-                     /usr/bin/apt-get install -y python-msgpack ${PACKAGES} || exit 1
-                 elif [ -f "/usr/bin/dnf" ]; then
-                     /usr/bin/dnf install -y --best --allowerasing ${PACKAGES} || exit 1
+        linux*)  if [ -f "/usr/bin/zypper" ]; then
+                     /usr/bin/zypper update -y || exit 1
+                     /usr/bin/zypper --non-interactive install ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/emerge" ]; then
                      /usr/bin/emerge --oneshot ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/pacman" ]; then
                      /usr/bin/pacman -S --noconfirm ${PACKAGES} || exit 1
-                 elif [ -f "/usr/bin/zypper" ]; then
-                     /usr/bin/zypper update -y || exit 1
-                     /usr/bin/zypper --non-interactive install ${PACKAGES} || exit 1
+                 elif [ -f "/usr/bin/dnf" ]; then
+                     /usr/bin/dnf install -y --best --allowerasing ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/yum" ]; then
                      /usr/bin/yum update -y || exit 1 
                      /usr/bin/yum install -y ${PACKAGES} || exit 1 
+                 elif [[ -f "/usr/bin/apt-get" ]]; then
+                     /usr/bin/apt-get update -y || exit 1
+                     /usr/bin/apt-get install -y python-msgpack ${PACKAGES} || exit 1
                  fi
                  ;;
         esac

@@ -27,7 +27,7 @@ Review site deployment data-
  vi site.j2
 ```
 
-Deploy on UBUNTU/CENTOS
+Deploy on UBUNTU/CENTOS/OpenSUSE_15
 ```
  ./install.sh -i salt; ./install.sh -i opensds
 ```

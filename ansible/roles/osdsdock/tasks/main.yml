@@ -15,22 +15,22 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: deploy_project != "gelato" and "lvm" in enabled_backend
+  when: deploy_project != "gelato" and "lvm" in enabled_backends
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: deploy_project != "gelato" and "ceph" in enabled_backend
+  when: deploy_project != "gelato" and "ceph" in enabled_backends
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
   when:
-   - deploy_project != "gelato" and "cinder" in enabled_backend
+   - deploy_project != "gelato" and "cinder" in enabled_backends
    - use_cinder_standalone == false
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
   when: 
-   - deploy_project != "gelato" and "cinder" in enabled_backend
+   - deploy_project != "gelato" and "cinder" in enabled_backends
    - use_cinder_standalone == true
  
 - name: run osdsdock daemon service

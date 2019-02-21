@@ -49,10 +49,13 @@ Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and
 ```
  mkdir ~/vagrant && cd ~/vagrant
 
- vagrant init ubuntu/bionic64       #UBUNTU
+ vagrant init ubuntu/bionic64          #UBUNTU
 
- vagrant init geerlingguy/centos7   #CENTOS
+ vagrant init geerlingguy/centos7      #CENTOS
+
+ vagrant init bento/opensuse-leap-15   #OPENSUSE
 ```
+
 Configure a public network and sufficient compute resources.
 ```
  vi Vagrantfile

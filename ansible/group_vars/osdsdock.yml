@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Change it according to your backend, currently support 'lvm', 'ceph', 'cinder'
-enabled_backend: lvm #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder
+enabled_backends: lvm #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder
 # Change it according to your node type (host or target), currently support
 # 'provisioner', 'attacher'
 dock_type: provisioner

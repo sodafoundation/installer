@@ -476,7 +476,7 @@ nginx:
     servers:
       managed:
         default:
-              {%- if grains.os_family in ('RedHat',) %}
+              {%- if grains.os_family in ('RedHat', 'Debian',) %}
           available_dir: /etc/nginx/sites-available
           enabled_dir: /etc/nginx/sites-available
               {%- endif %}
@@ -489,6 +489,7 @@ nginx:
               - server_name: '_'
               - listen:
                 - '8088 default_server'
+              - listen:
                 - '[::]:8088 default_server'
           {%- if grains.os_family == 'Debian' %}
               - index: 'index.html index.htm index.nginx-debian.html'

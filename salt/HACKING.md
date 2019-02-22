@@ -40,6 +40,7 @@ The following commands are provided (or -r for removal).
 
  ./install.sh -i gelato            ### Installs Multi-Cloud
 
+ ./install.sh -i freespace         ### Free some disk space
 ```
 
 Vagrant Reference for Testing

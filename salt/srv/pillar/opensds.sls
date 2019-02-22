@@ -488,16 +488,12 @@ nginx:
                 - /var/www/html
               - server_name: '_'
               - listen:
-                - 8088
-                - default_server
-              - listen:
-                - '[::]:8088'
-                - default_server
-              - index:
-                - index.html
-                - index.htm
+                - '8088 default_server'
+                - '[::]:8088 default_server'
           {%- if grains.os_family == 'Debian' %}
-                - index.nginx-debian.html
+              - index: 'index.html index.htm index.nginx-debian.html'
+          {%- else %}
+              - index: 'index.html index.htm'
           {%- endif %}
               - location /{{ site.hotpot_release }}/:
                 - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'

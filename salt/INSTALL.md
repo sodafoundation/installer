@@ -2,6 +2,10 @@
 
 Provision one or more GNU/Linux hosts so we can deploy OpenSDS.
 
+Supported OS
+============
+Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15.
+
 Solution View
 =============
 

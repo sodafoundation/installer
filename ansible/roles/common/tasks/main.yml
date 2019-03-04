@@ -84,11 +84,6 @@
     dest: "{{ opensds_config_dir }}"
   when: deploy_project != "gelato"
 
-- name: generate certificates
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
-  become: yes
-  when: deploy_project != "gelato"
-  args:
-    chdir: ~/opensds-installer/ansible
+
+ # args:
+  #  chdir: ~/opensds-installer/ansible

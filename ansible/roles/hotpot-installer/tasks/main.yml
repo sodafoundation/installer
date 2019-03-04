@@ -13,6 +13,13 @@
 # limitations under the License.
 
 ---
+- name: generate certificates
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
+  become: yes
+  when: deploy_project != "gelato"
+
 - name: hotpot keystone configuration
   shell: "{{ item }}"
   with_items:

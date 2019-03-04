@@ -36,8 +36,6 @@
     https_enabled = False
     beego_https_cert_file =
     beego_https_key_file =
-    # Encryption and decryption tool. Default value is aes.
-    password_decrypt_tool = aes
 
     [database]
     endpoint = {{ db_endpoint }}

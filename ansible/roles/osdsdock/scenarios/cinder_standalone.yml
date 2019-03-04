@@ -21,6 +21,7 @@
     - python-pip
     - lvm2
     - thin-provisioning-tools
+    - libffi-dev
     - docker-compose
 
 - name: configure cinder section in opensds global info if specify cinder backend
@@ -47,7 +48,7 @@
     state: directory
     recurse: yes
 
-- name: create volume group in thin mode
+- name: create volume group and load dm_thin_pool module into linux kernel
   shell:
     _raw_params: |
       function _create_lvm_volume_group {
@@ -73,6 +74,7 @@
               fi
           fi
       }
+      # we need this kernel module to support creating thin pool logical volumes (lv) later.
       modprobe dm_thin_pool
       _create_lvm_volume_group {{ cinder_volume_group }} 10G
   args:

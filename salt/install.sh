@@ -45,10 +45,11 @@ BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="nginx docker"
+FORK_FORMULAS="docker"
 FORK_FORMULAS2=""
 FORK_BRANCH="fixes"
 FORK_BRANCH2=""
+SALT_VERSION='git v2018.3.4'
 
 usage()
 {
@@ -149,6 +150,7 @@ setup_logger()
     LOGDIR=/tmp/opensds-installer-salt/${1}-${2}
     mkdir -p ${LOGDIR} 2>/dev/null
     LOG=${LOGDIR}/log.$( date '+%Y%m%d%H%M' )
+    salt-call --versions >>${LOG} 2>&1
     cat ${BASE}/pillar/site.j2 >>${LOG} 2>&1
     cat ${BASE}/pillar/${2}.sls >>${LOG} 2>&1
 }

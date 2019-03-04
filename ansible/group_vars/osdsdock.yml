@@ -23,17 +23,15 @@ dummy:
 ###########
 
 # Change it according to your backend, currently support 'lvm', 'ceph', 'cinder'
-enabled_backend: lvm
+# DISABLE OR COMMENT "enabled_backends: lvm" IF YOU WANT TO INSTALL DIFFERENT BACKENDS ON MULTI-NODES AND mention it in "local.hosts" file
+enabled_backends: lvm   # Comment this part if you want to use different backends on different nodes
+
 # Change it according to your node type (host or target), currently support
 # 'provisioner', 'attacher'
+#COMMENT THIS "dock_endpoint" if you want to install on MULTI-NODE and mention it in "local.hosts" file
+dock_endpoint: localhost # **For multinodes dock-point should be mentioned in local.hosts file and THIS SHOULD BE COMMENTED
+dock_port: 50050
 dock_type: provisioner
-
-#If you are using clean and not defined hard disk for osd enable and mention devices ( Do not use it if you are using loop device or losetup command to configure disk for osd
-
-#devices:
-# - '/dev/sdb'
-#osd_objectstore: bluestore
-
 
 ###########
 #   LVM   #

@@ -20,12 +20,16 @@
     recurse: yes
   ignore_errors: yes
   become: yes
-    
+
+
 - name: check ansible version
   shell: "{{ item }}"
   with_items:
     - bash ./script/check_ansible_version.sh
   become: yes
+  args:
+    chdir: ~/opensds-installer/ansible
+
 
 - name: run the equivalent of "apt-get update" as a separate step
   apt:
@@ -40,3 +44,51 @@
     - gcc
     - python-pip
     - open-iscsi
+
+- name: install Ubuntu system packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - librados-dev
+    - librbd-dev
+  when: ansible_os_family == "Debian" and deploy_project != "gelato"
+
+- name: create opensds work directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ hotpot_work_dir }}"
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_driver_config_dir }}"
+    - "{{ opensds_log_dir }}"
+  when: deploy_project != "gelato"
+
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/repository.yml
+  when: install_from == "repository" and deploy_project != "gelato"
+
+- name: include scenarios/release.yml when installing from release
+  include: scenarios/release.yml
+  when: install_from == "release" and deploy_project != "gelato"
+
+- name: include scenarios/container.yml when installing from container
+  include: scenarios/container.yml
+  when: install_from == "container" and deploy_project != "gelato"
+
+- name: copy config templates into opensds global config folder
+  copy:
+    src: ../../../../conf/
+    dest: "{{ opensds_config_dir }}"
+  when: deploy_project != "gelato"
+
+- name: generate certificates
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
+  become: yes
+  when: deploy_project != "gelato"
+  args:
+    chdir: ~/opensds-installer/ansible

@@ -76,7 +76,7 @@
   args:
     executable: /bin/bash
   become: true
-  when: enabled_backend == "lvm"
+  when: "'lvm' in enabled_backends"
   ignore_errors: yes
 
 - name: stop cinder-standalone service
@@ -84,7 +84,7 @@
   become: true
   args:
     chdir: "{{ cinder_data_dir }}/cinder/contrib/block-box"
-  when: enabled_backend == "cinder"
+  when: "'cinder' in enabled_backends"
   ignore_errors: yes
 
 - name: clean the volume group of cinder
@@ -150,5 +150,5 @@
   args:
     executable: /bin/bash
   become: true
-  when: enabled_backend == "cinder"
+  when: "'cinder' in enabled_backends"
   ignore_errors: yes

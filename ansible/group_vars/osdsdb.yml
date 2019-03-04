@@ -31,7 +31,8 @@ db_endpoint: "{{ etcd_host }}:{{ etcd_port }},{{ etcd_host }}:{{ etcd_peer_port 
 ###########
 
 etcd_release: v3.2.25
-etcd_host: 127.0.0.1
+#FOR MULTI-NODE USE HOST_IP INSTEAD OF 127.0.0.1
+etcd_host: 127.0.0.1 # For multi-node set it host ip as controllers ip address
 etcd_port: 2379
 etcd_peer_port: 2380
 

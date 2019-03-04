@@ -97,7 +97,7 @@
     # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
     dock_type = {{ dock_type }}
     # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
-    enabled_backends = {{ enabled_backend }}
+    enabled_backends = {{ enabled_backends }}
 
     [database]
     endpoint = {{ db_endpoint }}

@@ -14,10 +14,11 @@
 
 [controllers]
 localhost ansible_connection=local
-# For multi-docker please enable
+
+# For multi-docker DO NOT FORGET to mention "enabled_backends" and "dock_endpoint"
 [docks]
 localhost ansible_connection=local #enabled_backends=lvm dock_endpoint=<host_ip>
-#You can add more dockers to this
+#You can add more dockers to this like below example
 #{{ Dock-2 IP }} ansible_connection=ssh enabled_backends=lvm dock_endpoint=<dock_2_IP>
 
 [worker-nodes]

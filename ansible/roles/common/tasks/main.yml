@@ -27,9 +27,9 @@
   with_items:
     - bash ./script/check_ansible_version.sh
   become: yes
-  args:
-    chdir: ~/opensds-installer/ansible
-
+#  args:
+#    chdir: ~/opensds-installer/ansible
+#Enable above part to check Ansible version different node
 
 - name: run the equivalent of "apt-get update" as a separate step
   apt:

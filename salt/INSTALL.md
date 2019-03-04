@@ -2,9 +2,9 @@
 
 Provision one or more GNU/Linux hosts so we can deploy OpenSDS.
 
-Supported OS
-============
-Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15.
+Software versions
+=================
+Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15 with Salt version 2018.3.
 
 Solution View
 =============

@@ -462,10 +462,8 @@ resolver:
       enabled: False
   domain: {{ site.ipdomain or 'example.com' }}
   nameservers:
-    - {{ site.dns_host1  }}
+    - {{ site.dns_host1 }}
     - {{ site.dns_host2 }}
-  #searchpaths:
-  #- {{ site.ipdomain or 'example.com' }}
   options:
     - rotate
     - timeout:1

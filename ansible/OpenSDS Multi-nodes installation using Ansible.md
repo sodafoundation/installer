@@ -177,46 +177,47 @@ nbp_plugin_type: hotpot_only
 
 ##### For MULTI-NODE Installation, make following section COMMENTED/DISABLE as we will configure this in `local.hosts` file
 * `group_vars/osdsdock.yml`
-    ````
+    ```yml
      
     #enabled_backends: lvm # Change it according to the chosen backend. Supported backends include 'lvm', 'ceph', and 'cinder'
 
 
     #dock_endpoint: localhost # **For multinodes dock_endpoint should be mentioned in local.hosts file and THIS SHOULD BE COMMENTED
 
-    ````
+    ```
 
 
 ##### For Multi-node Installation, set following sections of following files
 
 * `group_vars/osdsdb`
-    ````
+    ```yml
     #FOR MULTI-NODE USE HOST_IP INSTEAD OF 127.0.0.1
     etcd_host: 127.0.0.1 # For multi-node set USE host ip as etcd_host
-    ````
+    ```
 
 * `group_vars/ceph/all.yml` ( while using ceph as a backend)
     ```yml
-    public_network: "{{ dock_endpoint }}/24" # Run 'ip -4 address' to check the ip address
+    public_network: "{{ ansible_default_ipv4.address }}/24" # Run 'ip -4 address' to check the ip address
    ```
 
 * `local.hosts` (docks section)
-    ````
+    ```yml
     [docks]
     localhost ansible_connection=local enabled_backends=lvm dock_endpoint=192.168.3.78
     192.168.1.234 ansible_connection=ssh enabled_backends=lvm dock_endpoint=192.168.1.234
     192.168.1.236 ansible_connection=ssh enabled_backends=lvm,ceph dock_endpoint=192.168.1.236
-    ````
+    ```
 ##### LVM
 If `lvm` is chosen as storage backend, modify `group_vars/osdsdock.yml`:
-```yaml
-enabled_backend: lvm 
-```
+    
+   ```yml
+   enabled_backend: lvm 
+   ```
 
 Modify ```group_vars/lvm/lvm.yaml```, change `tgtBindIp` to your real host ip if needed:
-```yaml
-tgtBindIp: 127.0.0.1 
-```
+   ```yml
+    tgtBindIp: 127.0.0.1 
+   ``` 
 
 ##### Ceph
 If `ceph` is chosen as storage backend, modify `group_vars/osdsdock.yml`:
@@ -229,7 +230,7 @@ Configure ```group_vars/ceph/all.yml``` with an example below:
 ceph_origin: repository
 ceph_repository: community
 ceph_stable_release: luminous # Choose luminous as default version
-#SET "public_network" as "{{ dock_endpoint }}/24" as described before FOR MULTI-NODE INSTALLATION
+#SET "public_network" as "{{ ansible_default_ipv4.address }}/24" as described before FOR MULTI-NODE INSTALLATION
 public_network: "192.168.3.0/24" # Run 'ip -4 address' to check the ip address
 cluster_network: "{{ public_network }}"
 monitor_interface: eth1 # Change to the network interface on the target machine

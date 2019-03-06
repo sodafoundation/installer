@@ -68,7 +68,7 @@
  
     ```bash
     ssh-keygen
-    #Leave passphrase is blank/empty.
+    #Leave passphrase as blank/empty.
     
     #Next, create a configuration file for the ssh config.
     vi  ~/.ssh/config

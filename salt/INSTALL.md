@@ -26,11 +26,6 @@ Now deploy OpenSDS as follows - expected run duration is 20-55 minutes depending
  cd opensds-installer/salt
 ```
 
-Review site deployment data-
-```
- vi site.j2
-```
-
 Install Salt on UBUNTU/CENTOS/OpenSUSE_15
 ```
  ./install.sh -i salt
@@ -39,6 +34,12 @@ Reboot if kernel got upgraded. If in doubt, reboot anyway.
 ```
 init 6
 ```
+
+Review site deployment data and set your public ipv4 address-
+```
+ vi site.j2
+```
+
 Deploy OpenSDS on UBUNTU/CENTOS/OpenSUSE_15
 ```
 sudo -s

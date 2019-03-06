@@ -236,29 +236,29 @@ lvm:
     create:
       ### dd: copy a file, converting and formatting according to the operands
       dd:
-        {{ site.hotpot_path }}/volumegroups/{{ site.lvm_poolname }}.img:
+        {{ site.hotpot_path }}/volumegroups/{{ site.lvm_poolname }}.img:      #10G
           options:
             if: /dev/urandom
-            bs: 1024
-            count: 204800
+            bs: 1048576
+            count: 10240
 
       ### or truncate: Shrink or extend the size of each FILE to the specified size
       truncate:
         {{ site.hotpot_path }}/volumegroups/{{ site.cinder_poolname }}.img:
           options:
-            size: 100M
+            size: 1G
       'truncate ':
         {{ site.hotpot_path }}/volumegroups/{{ site.ceph_poolname }}.img:
           options:
-            size: 10M
+            size: 1G
       'truncate  ':
         {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img:
           options:
-            size: 10M
+            size: 1G
       'truncate   ':
         {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img:
           options:
-            size: 10M
+            size: 1GM
 
       ### setup backing devices
       losetup:

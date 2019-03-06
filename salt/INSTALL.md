@@ -31,9 +31,18 @@ Review site deployment data-
  vi site.j2
 ```
 
-Deploy on UBUNTU/CENTOS/OpenSUSE_15
+Install Salt on UBUNTU/CENTOS/OpenSUSE_15
 ```
- ./install.sh -i salt; ./install.sh -i opensds
+ ./install.sh -i salt
+```
+Reboot if kernel got upgraded. If in doubt, reboot anyway.
+```
+init 6
+```
+Deploy OpenSDS on UBUNTU/CENTOS/OpenSUSE_15
+```
+sudo -s
+cd /root/opensds-installer/salt/; install.sh -i opensds
 ```
 
 How to test opensds cluster

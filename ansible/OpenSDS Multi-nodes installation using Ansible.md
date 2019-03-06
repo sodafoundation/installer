@@ -53,15 +53,15 @@
     ```bash
     vi /etc/hosts
     
-    192.168.3.78    opensds
-    192.168.1.234   dock-1
-    192.168.1.236   dock-2    
+    192.168.1.234   node-1
+    192.168.3.78    node-2
+    192.168.1.236   node-3    
 
     ```
     
 * Now you can try to ping between the server hostnames to test the network connectivity
     ```bash
-    ping -c 5 dock-2
+    ping -c 5 node-2 #from node-1
     ```
 
 * Configure the SSH Server (RUN ON ALL NODES)
@@ -75,16 +75,16 @@
     
     # Paste following configuration
     
-    Host opensds
-            Hostname opensds
+    Host node-1
+            Hostname node-1
             User root
              
-    Host dock-1
-            Hostname dock-1
+    Host node-2
+            Hostname node-2
             User root
      
-    Host dock-2
-            Hostname dock-2
+    Host node-3
+            Hostname node-3
             User root
 
     #Save and Exit the editor
@@ -93,7 +93,7 @@
     chmod 644 ~/.ssh/config
     
     #Now add the key to all nodes with the ssh-copy-id command.
-    ssh-keyscan dock-1 dock-2 opensds >> ~/.ssh/known_hosts
+    ssh-keyscan node-1 node-2 node-3 >> ~/.ssh/known_hosts
     
     sudo sed -i 's/prohibit-password/yes/' /etc/ssh/sshd_config
     
@@ -105,9 +105,9 @@
     #Restart sshd
     sudo systemctl restart sshd
     
-    ssh-copy-id dock-1
-    ssh-copy-id dock-2
-    ssh-copy-id testing-opensds
+    ssh-copy-id node-1
+    ssh-copy-id node-2
+    ssh-copy-id node-3
     ```
     
 Install following packages (on all nodes):
@@ -203,9 +203,9 @@ nbp_plugin_type: hotpot_only
 * `local.hosts` (docks section)
     ```yml
     [docks]
-    localhost ansible_connection=local enabled_backends=lvm dock_endpoint=192.168.3.78
-    192.168.1.234 ansible_connection=ssh enabled_backends=lvm dock_endpoint=192.168.1.234
-    192.168.1.236 ansible_connection=ssh enabled_backends=lvm,ceph dock_endpoint=192.168.1.236
+    localhost ansible_connection=local enabled_backends=lvm,ceph dock_endpoint=192.168.1.234
+    192.168.3.78 ansible_connection=ssh enabled_backends=lvm dock_endpoint=192.168.3.78
+    192.168.1.236 ansible_connection=ssh enabled_backends=lvm dock_endpoint=192.168.1.236
     ```
 ##### LVM
 If `lvm` is chosen as storage backend, modify `group_vars/osdsdock.yml`:
@@ -231,7 +231,7 @@ ceph_origin: repository
 ceph_repository: community
 ceph_stable_release: luminous # Choose luminous as default version
 #SET "public_network" as "{{ ansible_default_ipv4.address }}/24" as described before FOR MULTI-NODE INSTALLATION
-public_network: "192.168.3.0/24" # Run 'ip -4 address' to check the ip address
+public_network: "{{ ansible_default_ipv4.address }}/24" # Run 'ip -4 address' to check the ip address
 cluster_network: "{{ public_network }}"
 monitor_interface: eth1 # Change to the network interface on the target machine
 devices: # For ceph devices, append ONE or MULTIPLE devices like the example below:

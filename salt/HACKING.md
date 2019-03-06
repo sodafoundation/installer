@@ -46,15 +46,18 @@ The following commands are provided (or -r for removal).
 Vagrant Reference for Testing
 =============================
 
-Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html). Next choose a vagrant Linux image.
+Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html). Next choose a vagrant Linux image with 20G+ virtual disk size (avoid small virtual-disk-size images).
 ```
  mkdir ~/vagrant && cd ~/vagrant
 
- vagrant init ubuntu/bionic64          #UBUNTU
 
- vagrant init centos/7                 #CENTOS
+ vagrant init generic/ubuntu1804             #UBUNTU - 30G localdisk
 
- vagrant init bento/opensuse-leap-15   #OPENSUSE
+ vagrant init centos/7                       #CENTOS - 50G localdisk
+
+ vagrant init bento/opensuse-leap-15         #OPENSUSE - 40G localdisk
+
+ vagrant init opensuse/openSUSE-15.0-x86_64  #OPENSUSE - 64G localdisk
 ```
 
 Configure a public network and sufficient compute resources.

@@ -1,6 +1,6 @@
 # Deploying OpenSDS with Salt
 
-Provision one or more GNU/Linux hosts so we can deploy OpenSDS.
+Deploy OpenSDS (www.opensds.io) using Salt. This is an experimental solution using repeatable patterns of jinja/yaml to deploy cloud-native stack using infrastructure as code. Please use Salt 2018.3.4 or earlier while potential impacts from the <a href="https://docs.saltstack.com/en/develop/topics/releases/2019.2.0.html#non-backward-compatible-change-to-yaml-renderer">NON-BACKWARD-COMPATIBLE-CHANGE-TO-YAML-RENDERER</a> are reviewed by the <a href="https://github.com/saltstack-formulas">saltstack-formulas community</a>.
 
 Software versions
 =================
@@ -16,9 +16,9 @@ Reference Vagrant setup
 Refer to HACKING.md. Prefer a minimum of 6GB+4CPU per virutalized hosts.
 
 
-OpenSDS deployed via Salt
-=========================
-Now deploy OpenSDS as follows - expected run duration is 20-55 minutes depending on your network bandwith and compute resources (i.e. 4CPU x 8GiB).
+Procedure
+===========
+Deploy OpenSDS using the steps below. The expected installer duration is 20-55 minutes depending on your network bandwith and compute resources (we recommend at least 4CPU x 8G ram x 60G rootdisk).
 
 ```
  sudo -s

@@ -317,15 +317,12 @@ firewalld:
           - {{ site.port_mysql }}
           - {{ site.port_auth1 }}
           - {{ site.port_auth2 }}
-          - '11211'
-    openstack:
-      short: openstack
-      description: Open Stack Storage
-      ports:
-        tcp:
-          - 8776
-          - 35357
-          - 6000:6002
+          - '11211'               ## memcached
+          - 3260                  ## tgt
+          - 5672                  ## docker-proxy
+          - 3306:3307             ## cinder
+          - 8776                  ## cinder-api
+          - 35357                 ## openstack
   zones:
     public:
       short: Public

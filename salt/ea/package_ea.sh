@@ -66,18 +66,18 @@ while getopts ":i:u:r:" action; do
                      su ${USER} -c "brew upgrade ${p}"
                  done
                  ;;
-        linux*)  if [[ -f "/usr/bin/apt-get" ]]; then
-                     /usr/bin/apt-get upgrade -y ${PACKAGES} || exit 1
-                 elif [ -f "/usr/bin/dnf" ]; then
-                     /usr/bin/dnf upgrade -y --allowerasing ${PACKAGES} || exit 1
+        linux*)  if [ -f "/usr/bin/zypper" ]; then
+                     /usr/bin/zypper --non-interactive up ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/emerge" ]; then
                      /usr/bin/emerge -avDuN ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/pacman" ]; then
                      /usr/bin/pacman -Syu --noconfirm ${PACKAGES} || exit 1
-                 elif [ -f "/usr/bin/zypper" ]; then
-                     /usr/bin/zypper --non-interactive up ${PACKAGES} || exit 1
+                 elif [ -f "/usr/bin/dnf" ]; then
+                     /usr/bin/dnf upgrade -y --allowerasing ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/yum" ]; then
                      /usr/bin/yum update -y ${PACKAGES} || exit 1 
+                 elif [[ -f "/usr/bin/apt-get" ]]; then
+                     /usr/bin/apt-get upgrade -y ${PACKAGES} || exit 1
                  fi
                  ;;
         esac
@@ -94,18 +94,18 @@ while getopts ":i:u:r:" action; do
                      su ${USER} -c "brew uninstall ${p} --force"
                  done
                  ;;
-        linux*)  if [[ -f "/usr/bin/apt-get" ]]; then
-                     /usr/bin/apt-get remove -y ${PACKAGES} || exit 1
-                 elif [ -f "/usr/bin/dnf" ]; then
-                     /usr/bin/dnf remove -y ${PACKAGES} || exit 1
+        linux*)  if [ -f "/usr/bin/zypper" ]; then
+                     /usr/bin/zypper --non-interactive rm ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/emerge" ]; then
                      /usr/bin/emerge -C ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/pacman" ]; then
                      /usr/bin/pacman -Rs --noconfirm ${PACKAGES} || exit 1
-                 elif [ -f "/usr/bin/zypper" ]; then
-                     /usr/bin/zypper --non-interactive rm ${PACKAGES} || exit 1
+                 elif [ -f "/usr/bin/dnf" ]; then
+                     /usr/bin/dnf remove -y ${PACKAGES} || exit 1
                  elif [ -f "/usr/bin/yum" ]; then
                      /usr/bin/yum remove -y ${PACKAGES} || exit 1 
+                 elif [[ -f "/usr/bin/apt-get" ]]; then
+                     /usr/bin/apt-get remove -y ${PACKAGES} || exit 1
                  fi
                  ;;
         esac

@@ -44,11 +44,9 @@ LOG=""
 BASE=/srv
 MODELS=$( pwd )/${BASE}
 REPO=https://github.com/saltstack-formulas
-FORK_REPO=https://github.com/noelmcloughlin
-FORK_FORMULAS="docker"
-FORK_FORMULAS2=""
+FORK_REPO=https://example.com/your_forked_repo
+FORK_FORMULAS=""
 FORK_BRANCH="fixes"
-FORK_BRANCH2=""
 SALT_VERSION='git v2018.3.4'
 
 usage()

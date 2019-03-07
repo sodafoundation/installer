@@ -318,6 +318,14 @@ firewalld:
           - {{ site.port_auth1 }}
           - {{ site.port_auth2 }}
           - '11211'
+    openstack:
+      short: openstack
+      description: Open Stack Storage
+      ports:
+        tcp:
+          - 8776
+          - 35357
+          - 6000:6002
   zones:
     public:
       short: Public

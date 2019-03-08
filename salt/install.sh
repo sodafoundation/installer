@@ -273,6 +273,9 @@ then
             salt-key -L
             [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead "${FORK_FORMULAS}" ${FORK_BRANCH}
             [[ ! -z "${FORK_FORMULAS2}" ]] && use_branch_instead "${FORK_FORMULAS2}" ${FORK_BRANCH2}
+            echo
+            echo "Reboot this host if the linux kernel package was upgraded - if unsure reboot!"
+            echo
             ;;
 
     opensds)

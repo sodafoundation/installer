@@ -306,6 +306,21 @@ firewalld:
         tcp:
           - 6789
           - 6800:6810
+    rabbitmq:
+      short: rabbitmq
+      description: RabbitMQ
+      ports:
+        tcp:
+          - 4369         ## epmd peer discovery
+          - 5671:5672    #a #AMQP clients
+          - 25672        ## internet-node/cli
+          - 35672:35682  ## clitools
+          - 15672        ## http-api, mngt-ui, rabbitmqadm
+          - 61613:61614  ## STOMP
+          - 1883         ## mqtt client
+          - 8883         ## mqtt-tls client
+          - 15674        ## STOMP-over-WebSockets
+          - 15675        ## MQTT-over-WebSockets
     opensds:
       short: opensds
       description: Open Software Defined Storage
@@ -314,13 +329,14 @@ firewalld:
           - {{ site.port_hotpot }}
           - {{ site.port_gelato }}
           - {{ site.port_dock }}
-          - {{ site.port_mysql }}
           - {{ site.port_auth1 }}
           - {{ site.port_auth2 }}
-          - '11211'               ## memcached
+          - {{ site.port_mysql }}
+          - {{ site.port_mysql|int + 1 }}
+          - 11211                 ## memcached
           - 3260                  ## tgt
           - 5672                  ## docker-proxy
-          - 3306:3307             ## cinder
+          - 33060:33070           ## cinder
           - 8776                  ## cinder-api
           - 35357                 ## openstack
   zones:
@@ -334,6 +350,7 @@ firewalld:
         - saltstack
         - ceph
         - opensds
+        - rabbitmq
 
       {%- if grains.os == 'Fedora' %}
     FedoraWorkstation:

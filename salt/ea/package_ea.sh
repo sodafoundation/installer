@@ -20,8 +20,22 @@
 
 [[ `id -u` != 0 ]] && echo && echo "Run script with sudo, exiting" && echo && exit 1
 
-while getopts ":i:u:r:" action; do
+while getopts ":i:u:r:q:" action; do
     case "${action}" in
+
+    ## QUERY PACKAGE
+    q)  shift
+        PACKAGE=${@}
+        case ${OSTYPE} in
+        linux*)  if [ -f "/usr/bin/zypper" ]; then
+                     /usr/bin/zypper se -si ${PACKAGE}
+                 elif [ -f "/usr/bin/yum" ]; then
+                     /usr/bin/rpm -qa | grep ${PACKAGE}
+                 elif [[ -f "/usr/bin/apt-get" ]]; then
+                     /usr/bin/dpkg-query --list | grep ${PACKAGE}
+                 ;;
+        esac
+        ;;
 
     ## INSTALL PACKAGE(S) ##
 

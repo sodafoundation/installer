@@ -156,7 +156,7 @@ setup_logger()
 show_logger()
 {
     #### DISPLAY LOG
-    tail -8 ${1} 2>/dev/null
+    tail -6 ${1} 2>/dev/null
     echo "See full log in [ ${1} ]"
     echo
 }
@@ -250,6 +250,7 @@ while getopts ":i:m:l:x:r:v:" option; do
     esac
 done
 shift $((OPTIND-1))
+KERNEL_RELEASE=$( uname -r | awk -F. '{print $1"."$2"."$3"."$4"."$5}' )
 
 #trying workaround for https://github.com/saltstack/salt/issues/44062 noise
 ${PACKAGE_MGR} -r python2-botocore >/dev/null 2>&1
@@ -274,7 +275,9 @@ then
             [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead "${FORK_FORMULAS}" ${FORK_BRANCH}
             [[ ! -z "${FORK_FORMULAS2}" ]] && use_branch_instead "${FORK_FORMULAS2}" ${FORK_BRANCH2}
             echo
-            echo "Reboot this host if the linux kernel package was upgraded - if unsure reboot!"
+            ${PACKAGE_MGR} -q kernel-[123456] 2>/dev/null
+            echo
+            echo "Reboot this host if linux kernel-${KERNEL_RELEASE} package was upgraded - if unsure reboot!"
             echo
             ;;
 

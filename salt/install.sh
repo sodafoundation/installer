@@ -156,9 +156,12 @@ setup_logger()
 show_logger()
 {
     #### DISPLAY LOG
-    tail -6 ${1} 2>/dev/null
-    echo "See full log in [ ${1} ]"
-    echo
+    if [ -f "${LOG}" ]
+    then
+        tail -6 ${1} | head -4 2>/dev/null
+        echo "See full log in [ ${1} ]"
+        echo
+    fi
 }
 
 ### Prepare salt deployment model for salt middleware and formulas
@@ -175,14 +178,13 @@ apply-salt-state-model()
     ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${2}.sls 2>/dev/null
     [[ "${2}" == 'salt' ]] && clone_formula salt
 
-    echo "run salt ..."
+    echo "run salt: this takes a while, please be patient ..."
     setup_logger $1 $2
     echo >>${LOG} 2>&1
     salt-call pillar.items --local >> ${LOG} 2>&1
     echo >>${LOG} 2>&1
     salt-call state.show_top --local | tee -a ${LOG} 2>&1
     echo >>${LOG} 2>&1
-    echo " ... this takes a while ... please be patient ..." | tee -a ${LOG} 2>&1
     salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
     show_logger ${LOG}
 }

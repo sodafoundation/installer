@@ -26,15 +26,16 @@ while getopts ":i:u:r:q:" action; do
     ## QUERY PACKAGE
     q)  shift
         PACKAGE=${@}
-        case ${OSTYPE} in
-        linux*)  if [ -f "/usr/bin/zypper" ]; then
-                     /usr/bin/zypper se -si ${PACKAGE}
-                 elif [ -f "/usr/bin/yum" ]; then
-                     /usr/bin/rpm -qa | grep ${PACKAGE}
-                 elif [[ -f "/usr/bin/apt-get" ]]; then
-                     /usr/bin/dpkg-query --list | grep ${PACKAGE}
-                 ;;
-        esac
+        if [ "${OSTYPE}" == linux* ]
+        then
+            if [ -f "/usr/bin/zypper" ]; then
+                 /usr/bin/zypper se -si ${PACKAGE}
+            elif [ -f "/usr/bin/yum" ]; then
+                 /usr/bin/rpm -qa | grep ${PACKAGE}
+            elif [[ -f "/usr/bin/apt-get" ]]; then
+                 /usr/bin/dpkg-query --list | grep ${PACKAGE}
+            fi
+        fi
         ;;
 
     ## INSTALL PACKAGE(S) ##

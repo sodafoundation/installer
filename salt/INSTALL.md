@@ -26,6 +26,11 @@ Deploy OpenSDS using the steps below. The expected installer duration is 20-55 m
  cd opensds-installer/salt
 ```
 
+Review site deployment data and set your public ipv4 address. Set "auth_strategy: noauth" if not using keystone.
+```
+ vi site.j2
+```
+
 Install Salt on UBUNTU/CENTOS/OpenSUSE_15
 ```
  ./install.sh -i salt
@@ -35,8 +40,9 @@ Reboot if kernel got upgraded. If in doubt, reboot anyway.
 init 6
 ```
 
-Review site deployment data and set your public ipv4 address-
+Review site deployment data to double check ipv4 adddres. Set "auth_strategy: noauth" if not using keystone.
 ```
+ ip addr
  vi site.j2
 ```
 
@@ -54,6 +60,11 @@ Check openSDS services are running (check logs/status if necessary)
  docker ps -a
  ps -ef | grep osds
  systemctl list-unit-files | grep opensds
+```
+Check openSDS services which start slowly first time:
+```
+ journalctl -u opensds-multi-cloud --follow
+ journalctl -u opensds-cinder --follow
 ```
 
 Firstly configure opensds CLI tool:
@@ -88,11 +99,6 @@ Delete the volume:
 
 ### Dashboard
 The OpenSDS dashboard is available at http://127.0.0.1:8088 or http://<primary_host_ip>:8088. 
-
-If firewalld or iptables is running open the port.
-```
-iptables -I INPUT 1 -i eth1 -p tcp --dport 8088 -j ACCEPT
-```
 
 Please login to the dashboard using the default admin credentials: admin/opensds@123. Create tenant, user, and profiles as admin. Multi-Cloud is also supported by dashboard.
 

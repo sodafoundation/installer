@@ -26,11 +26,6 @@ Deploy OpenSDS using the steps below. The expected installer duration is 20-55 m
  cd opensds-installer/salt
 ```
 
-Review site deployment data and set your public ipv4 address. Set "auth_strategy: noauth" if not using keystone.
-```
- vi site.j2
-```
-
 Install Salt on UBUNTU/CENTOS/OpenSUSE_15
 ```
  ./install.sh -i salt

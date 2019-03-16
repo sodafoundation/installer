@@ -7,9 +7,17 @@
 {%- set sitedata = {} %}
 {%- do sitedata.update( {
 
-      'deploy_project': 'all',
       'auth_strategy': 'noauth',
+      'host_ipv4': '127.0.0.1',
+      'tgtBindIp': '127.0.0.1',
+      'db_host'  : '127.0.0.1',
+      'host_ipv6': '::1/128',
+      'dns_host1': '8.8.8.8',
+      'dns_host2': '64.6.64.6',
+      'ipdomain': 'example.com',
+      'timezone': 'America/Denver',
 
+      'deploy_project': 'all',
       'dock_type': 'provisioner',
       'nbp_plugin_type': 'hotpot_only',
       'fusionstorage_fmip': '192.168.0.200',
@@ -18,15 +26,6 @@
       'drbd_host_0_ipv4': '10.43.70.115',
       'drbd_host_1_name': 'rckdebb',
       'drbd_host_1_ipv4': '10.43.70.116',
-
-      'host_ipv6': '::1/128',
-      'host_ipv4': '127.0.0.1',
-      'tgtBindIp': '127.0.0.1',
-      'db_host'  : '127.0.0.1',
-      'dns_host1': '8.8.8.8',
-      'dns_host2': '64.6.64.6',
-      'ipdomain': 'example.com',
-      'timezone': 'America/Denver',
 
       'enabled_backends': 'lvm, cinder, ceph',
       'lvm_poolname': 'opensds-volumes',

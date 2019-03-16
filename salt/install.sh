@@ -39,6 +39,7 @@ else
 fi
 
 PACKAGE_MGR=$( dirname $0 )/ea/package_ea.sh
+WORKDIR=$(pwd)
 LOGDIR=/tmp/opensds-installer-salt
 LOG=""
 BASE=/srv
@@ -67,7 +68,9 @@ usage()
     echo 1>&2
     echo "  OPTIONS" 1>&2
     echo 1>&2
-    echo "   [ -l debug ]    Debug output (install/remove)." 1>&2
+    echo "   [ -l debug ]    Debug output in logs." 1>&2
+    echo 1>&2
+    echo "   [ -t debug ]    Debug output and valgrind in logs." 1>&2
     echo 1>&2
     echo "   [ -m <name>]    Install; needed if /etc/salt/minion unparseable" 1>&2
     echo 1>&2
@@ -84,8 +87,8 @@ usage()
 ### Install Salt agent software on host (using wget, instead of 'salt-ssh')
 salt-bootstrap()
 {
-    ${PACKAGE_MGR} update 2>/dev/null
-    ${PACKAGE_MGR} -i wget 2>/dev/null
+    ${WORKDIR}/${PACKAGE_MGR} update 2>/dev/null
+    ${WORKDIR}/${PACKAGE_MGR} -i wget 2>/dev/null
     if (( $? > 0 ))
     then
        echo "Failed to install wget"
@@ -185,7 +188,14 @@ apply-salt-state-model()
     echo >>${LOG} 2>&1
     salt-call state.show_top --local | tee -a ${LOG} 2>&1
     echo >>${LOG} 2>&1
-    salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
+    if [[ "${DEBUGG_ON}" == '-tdebug' ]] && [[ -x "${WORKDIR}/${PACKAGE_MGR}" ]]
+    then
+        ${WORKDIR}/${PACKAGE_MGR} -i valgrind kexec-tools crash >/dev/null 2>&1
+        valgrind --tool=memcheck --trace-children=yes --track-fds=yes --time-stamp=yes salt-call state.highstate --local -ldebug --retcode-passthrough saltenv=base  >>${LOG} 2>&1
+
+    else
+        salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
+    fi
     show_logger ${LOG}
 }
 
@@ -237,7 +247,7 @@ use_branch_instead()
 
 #*** MAIN
 
-while getopts ":i:m:l:x:r:v:" option; do
+while getopts ":i:m:l:t:x:r:v:" option; do
     case "${option}" in
     m)  MASTER_HOST=${OPTARG} ;;
     i)  INSTALL_TARGET=${OPTARG}
@@ -247,6 +257,7 @@ while getopts ":i:m:l:x:r:v:" option; do
         INSTALL_TARGET=""
         ;;
     l)  DEBUGG_ON="-ldebug" ;;
+    t)  DEBUGG_ON="-tdebug" ;;
     x)  SALT_OPTS="-x python3" ;;
     v)  SALT_VERSION="git v${OPTARG}" ;;
     esac
@@ -255,7 +266,7 @@ shift $((OPTIND-1))
 KERNEL_RELEASE=$( uname -r | awk -F. '{print $1"."$2"."$3"."$4"."$5}' )
 
 #trying workaround for https://github.com/saltstack/salt/issues/44062 noise
-${PACKAGE_MGR} -r python2-botocore >/dev/null 2>&1
+${WORKDIR}/${PACKAGE_MGR} -r python2-botocore >/dev/null 2>&1
 
 if [[ -z "${REMOVE_TARGET}" ]]
 then
@@ -265,7 +276,7 @@ then
             if [[ -z "${SALT_VERSION}" ]]
             then
                 salt-bootstrap "${SALT_OPTS}"
-                ${PACKAGE_MGR} -i salt-api
+                ${WORKDIR}/${PACKAGE_MGR} -i salt-api
             else
                 salt-bootstrap "${SALT_OPTS} -M ${SALT_VERSION}"
             fi
@@ -277,7 +288,7 @@ then
             [[ ! -z "${FORK_FORMULAS}" ]] && use_branch_instead "${FORK_FORMULAS}" ${FORK_BRANCH}
             [[ ! -z "${FORK_FORMULAS2}" ]] && use_branch_instead "${FORK_FORMULAS2}" ${FORK_BRANCH2}
             echo
-            ${PACKAGE_MGR} -q kernel-[123456] 2>/dev/null
+            ${WORKDIR}/${PACKAGE_MGR} -q kernel-[123456] 2>/dev/null
             echo
             echo "Reboot this host if linux kernel-${KERNEL_RELEASE} package was upgraded - if unsure reboot!"
             echo

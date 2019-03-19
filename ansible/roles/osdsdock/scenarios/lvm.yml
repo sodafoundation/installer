@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-- name: install lvm2 ang tgt external package when lvm backend enabled
+- name: install lvm2 ang tgt external package and ibv* commands package when lvm backend enabled
   apt:
     name: "{{ item }}"
     state: present
@@ -21,6 +21,7 @@
     - lvm2
     - tgt
     - thin-provisioning-tools
+    - ibverbs-utils
 
 - name: configure lvm section in opensds global info if specify lvm backend
   shell: |
@@ -70,10 +71,57 @@
                   sudo vgcreate $vg $vg_dev
               fi
           fi
+
+          # Only create if the file doesn't already exists
+          # create volume group and prepare kernel module
+          if [ -e {{ lvm_nvme_device }} ]; then
+            local vg={{ opensds_volume_group_nvme }}
+            local size={{ opensds_volume_group_nvme_size }}
+            sudo mkdir -p {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
+            sudo mount {{ lvm_nvme_device }} {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
+            local backing_file={{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/${vg}.img
+            if ! sudo vgs $vg; then
+                # Only create if the file doesn't already exists
+                [[ -f $backing_file ]] || truncate -s $size $backing_file
+                local vg_dev
+                vg_dev=`sudo losetup -f --show $backing_file`
+
+                # Only create physical volume if it doesn't already exist
+                if ! sudo pvs $vg_dev; then
+                    sudo pvcreate $vg_dev
+                fi
+
+                # Only create volume group if it doesn't already exist
+                if ! sudo vgs $vg; then
+                    sudo vgcreate $vg $vg_dev
+                fi
+            fi
+              sudo modprobe nvmet
+              sudo modprobe nvmet-rdma
+          fi
+          # nvme-cli utility for nvmeof initiator
+          sudo wget https://github.com/linux-nvme/nvme-cli/archive/v1.7.tar.gz -O /opt/nvmecli-1.7.tar.gz
+          sudo tar -zxvf /opt/nvmecli-1.7.tar.gz -C /opt/
+          cd /opt/nvme-cli-1.7 && sudo make && sudo make install
+          sudo modprobe nvme
+          sudo modprobe nvme-rdma
       }
       # we need this kernel module to support creating thin pool logical volumes (lv) later.
       modprobe dm_thin_pool
       _create_lvm_volume_group {{ opensds_volume_group }} 10G
+  args:
+    executable: /bin/bash
+  become: true
+
+- name: check RDMA card for nvmeof
+  shell:
+    _raw_params: |
+      phys_port_cnt=$(ibv_devinfo |grep -Eow hca_id |wc -l)
+      echo "The actual quantity of RDMA ports is $phys_port_cnt"
+
+      if [[ "$phys_port_cnt" < '1' ]]; then
+        echo "RDMA card not found"
+      fi
   args:
     executable: /bin/bash
   become: true

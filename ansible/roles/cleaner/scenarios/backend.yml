@@ -73,6 +73,23 @@
 
       clean_lvm_volume_group {{opensds_volume_group}}
 
+      if [ -e {{ lvm_nvme_device }} ]; then
+        # delete nvme volume group and prepare kernel module
+        _clean_lvm_volume_group {{ opensds_volume_group_nvme }}
+        _remove_lvm_volume_group {{ opensds_volume_group_nvme }}
+        if [[ -z "$(sudo lvs --noheadings -o lv_name {{ opensds_volume_group_nvme }} 2>/dev/null)" ]]; then
+            _clean_lvm_backing_file {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/{{ opensds_volume_group_nvme }}.img
+        fi
+        sudo umount {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
+        sudo rm -rf {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/
+        sudo modprobe -r nvmet
+        sudo modprobe -r nvmet-rdma
+        # nvme-cli utility for nvmeof initiator
+        # sudo rm -rf /opt/nvmecli-0.8
+      fi
+      sudo modprobe -r nvme
+      sudo modprobe -r nvme-rdma
+
   args:
     executable: /bin/bash
   become: true

@@ -246,11 +246,11 @@ lvm:
       truncate:
         {{ site.hotpot_path }}/volumegroups/{{ site.cinder_poolname }}.img:
           options:
-            size: 1G
+            size: 10G
       'truncate ':
         {{ site.hotpot_path }}/volumegroups/{{ site.ceph_poolname }}.img:
           options:
-            size: 1G
+            size: 10G
       'truncate  ':
         {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img:
           options:
@@ -258,7 +258,7 @@ lvm:
       'truncate   ':
         {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img:
           options:
-            size: 1GM
+            size: 1G
 
       ### setup backing devices
       losetup:

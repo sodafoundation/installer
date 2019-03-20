@@ -40,3 +40,4 @@
     - gcc
     - python-pip
     - open-iscsi
+    - ceph-deploy

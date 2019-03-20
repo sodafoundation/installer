@@ -152,3 +152,8 @@
   become: true
   when: "'cinder' in enabled_backends"
   ignore_errors: yes
+
+- name: clean the ceph backend
+  shell: bash ./script/check_ceph_exist.sh clean
+  when: "'ceph' in enabled_backends"
+  ignore_errors: yes

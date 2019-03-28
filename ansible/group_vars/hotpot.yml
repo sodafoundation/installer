@@ -22,7 +22,8 @@ dummy:
 # GENERAL #
 ###########
 
-controller_endpoint: "{{ host_ip }}:50040"
+controller_endpoint: "{{ host_ip }}:50049"
+apiserver_endpoint: "{{ host_ip }}:50040"
 dock_endpoint: localhost:50050
 
 # These fields are NOT suggested to be modifie
@@ -32,6 +33,7 @@ opensds_config_dir: /etc/opensds
 opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
 opensds_log_dir: /var/log/opensds
 controller_log_file: "{{ opensds_log_dir }}/osdslet.log"
+apiserver_log_file: "{{ opensds_log_dir }}/osdsapiserver.log"
 dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 
 
@@ -51,7 +53,7 @@ hotpot_remote_url: https://github.com/opensds/opensds.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-hotpot_release: v0.5.0 # The version should be at least v0.2.1
+hotpot_release: v0.6.0 # The version should be at least v0.2.1
 
 # These fields are NOT suggested to be modified
 hotpot_download_url: https://github.com/opensds/opensds/releases/download/{{ hotpot_release }}/opensds-hotpot-{{ hotpot_release }}-linux-amd64.tar.gz

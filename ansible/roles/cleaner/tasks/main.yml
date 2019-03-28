@@ -19,8 +19,8 @@
     state: stopped
   when: dashboard_installation_type == "container"
 
-- name: kill osdslet and osdsdock daemon service
-  shell: killall osdslet osdsdock
+- name: kill osdslet and osdsdock and osdsapiserver daemon service
+  shell: killall osdslet osdsdock osdsapiserver
   when: install_from != "container"
   ignore_errors: true
 

@@ -68,4 +68,5 @@ hotpot_image_tag: latest
 
 # These fields are NOT suggested to be modified
 controller_docker_image: opensdsio/opensds-controller:{{ hotpot_image_tag }}
+apiserver_docker_image: opensdsio/opensds-apiserver:{{ hotpot_image_tag }}
 dock_docker_image: opensdsio/opensds-dock:{{ hotpot_image_tag }}

@@ -150,3 +150,13 @@
     volumes:
     - "/etc/opensds/:/etc/opensds"
   when: deploy_project != "gelato" and install_from == "container"
+
+- name: run osdsapiserver containerized service
+  docker_container:
+    name: apiserver
+    image: "{{ apiserver_docker_image }}"
+    state: started
+    network_mode: host
+    volumes:
+    - "/etc/opensds/:/etc/opensds"
+  when: deploy_project != "gelato" and install_from == "container"

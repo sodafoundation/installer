@@ -31,6 +31,13 @@
     state: stopped
   when: install_from == "container"
 
+- name: kill osdsapiserver containerized service
+  docker_container:
+    name: apiserver
+    image: "{{ apiserver_docker_image }}"
+    state: stopped
+  when: install_from == "container"
+
 - name: kill osdsdock containerized service
   docker_container:
     name: osdsdock

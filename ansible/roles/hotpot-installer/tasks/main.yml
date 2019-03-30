@@ -80,9 +80,11 @@
     cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
     [osdslet]
     api_endpoint = {{ controller_endpoint }}
-    graceful = True
     log_file = {{ controller_log_file }}
-    socket_order = inc
+    
+    [osdsapiserver]
+    api_endpoint = {{ apiserver_endpoint }}
+    log_file = {{ apiserver_log_file }}
     auth_strategy = {{ opensds_auth_strategy }}
     # If https is enabled, the default value of cert file
     # is /opt/opensds-security/opensds/opensds-cert.pem, 
@@ -123,10 +125,36 @@
     chdir: "{{ hotpot_work_dir }}"
   when: deploy_project != "gelato" and install_from != "container"
 
+- name: run osdsapiserver daemon service
+  shell:
+    cmd: |
+      i=0
+      while
+        i="$((i+1))"
+        [ "$i" -lt 4 ]
+      do
+        nohup bin/osdsapiserver > osdsapiserver.out 2> osdsapiserver.err < /dev/null &
+        sleep 5
+        ps aux | grep osdsapiserver | grep -v grep && break
+      done
+  args:
+    chdir: "{{ hotpot_work_dir }}"
+  when: deploy_project != "gelato" and install_from != "container"
+
 - name: run osdslet containerized service
   docker_container:
     name: osdslet
     image: "{{ controller_docker_image }}"
+    state: started
+    network_mode: host
+    volumes:
+    - "/etc/opensds/:/etc/opensds"
+  when: deploy_project != "gelato" and install_from == "container"
+
+- name: run osdsapiserver containerized service
+  docker_container:
+    name: apiserver
+    image: "{{ apiserver_docker_image }}"
     state: started
     network_mode: host
     volumes:

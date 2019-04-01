@@ -1,0 +1,94 @@
+#*****************************************
+# SITE & RELEASE DATA COLLECTION
+# Save file as /srv/pillar/site.j2
+# this is jinja not yaml!!
+# Reference values
+#*****************************************
+{%- set sitedata = {} %}
+{%- do sitedata.update( {
+
+      'auth_strategy': 'noauth',
+      'host_ipv4': '127.0.0.1',
+      'tgtBindIp': '127.0.0.1',
+      'db_host'  : '127.0.0.1',
+      'host_ipv6': '::1/128',
+      'dns_host1': '8.8.8.8',
+      'dns_host2': '64.6.64.6',
+      'ipdomain': 'example.com',
+      'timezone': 'America/Denver',
+
+      'deploy_project': 'all',
+      'dock_type': 'provisioner',
+      'nbp_plugin_type': 'hotpot_only',
+      'fusionstorage_fmip': '192.168.0.200',
+      'fusionstorage_fsaip': ['192.168.0.4', '192.168.0.5', '192.168.0.6',],
+      'drbd_host_0_name': 'rckdeba',
+      'drbd_host_0_ipv4': '10.43.70.115',
+      'drbd_host_1_name': 'rckdebb',
+      'drbd_host_1_ipv4': '10.43.70.116',
+
+      'enabled_backends': 'lvm, cinder, ceph',
+      'lvm_poolname': 'opensds-volumes',
+      'ceph_poolname': 'ceph-volumes',
+      'cinder_poolname': 'cinder-volumes',
+      'dorado_poolname': 'dorado-volumes',
+      'fusionstorage_poolname': 'fusionstorage-volumes',
+
+      'gelato_release': 'v0.5.0',
+      'gelato_service': 'multi-cloud',
+      'gelato_uri': 'https://github.com/opensds/multi-cloud/releases/download',
+      'gelato_hashsum': 'md5=b529126cd30a3aec5936b368d34337b6',
+
+      'hotpot_release': 'v0.4.0',
+      'hotpot_service': 'opensds',
+      'hotpot_hashsum': 'md5=d9dee4acf9cfd8d29f99cd09c7669519',
+      'hotpot_uri': 'https://github.com/opensds/opensds/releases/download',
+
+      'sushi_release': 'v0.4.0',
+      'sushi_hashsum': 'md5=e774d5fe5851a4177175ba806eb87682',
+      'sushi_uri': 'https://github.com/opensds/nbp/releases/download',
+
+      'cinder_release': '13.0.2',
+      'cinder_hashsum': 'md5=dcacbed12750238dac1dbd7a7957dc54',
+      'cinder_url': 'https://github.com/openstack/cinder/archive/13.0.2.tar.gz',
+
+      'kubectl_hashsum': 'md5=b0629c3ca34bc043da2f5d3eb226fb9e',
+      'kubectl_url': 'https://storage.googleapis.com/kubernetes-release/release/v1.12.3/bin/linux/amd64/kubectl',
+
+      'container_hotpot_img': 'opensdsio/opensds-controller',
+      'container_dock_img': 'opensdsio/opensds-dock',
+      'container_dashboard_img': 'opensdsio/dashboard',
+      'container_etcd_img': 'quay.io/coreos/etcd',
+      'container_cinder_img': 'openstack/cinder-blockbox',
+
+      'hotpot_version': 'latest',
+      'dock_version': 'latest',
+      'dashboard_version': 'latest',
+      'etcd_version': 'latest',
+      'cinder_version': 'stable/rocky',
+
+      'devstack_enabled_services': 'mysql,key',
+      'devstack_password': 'opensds@123',
+      'project_domain_name': 'Default',
+      'project_name': 'service',
+      'user_domain_name': 'Default',
+
+      'devstack_path': '/opt/opensds-linux-amd64-devstack',
+      'hotpot_path': '/opt/opensds-linux-amd64',
+      'devstack_path': '/opt/opensds-linux-amd64-devstack',
+      'gelato_path': '/opt/opensds-gelato-linux-amd64',
+      'sushi_path': '/opt/opensds-sushi-linux-amd64',
+      'go_prefix': '/usr/local',
+      'go_root': '/usr/local/go',
+      'go_path': '/usr/local/golang/packages',
+
+      'port_hotpot': '50040',
+      'port_dock': '50050',
+      'port_csi': '50051',
+      'port_gelato': '8089',
+      'port_mysql': '3306',
+      'port_nginx': '8088',
+      'port_auth1': '2379',
+      'port_auth2': '2380',
+
+}) %}

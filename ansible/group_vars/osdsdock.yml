@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Change it according to your backend, currently support 'lvm', 'ceph', 'cinder'
-enabled_backend: lvm
+enabled_backends: lvm #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder
 # Change it according to your node type (host or target), currently support
 # 'provisioner', 'attacher'
 dock_type: provisioner
@@ -45,7 +45,10 @@ lvm_name: lvm backend
 lvm_description: This is a lvm backend service
 lvm_driver_name: lvm
 lvm_config_path: "{{ opensds_driver_config_dir }}/lvm.yaml"
+lvm_nvme_device: "/dev/nvme0n1"
 opensds_volume_group: opensds-volumes
+opensds_volume_group_nvme: opensds-volumes-nvme
+opensds_volume_group_nvme_size: 10G
 
 
 

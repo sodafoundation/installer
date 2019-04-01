@@ -44,7 +44,7 @@ Review site deployment data to double check ipv4 adddres. Set "auth_strategy: no
 Deploy OpenSDS on UBUNTU/CENTOS/OpenSUSE_15
 ```
 sudo -s
-cd /root/opensds-installer/salt/; install.sh -i opensds
+cd /root/opensds-installer/salt/; ./install.sh -i opensds
 ```
 
 How to test opensds cluster

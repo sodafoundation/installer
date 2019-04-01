@@ -44,7 +44,10 @@ lvm_name: lvm backend
 lvm_description: This is a lvm backend service
 lvm_driver_name: lvm
 lvm_config_path: "{{ opensds_driver_config_dir }}/lvm.yaml"
+lvm_nvme_device: "/dev/nvme0n1"
 opensds_volume_group: opensds-volumes
+opensds_volume_group_nvme: opensds-volumes-nvme
+opensds_volume_group_nvme_size: 10G
 
 
 

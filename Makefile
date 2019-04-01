@@ -38,6 +38,7 @@ dist:
 	    cd $(DIST_DIR) && \
 	    cp -r $(BASE_DIR)/ansible $(BUILD_TGT)/ && \
 	    cp -r $(BASE_DIR)/charts $(BUILD_TGT)/ && \
+	    cp -r $(BASE_DIR)/salt $(BUILD_TGT)/ && \
 	    cp -r $(BASE_DIR)/conf $(BUILD_TGT)/ && \
 	    cp $(BASE_DIR)/LICENSE $(BUILD_TGT)/ && \
 	    zip -r $(DIST_DIR)/$(BUILD_TGT).zip $(BUILD_TGT) && \

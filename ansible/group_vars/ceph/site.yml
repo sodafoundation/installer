@@ -1,166 +1,101 @@
+# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 ---
 # Defines deployment design and assigns role to server groups
+- name: deploy opensds cluster
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/hotpot.yml
+    - group_vars/osdsdb.yml
+  become: True
+  roles:
+    - common
 
-- hosts:
-    - mons
-    - agents
-    - osds
-    - mdss
-    - rgws
-    - nfss
-    - restapis
-    - rbdmirrors
-    - clients
-    - mgrs
-    - iscsigws
-    - iscsi-gws # for backward compatibility only!
-
-  gather_facts: false
-
-  tags:
-    - always
-
-  vars:
-    delegate_facts_host: True
-
-  tasks:
-    # If we can't get python2 installed before any module is used we will fail
-    # so just try what we can to get it installed
-    - name: check for python2
-      stat:
-        path: /usr/bin/python
-      ignore_errors: yes
-      register: systempython2
-
-    - name: install python2 for debian based systems
-      raw: sudo apt-get -y install python-simplejson
-      ignore_errors: yes
-      when:
-        - systempython2.stat.exists is undefined or systempython2.stat.exists == false
-
-    - name: install python2 for fedora
-      raw: sudo dnf -y install python creates=/usr/bin/python
-      ignore_errors: yes
-      when:
-        - systempython2.stat.exists is undefined or systempython2.stat.exists == false
-
-    - name: gather facts
-      setup:
-      when:
-        - not delegate_facts_host | bool
-
-    - name: gather and delegate facts
-      setup:
-      delegate_to: "{{ item }}"
-      delegate_facts: True
-      with_items: "{{ groups['all'] }}"
-      run_once: true
-      when:
-        - delegate_facts_host | bool
-
-    - name: install required packages for fedora > 23
-      raw: sudo dnf -y install python2-dnf libselinux-python ntp
-      when:
-        - ansible_distribution == 'Fedora'
-        - ansible_distribution_major_version|int >= 23
-
-- hosts: mons
+- name: Install keystone
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
   gather_facts: false
   become: True
   roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-mon
+    - auth-installer
 
-- hosts: mgrs
+- name: Deploy OpenSDS Hotpot-installer
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/hotpot.yml
+    - group_vars/osdsdb.yml
   gather_facts: false
   become: True
   roles:
-    - ceph-defaults
-    - ceph-common
-    - { role: ceph-config, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
-    - { role: ceph-mgr, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
+    - osdsdb
+    - hotpot-installer
 
-- hosts: agents
+- name: Deploy Docker
+  hosts: docks
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/hotpot.yml
+    - group_vars/osdsdb.yml
+    - group_vars/osdsdock.yml
   gather_facts: false
   become: True
   roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-agent
+    - osdsdock
 
-- hosts: osds
+- name: Install Gelato
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/gelato.yml
   gather_facts: false
   become: True
   roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-osd
+    - gelato-installer
 
-- hosts: mdss
+- name: Install Sushi
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/sushi.yml
   gather_facts: false
   become: True
   roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-mds
+    - sushi-installer
 
-- hosts: rgws
+- name: deploy dashboard
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/dashboard.yml
   gather_facts: false
   become: True
   roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-rgw
-
-- hosts: nfss
-  gather_facts: false
-  become: True
-  roles:
-    - ceph-defaults
-    - ceph-common
-    - { role: ceph-config, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
-    - { role: ceph-nfs, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
-
-- hosts: restapis
-  gather_facts: false
-  become: True
-  roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-restapi
-
-- hosts: rbdmirrors
-  gather_facts: false
-  become: True
-  roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-rbd-mirror
-
-- hosts: clients
-  gather_facts: false
-  become: True
-  roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-client
-
-- hosts:
-    - iscsigws
-    - iscsi-gws # for backward compatibility only!
-  gather_facts: false
-  become: True
-  roles:
-    - ceph-defaults
-    - ceph-common
-    - { role: ceph-config, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
-    - { role: ceph-iscsi-gw, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
+    - dashboard-installer

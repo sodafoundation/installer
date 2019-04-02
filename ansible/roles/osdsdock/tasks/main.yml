@@ -37,21 +37,6 @@
   shell: |
     cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
 
-    [osdslet]
-    api_endpoint = {{ controller_endpoint }}
-    graceful = True
-    log_file = {{ controller_log_file }}
-    socket_order = inc
-    auth_strategy = {{ opensds_auth_strategy }}
-    # If https is enabled, the default value of cert file
-    # is /opt/opensds-security/opensds/opensds-cert.pem,
-    # and key file is /opt/opensds-security/opensds/opensds-key.pem
-    https_enabled = False
-    beego_https_cert_file =
-    beego_https_key_file =
-    # Encryption and decryption tool. Default value is aes.
-    password_decrypt_tool = aes
-
     [osdsdock]
     api_endpoint = {{ dock_endpoint }}:{{ dock_port }}
     log_file = {{ dock_log_file }}

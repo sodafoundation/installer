@@ -72,10 +72,6 @@
   include: scenarios/release.yml
   when: install_from == "release" and deploy_project != "gelato"
 
-- name: include scenarios/container.yml when installing from container
-  include: scenarios/container.yml
-  when: install_from == "container" and deploy_project != "gelato"
-
 - name: copy config templates into opensds global config folder
   copy:
     src: ../../../../conf/

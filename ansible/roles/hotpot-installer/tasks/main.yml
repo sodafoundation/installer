@@ -13,6 +13,10 @@
 # limitations under the License.
 
 ---
+- name: include scenarios/container.yml when installing from container
+  include: scenarios/container.yml
+  when: install_from == "container" and deploy_project != "gelato"
+
 - name: generate certificates
   shell: "{{ item }}"
   with_items:

@@ -112,7 +112,7 @@
     
 Install following packages (on all nodes):
 ```bash
-apt-get install -y git curl wget libltdl7 libseccomp2
+apt-get install -y git curl wget libltdl7 libseccomp2 libffi-dev
 ```
 * docker
 
@@ -145,7 +145,9 @@ source /etc/profile
 ### Download opensds-installer code (on all nodes)
 ```bash
 git clone https://github.com/opensds/opensds-installer.git
-cd opensds-installer/ansible
+cd opensds-installer/
+git checkout stable/bali
+cd ansible
 ```
 
 ### Install ansible tool (on all nodes)
@@ -254,6 +256,7 @@ Configure the auth and pool options to access cinder in `group_vars/cinder/cinde
 
 ### Check if the hosts can be reached
 ```bash
+export HOST_IP={your_real_host_ip}
 ansible all -m ping -i local.hosts
 ```
 

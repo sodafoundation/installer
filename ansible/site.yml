@@ -14,27 +14,95 @@
 
 ---
 # Defines deployment design and assigns role to server groups
+- name: deploy commom
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+  gather_facts: false
+  become: True
+  roles:
+    - common
 
-- name: deploy an opensds local cluster
+- name: deploy auth
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/auth.yml
+  gather_facts: false
+  become: True
+  roles:
+    - auth-installer
+
+- name: deploy osdsdb
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/osdsdb.yml
+  gather_facts: false
+  become: True
+  roles:
+    - osdsdb
+
+- name: deploy hotpot
   hosts: all
   remote_user: root
   vars_files:
     - group_vars/common.yml
     - group_vars/auth.yml
     - group_vars/hotpot.yml
-    - group_vars/osdsdb.yml
     - group_vars/osdsdock.yml
+    - group_vars/osdsdb.yml
+  gather_facts: false
+  become: True
+  roles:
+    - hotpot-installer
+
+- name: deploy osdsdock
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/hotpot.yml
+    - group_vars/osdsdock.yml
+    - group_vars/ceph/conf.yml
+    - group_vars/ceph/all.yml
+  gather_facts: false
+  become: True
+  roles:
+    - osdsdock
+
+- name: deploy gelato-installer
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
     - group_vars/gelato.yml
+  gather_facts: false
+  become: True
+  roles:
+    - gelato-installer
+
+- name: deploy sushi
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
     - group_vars/sushi.yml
+  gather_facts: false
+  become: True
+  roles:
+    - sushi-installer
+
+- name: deploy dashboard-installer
+  hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
     - group_vars/dashboard.yml
   gather_facts: false
   become: True
   roles:
-    - common
-    - auth-installer
-    - osdsdb
-    - hotpot-installer
-    - osdsdock
-    - gelato-installer
-    - sushi-installer
     - dashboard-installer

@@ -17,7 +17,7 @@
 
 # os support feature
 default_feature: 1
-# you can get fsid by command "cepf fsid"
+# you can get fsid by command "ceph fsid"
 fsid: b4683c8b-0b0f-4a70-aa8e-c553090f826a
 # you can get mon_members by command "ceph mon_status",it's name parameter of the result.
 mon_members: ubuntu

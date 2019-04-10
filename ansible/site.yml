@@ -26,17 +26,6 @@
     - common
     - auth-installer
 
-- name: deploy osdsdb
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/osdsdb.yml
-  gather_facts: false
-  become: True
-  roles:
-    - osdsdb
-
 - name: deploy hotpot
   hosts: all
   remote_user: root
@@ -49,6 +38,7 @@
   gather_facts: false
   become: True
   roles:
+    - osdsdb
     - hotpot-installer
 
 - name: deploy osdsdock

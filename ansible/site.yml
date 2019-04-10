@@ -14,24 +14,16 @@
 
 ---
 # Defines deployment design and assigns role to server groups
-- name: Pre-deployment operation
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-  gather_facts: false
-  become: True
-  roles:
-    - common
-
 - name: deploy auth
   hosts: all
   remote_user: root
   vars_files:
+    - group_vars/common.yml
     - group_vars/auth.yml
   gather_facts: false
   become: True
   roles:
+    - common
     - auth-installer
 
 - name: deploy osdsdb

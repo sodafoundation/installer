@@ -158,6 +158,7 @@ install(){
     cd "${DEV_STACK_DIR}"
     su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/stack.sh" >/dev/null
     delete_redundancy_data
+    cp "$TOP_DIR/../../conf/keystone.policy.json" "${KEYSTONE_CONFIG_DIR}/policy.json"
 }
 
 uninstall(){
@@ -185,6 +186,8 @@ TOP_DIR=$(cd $(dirname "$0") && pwd)
 
 # OpenSDS configuration directory
 OPENSDS_CONFIG_DIR=${OPENSDS_CONFIG_DIR:-/etc/opensds}
+# Keystone configuration directory
+KEYSTONE_CONFIG_DIR=${KEYSTONE_CONFIG_DIR:-/etc/keystone}
 if [[ -e $TOP_DIR/local.conf ]];then
     source $TOP_DIR/local.conf
 fi

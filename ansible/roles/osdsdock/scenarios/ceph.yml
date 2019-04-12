@@ -13,6 +13,58 @@
 # limitations under the License.
 
 ---
+- name: check ceph exists
+  shell: "{{ item }}"
+  with_items: 
+    - bash ./script/check_ceph_exist.sh
+  ignore_errors: true
+  register: cephres
+
+- name: check if ceph.conf folder exist when ceph backend enable
+  shell: ls /etc/ceph
+  ignore_errors: true
+  register: result
+
+- name: create ceph.conf folder if not exist when ceph backend enable
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ ceph_backend_conf }}"
+  when: cephres["results"][0]["stdout"] == "HEALTH_OK" and result["rc"] != 0
+
+- name:  configure ceph section when ceph backend exist
+  shell: |
+   cat > ceph_exist.conf
+   cat >> ceph_exist.conf <<EOF    
+    [global]
+    rbd default features = {{ default_feature }}
+    
+    fsid= {{ fsid }}
+    mon initial members= {{ mon_members }}
+    mon host= {{ mon_host }}
+    public network = {{ public_network }}
+    cluster network = {{ cluster_network }}
+    [osd]
+    osd mkfs type = {{ mkfs_type }}
+    osd mkfs options xfs = {{ mkfs_options }}
+    osd mount options xfs = {{ mount_options }}
+    osd journal size = {{ journal_size }}
+       
+  args:
+    chdir: "{{ ceph_backend_conf }}"
+  ignore_errors: yes
+  when: cephres["results"][0]["stdout"] == "HEALTH_OK" and cephres["results"][0]["rc"] == 0
+
+- name: copy ceph config to /etc/ceph
+  copy:
+    backup: yes
+    src: "{{ ceph_backend_conf }}/ceph_exist.conf"
+    dest: "{{ ceph_backend_conf }}/ceph.conf"
+    force: yes
+  when: cephres["results"][0]["stdout"] == "HEALTH_OK" and result["rc"] == 0
+
 - name: check ceph version
   script: ./script/check_ceph_version.sh 
   become: yes
@@ -25,13 +77,14 @@
     state: present
   with_items:
     - ceph-common
-  when: res["rc"] == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
 
 - name: install notario package with pip when ceph backend enabled
   pip:
     name: "{{ item }}"
   with_items:
     - notario
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK"
 
 - name: configure ceph section in opensds global info if specify ceph backend
   shell: |
@@ -70,6 +123,7 @@
     path: /opt/ceph-ansible
   ignore_errors: yes
   register: cephansibleexisted
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK"
 
 - name: download ceph-ansible source code
   git:
@@ -77,6 +131,7 @@
     dest: /opt/ceph-ansible
     version: stable-3.0
   when:
+    - cephres["results"][0]["stdout"] != "HEALTH_OK"
     - cephansibleexisted.stat.exists is undefined or cephansibleexisted.stat.exists == false
     - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
 
@@ -84,20 +139,22 @@
   copy:
     src: ../../../group_vars/ceph/ceph.hosts
     dest: /opt/ceph-ansible/ceph.hosts
-  when: res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
 
 - name: copy ceph all.yml file into ceph-ansible group_vars directory
   copy:
     src: ../../../group_vars/ceph/all.yml
     dest: /opt/ceph-ansible/group_vars/all.yml
-  when: res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
+
 
 - name: copy site.yml in ceph-ansible
   copy:
     src: /opt/ceph-ansible/site.yml.sample
     dest: /opt/ceph-ansible/site.yml
     remote_src: yes
-  when: res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
+
 
 - name: ping all hosts and run ceph-ansible playbook
   shell: "{{ item }}"
@@ -107,7 +164,9 @@
     - ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
   args:
     chdir: /opt/ceph-ansible
-  when: res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+  when:
+    - cephres["results"][0]["stdout"] != "HEALTH_OK"
+    - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
 
 - name: check if ceph osd is running
   shell: ps aux | grep ceph-osd | grep -v grep
@@ -129,7 +188,9 @@
     - ceph osd crush tunables hammer
     - sleep 5 
     - grep -q "^rbd default features" /etc/ceph/ceph.conf || sed -i '/\[global\]/arbd default features = 1' /etc/ceph/ceph.conf
-  when: service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0
+  when:
+    - cephres["results"][0]["stdout"] != "HEALTH_OK"
+    - service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0
 
 - name: create specified pools and initialize them with default pool size.
   shell: ceph osd pool create {{ item }} 100 && ceph osd pool set {{ item }} size 1

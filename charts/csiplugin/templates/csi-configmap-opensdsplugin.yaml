@@ -14,3 +14,5 @@ data:
   ostenantname: {{ .Values.data.osTenantName }}
   osprojectname: {{ .Values.data.osProjectName }}
   osuserdomainid: {{ .Values.data.osUserDomainId }}
+  passwordencrypter: {{ .Values.data.passwordEncrypter }}
+  enableEncrypted: {{ .Values.data.enableEncrypted }}

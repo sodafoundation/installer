@@ -1,7 +1,7 @@
 # Default values for OpenSDS Service Broker
 # Image to use
 image:
-  service-broker: opensdsio/service-broker:bali
+  service-broker: opensdsio/service-broker:latest
   etcd-store: quay.io/coreos/etcd:latest
 # ImagePullPolicy; valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent

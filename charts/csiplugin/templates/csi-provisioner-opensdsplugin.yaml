@@ -4,34 +4,39 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: csi-provisioner-opensdsplugin
+  name: {{ template "fullname" . }}-csi-provisioner-opensdsplugin
   labels:
-    app: csi-provisioner-opensdsplugin
+    app: {{ template "fullname" . }}-csi-provisioner-opensdsplugin
 spec:
   selector:
-    app: csi-provisioner-opensdsplugin
+    app: {{ template "fullname" . }}-csi-provisioner-opensdsplugin
   ports:
     - name: dummy
       port: 12345
 
 ---
 kind: StatefulSet
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
-  name: csi-provisioner-opensdsplugin
+  name: {{ template "fullname" . }}-csi-provisioner-opensdsplugin
 spec:
   serviceName: "csi-provisioner-opensdsplugin"
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}-csi-provisioner-opensdsplugin
   template:
     metadata:
       labels:
-        app: csi-provisioner-opensdsplugin
+        app: {{ template "fullname" . }}-csi-provisioner-opensdsplugin
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
     spec:
       serviceAccount: csi-provisioner
       containers:
         - name: csi-provisioner
-          # This should be replaced by an official k8s-csi provisioner image when it is released.
-          image: quay.io/k8scsi/csi-provisioner:v0.4.0
+          image: quay.io/k8scsi/csi-provisioner:v1.0.1
           args:
             - "--provisioner=csi-opensdsplugin"
             - "--csi-address=$(ADDRESS)"
@@ -73,11 +78,26 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: osusername
+            - name: PASSWORD_ENCRYPTER
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: passwordencrypter
             - name: OS_PASSWORD
               valueFrom:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: ospassword
+            - name: PASSWORD_ENCRYPTER
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: passwordencrypter
+            - name: ENABLE_ENCRYPTED
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: enableEncrypted
             - name: OS_TENANT_NAME
               valueFrom:
                 configMapKeyRef:
@@ -97,6 +117,12 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
+            - name: certificate-path
+              mountPath: /opt/opensds-security
       volumes:
         - name: socket-dir
           emptyDir:
+        - name: certificate-path
+          hostPath:
+            path: /opt/opensds-security
+            type: DirectoryOrCreate

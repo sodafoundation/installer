@@ -17,3 +17,5 @@ data:
   osTenantName: admin
   osProjectName: admin
   osUserDomainId: default
+  passwordEncrypter: aes
+  enableEncrypted: F

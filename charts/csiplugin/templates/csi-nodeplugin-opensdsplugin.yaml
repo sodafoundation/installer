@@ -2,26 +2,29 @@
 # which are necessary to run csi nodeplugin for opensds.
 
 kind: DaemonSet
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 metadata:
-  name: csi-nodeplugin-opensdsplugin
+  name: {{ template "fullname" . }}-csi-nodeplugin-opensdsplugin
 spec:
   selector:
     matchLabels:
-      app: csi-nodeplugin-opensdsplugin
+      app: {{ template "fullname" . }}-csi-nodeplugin-opensdsplugin
   template:
     metadata:
       labels:
-        app: csi-nodeplugin-opensdsplugin
+        app: {{ template "fullname" . }}-csi-nodeplugin-opensdsplugin
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
     spec:
       serviceAccount: csi-nodeplugin
       hostNetwork: true
       containers:
-        - name: driver-registrar
-          image: quay.io/k8scsi/driver-registrar:v0.4.0
+        - name: node-driver-registrar
+          image: quay.io/k8scsi/csi-node-driver-registrar:v1.0.1
           args:
             - "--v=5"
-            - "--csi-address=$(ADDRESS)"
+            - "--csi-address=/csi/csi.sock"
             - "--kubelet-registration-path=$(ADDRESS)"
           env:
             - name: ADDRESS
@@ -33,7 +36,7 @@ spec:
           imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
-              mountPath: /var/lib/kubelet/plugins/csi-opensdsplugin
+              mountPath: /csi
             - name: registration-dir
               mountPath: /registration
         - name: opensds
@@ -76,11 +79,31 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: ospassword
+            - name: PASSWORD_ENCRYPTER
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: passwordencrypter
+            - name: ENABLE_ENCRYPTED
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: enableEncrypted
             - name: OS_TENANT_NAME
               valueFrom:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin
                   key: ostenantname
+            - name: PASSWORD_ENCRYPTER
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: passwordencrypter
+            - name: ENABLE_ENCRYPTED
+              valueFrom:
+                configMapKeyRef:
+                  name: csi-configmap-opensdsplugin
+                  key: enableEncrypted
             - name: OS_PROJECT_NAME
               valueFrom:
                 configMapKeyRef:
@@ -98,6 +121,9 @@ spec:
             - name: pods-mount-dir
               mountPath: /var/lib/kubelet/pods
               mountPropagation: "Bidirectional"
+            - name: volume-devices-dir
+              mountPath: /var/lib/kubelet/plugins/kubernetes.io/csi/volumeDevices
+              mountPropagation: "Bidirectional"
             - name: pods-probe-dir
               mountPath: /dev
               mountPropagation: "HostToContainer"
@@ -105,11 +131,17 @@ spec:
               mountPath: /etc/iscsi/
             - name: ceph-dir
               mountPath: /etc/ceph/
+            - name: certificate-path
+              mountPath: /opt/opensds-security
       volumes:
         - name: socket-dir
           hostPath:
             path: /var/lib/kubelet/plugins/csi-opensdsplugin
-            type: DirectoryOrCreate		
+            type: DirectoryOrCreate
+        - name: volume-devices-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/kubernetes.io/csi/volumeDevices
+            type: DirectoryOrCreate
         - name: pods-mount-dir
           hostPath:
             path: /var/lib/kubelet/pods
@@ -128,5 +160,9 @@ spec:
             type: DirectoryOrCreate
         - name: registration-dir
           hostPath:
-            path: /var/lib/kubelet/plugins
-            type: Directory
+            path: /var/lib/kubelet/plugins_registry
+            type: DirectoryOrCreate
+        - name: certificate-path
+          hostPath:
+            path: /opt/opensds-security
+            type: DirectoryOrCreate

@@ -52,7 +52,7 @@
     - osdsdb
     - hotpot-installer
 
-- name: Deploy Docker
+- name: Deploy Dock
   hosts: docks
   remote_user: root
   vars_files:

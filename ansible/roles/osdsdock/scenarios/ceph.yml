@@ -66,14 +66,10 @@
   when: cephres["results"][0]["stdout"] == "HEALTH_OK" and result["rc"] == 0
 
 - name: check ceph version
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/check_ceph_version.sh
+  script: ./script/check_ceph_version.sh 
   become: yes
   ignore_errors: true
   register: res
-- debug:
-    var: res["results"][0]["rc"]
 
 - name: install ceph-common external package when ceph backend enabled
   apt:
@@ -81,7 +77,7 @@
     state: present
   with_items:
     - ceph-common
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["results"][0]["rc"] == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
 
 - name: install notario package with pip when ceph backend enabled
   pip:
@@ -113,14 +109,14 @@
   ignore_errors: true
   changed_when: false
   register: service_ceph_osd_status
-  when: res["results"][0]["rc"] == 0
+  when: res["rc"] == 0
 
 - name: check if ceph mon is running
   shell: ps aux | grep ceph-mon | grep -v grep
   ignore_errors: true
   changed_when: false
   register: service_ceph_mon_status
-  when: res["results"][0]["rc"] == 0
+  when: res["rc"] == 0
 
 - name: check for ceph-ansible source code existed
   stat:
@@ -137,24 +133,28 @@
   when:
     - cephres["results"][0]["stdout"] != "HEALTH_OK"
     - cephansibleexisted.stat.exists is undefined or cephansibleexisted.stat.exists == false
+    - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
 
 - name: copy ceph inventory host into ceph-ansible directory
   copy:
     src: ../../../group_vars/ceph/ceph.hosts
     dest: /opt/ceph-ansible/ceph.hosts
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["results"][0]["rc"] == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
 
 - name: copy ceph all.yml file into ceph-ansible group_vars directory
   copy:
     src: ../../../group_vars/ceph/all.yml
     dest: /opt/ceph-ansible/group_vars/all.yml
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["results"][0]["rc"] == 1
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
 
-- name: copy site.yml.sample to site.yml in ceph-ansible
+
+- name: copy site.yml in ceph-ansible
   copy:
     src: /opt/ceph-ansible/site.yml.sample
     dest: /opt/ceph-ansible/site.yml
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["results"][0]["rc"] == 1
+    remote_src: yes
+  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
+
 
 - name: ping all hosts and run ceph-ansible playbook
   shell: "{{ item }}"
@@ -166,7 +166,7 @@
     chdir: /opt/ceph-ansible
   when:
     - cephres["results"][0]["stdout"] != "HEALTH_OK"
-    - res["results"][0]["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+    - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
 
 - name: check if ceph osd is running
   shell: ps aux | grep ceph-osd | grep -v grep
@@ -198,4 +198,3 @@
   changed_when: false
   with_items: "{{ ceph_pools }}"
   when: service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0
-

@@ -14,8 +14,7 @@
 
 ---
 # Defines deployment design and assigns role to server groups
-
-- name: deploy an opensds local cluster
+- name: deploy opensds cluster
   hosts: all
   remote_user: root
   vars_files:
@@ -23,18 +22,81 @@
     - group_vars/auth.yml
     - group_vars/hotpot.yml
     - group_vars/osdsdb.yml
-    - group_vars/osdsdock.yml
-    - group_vars/gelato.yml
-    - group_vars/sushi.yml
-    - group_vars/dashboard.yml
   gather_facts: false
   become: True
   roles:
     - common
+
+- name: Install keystone
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+  gather_facts: false
+  become: True
+  roles:
     - auth-installer
+
+- name: Deploy OpenSDS Hotpot-installer
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/hotpot.yml
+    - group_vars/osdsdb.yml
+  gather_facts: false
+  become: True
+  roles:
     - osdsdb
     - hotpot-installer
+
+- name: Deploy Dock
+  hosts: docks
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/hotpot.yml
+    - group_vars/osdsdb.yml
+    - group_vars/osdsdock.yml
+  gather_facts: false
+  become: True
+  roles:
     - osdsdock
+
+- name: Install Gelato
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/gelato.yml
+  gather_facts: false
+  become: True
+  roles:
     - gelato-installer
+
+- name: Install Sushi
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/sushi.yml
+  gather_facts: false
+  become: True
+  roles:
     - sushi-installer
+
+- name: deploy dashboard
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/dashboard.yml
+  gather_facts: false
+  become: True
+  roles:
     - dashboard-installer

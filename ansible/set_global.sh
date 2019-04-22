@@ -32,7 +32,7 @@ sed -i 's/^sushi_plugin_type: .*/sushi_plugin_type: '"$sushi_plugin_type"'/g' $v
 sed -i 's/^dashboard_installation_type: .*/dashboard_installation_type: '"$dashboard_installation_type"'/g' $var_path/dashboard.yml
 
 # osdsdock.yml
-sed -i 's/^enabled_backend: .*/enabled_backend: '"$enabled_backend"'/g' $var_path/osdsdock.yml
+sed -i 's/^enabled_backends: .*/enabled_backends: '"$enabled_backends"'/g' $var_path/osdsdock.yml
 
 # etcd
 sed -i 's/^etcd_port: .*/etcd_port: '"$etcd_port"'/g' $var_path/osdsdb.yml

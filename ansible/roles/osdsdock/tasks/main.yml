@@ -15,23 +15,42 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: deploy_project != "gelato" and enabled_backend == "lvm"
+  when: deploy_project != "gelato" and "lvm" in enabled_backends
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: deploy_project != "gelato" and enabled_backend == "ceph"
+  when: deploy_project != "gelato" and "ceph" in enabled_backends
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
   when:
-    - deploy_project != "gelato"
-    - enabled_backend == "cinder" and use_cinder_standalone == false
+    - deploy_project != "gelato" and "cinder" in enabled_backends
+    - use_cinder_standalone == false
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
   when: 
-    - deploy_project != "gelato"
-    - enabled_backend == "cinder" and use_cinder_standalone == true
+    - deploy_project != "gelato" and "cinder" in enabled_backends
+    - use_cinder_standalone == true
+
+- name: configure opensds global info
+  shell: |
+    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+
+    [osdsdock]
+    api_endpoint = {{ dock_endpoint }}:{{ dock_port }}
+    log_file = {{ dock_log_file }}
+    # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
+    dock_type = {{ dock_type }}
+    # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
+    enabled_backends = {{ enabled_backends }}
+
+    [database]
+    endpoint = {{ db_endpoint }}
+    driver = {{ db_driver }}
+  args:
+    chdir: "{{ opensds_config_dir }}"
+  ignore_errors: yes
 
 - name: run osdsdock daemon service
   shell:

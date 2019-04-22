@@ -20,6 +20,12 @@ Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
 OpenSDS installer project also holds all code related to opensds-charts in
 `charts` folder for installing and configuring OpenSDS cluster through helm tool.
 
+### Salt
+[Salt](https://github.com/saltstack/salt) is software to automate the management
+ and configuration of any infrastructure or application at scale. OpenSDS installer
+holds all code related to opensds-salt in `salt` folder for deploying OpenSDS cluster
+through salt tool.
+
 ## Contact
 * Mailing list: [opensds-tech-discuss](https://lists.opensds.io/mailman/listinfo/opensds-tech-discuss)
 * slack: #[opensds](https://opensds.slack.com)

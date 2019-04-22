@@ -53,8 +53,6 @@ spec:
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           command: ["bin/sh"]
           args: ["-c", "/usr/sbin/tgtd; /usr/bin/osdsdock -logtostderr"]
-          ports:
-          - containerPort: 3260
           volumeMounts:
             - name: opensds-conf-dir
               mountPath: /etc/opensds

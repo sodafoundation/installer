@@ -121,43 +121,70 @@
     export BackendType="ceph" 
 
     sudo cat > /etc/opensds/opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
-    [osdslet]
+    [osdsapiserver]
     api_endpoint = 0.0.0.0:50040
-    graceful = True
-    log_file = /var/log/opensds/osdslet.log
-    socket_order = inc
     auth_strategy = keystone
-    
+    # If https is enabled, the default value of cert file
+    # is /opt/opensds-security/opensds/opensds-cert.pem,
+    # and key file is /opt/opensds-security/opensds/opensds-key.pem
+    https_enabled = False
+    beego_https_cert_file =
+    beego_https_key_file =
+    # Encryption and decryption tool. Default value is aes.
+    password_decrypt_tool = aes
+
+    [osdslet]
+    api_endpoint = 0.0.0.0:50049
+
     [osdsdock]
     api_endpoint = 0.0.0.0:50050
-    log_file = /var/log/opensds/osdsdock.log
     # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
     dock_type = provisioner
-    # Enabled backend types, such as 'sample', 'lvm', 'ceph', 'cinder', etc.
-    enabled_backends = ${BackendType}
-    
+    # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
+    enabled_backends = sample
+
+    [sample]
+    name = sample
+    description = Sample Test
+    driver_name = sample
+
     [ceph]
     name = ceph
     description = Ceph Test
     driver_name = ceph
     config_path = /etc/opensds/driver/ceph.yaml
-    
+
     [cinder]
     name = cinder
     description = Cinder Test
     driver_name = cinder
     config_path = /etc/opensds/driver/cinder.yaml
-    
+
     [lvm]
     name = lvm
+
     description = LVM Test
     driver_name = lvm
     config_path = /etc/opensds/driver/lvm.yaml
-    
+    host_based_replication_driver = DRBD
+
+    [huawei_dorado]
+    name = dorado
+    description = dorado Test
+    driver_name = dorado
+    config_path = /etc/opensds/driver/dorado.yaml
+    replication_type = array_based
+
+    [huawei_fusionstorage]
+    name = fusionstorage backend
+    description = This is a fusionstorage backend service
+    driver_name = huawei_fusionstorage
+    config_path = /etc/opensds/driver/fusionstorage.yaml
+
     [database]
-    # Enabled database types, such as etcd, mysql, fake, etc.
-    driver = etcd
-    endpoint = 127.0.0.1:2379,127.0.0.1:2380
+    credential = opensds:password@127.0.0.1:3306/dbname
+    endpoint = localhost:2379,localhost:2380
+    driver = etcd[osdslet]
     OPENSDS_GLOABL_CONFIG_DOC
    	
     

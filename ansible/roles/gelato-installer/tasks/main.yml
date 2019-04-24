@@ -16,7 +16,6 @@
 - name: install docker-py package with pip when deploying gelato cluster
   pip:
     name: docker-py
-  when: deploy_project != "hotpot"
 
 - name: create gelato work directory if it doesn't exist
   file:
@@ -25,23 +24,22 @@
     mode: 0755
   with_items:
     - "{{ gelato_work_dir }}"
-  when: deploy_project != "hotpot"
  
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
-  when:  deploy_project != "hotpot" and install_from == "repository"
+  when: install_from == "repository"
 
 - name: download gelato docker-compose configuration file
   get_url:
     url={{ gelato_docker_compose_file }}
     dest={{ gelato_work_dir }}/docker-compose.yml
-  when: deploy_project != "hotpot" and install_from != "repository"
+  when: install_from != "repository"
 
 - name: gelato keystone configuration
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh config gelato
-  when: opensds_auth_strategy == "keystone" and deploy_project != "hotpot"
+  when: opensds_auth_strategy == "keystone"
   become: yes
 
 - name: set variables for docker-compose configuration
@@ -49,13 +47,11 @@
      sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }},"  docker-compose.yml
   args:
     chdir: "{{ gelato_work_dir }}"
-  when: deploy_project != "hotpot"
 
 - name: start service
   shell: docker-compose up -d
   args:
     chdir: "{{ gelato_work_dir }}"
-  when: deploy_project != "hotpot"
 
 - name: wait for service to start normally
   wait_for:
@@ -64,4 +60,3 @@
     delay: 15
     timeout: 120
   ignore_errors: yes
-  when: deploy_project != "hotpot"

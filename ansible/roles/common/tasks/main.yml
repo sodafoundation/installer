@@ -21,7 +21,6 @@
   ignore_errors: yes
   become: yes
 
-
 - name: check ansible version
   shell: "{{ item }}"
   with_items:

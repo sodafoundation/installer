@@ -14,29 +14,28 @@
 
 ---
 # Defines deployment design and assigns role to server groups
-- name: deploy opensds cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/auth.yml
-    - group_vars/hotpot.yml
-    - group_vars/osdsdb.yml
+- hosts:
+  - controllers
+  - docks
   gather_facts: false
+  any_errors_fatal: true
   become: True
-  roles:
-    - common
-
-- name: Install keystone
+  
+# Defines deployment design and assigns role to server groups
+- name: Install keystone services
   hosts: controllers
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/auth.yml
   gather_facts: false
   become: True
-  roles:
-    - auth-installer
+  tasks:
+    - import_role:
+        name: common
+    - import_role:
+        name: auth-installer
 
 - name: Deploy OpenSDS Hotpot-installer
   hosts: controllers
@@ -48,47 +47,69 @@
     - group_vars/osdsdb.yml
   gather_facts: false
   become: True
-  roles:
-    - osdsdb
-    - hotpot-installer
+  tasks:
+    - import_role:
+        name: common
+    - import_role:
+        name: osdsdb
+    - import_role:
+        name: hotpot-installer
+      when:
+        - deploy_project != "gelato"
 
 - name: Deploy Dock
   hosts: docks
   remote_user: root
   vars_files:
     - group_vars/common.yml
-    - group_vars/auth.yml
     - group_vars/hotpot.yml
     - group_vars/osdsdb.yml
     - group_vars/osdsdock.yml
   gather_facts: false
   become: True
-  roles:
-    - osdsdock
+  tasks:
+    - import_role:
+        name: common
+    - import_role:
+        name: osdsdock
+      when:
+        - deploy_project != "gelato"
 
 - name: Install Gelato
   hosts: controllers
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/auth.yml
     - group_vars/gelato.yml
   gather_facts: false
   become: True
-  roles:
-    - gelato-installer
+  tasks:
+    - import_role:
+        name: common
+    - import_role:
+        name: gelato-installer
+      when:
+        - deploy_project != "hotpot"
 
 - name: Install Sushi
   hosts: controllers
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/auth.yml
     - group_vars/sushi.yml
   gather_facts: false
   become: True
-  roles:
-    - sushi-installer
+  tasks:
+    - import_role:
+        name: common
+    - import_role:
+        name: sushi-installer
+      when:
+        - sushi_plugin_type != "hotpot_only"
 
 - name: deploy dashboard
   hosts: controllers
@@ -98,5 +119,6 @@
     - group_vars/dashboard.yml
   gather_facts: false
   become: True
-  roles:
-    - dashboard-installer
+  tasks:
+    - import_role:
+        name: dashboard-installer

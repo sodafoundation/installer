@@ -15,23 +15,23 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: deploy_project != "gelato" and "lvm" in enabled_backends
+  when:
+    - "'lvm' in enabled_backends"
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: deploy_project != "gelato" and "ceph" in enabled_backends
+  when:
+    - "'ceph' in enabled_backends"
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
   when:
-    - deploy_project != "gelato" and "cinder" in enabled_backends
-    - use_cinder_standalone == false
+    - use_cinder_standalone == false and "cinder" in enabled_backends
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
-  when: 
-    - deploy_project != "gelato" and "cinder" in enabled_backends
-    - use_cinder_standalone == true
+  when:
+    - use_cinder_standalone == true and "cinder" in enabled_backends
 
 - name: configure opensds global info
   shell: |
@@ -66,7 +66,8 @@
       done
   args:
     chdir: "{{ hotpot_work_dir }}"
-  when: deploy_project != "gelato" and install_from != "container"
+  when:
+    - install_from != "container"
 
 - name: run osdsdock containerized service
   docker_container:
@@ -82,4 +83,5 @@
     - "/run/:/run/:shared"
     - "/etc/localtime:/etc/localtime:ro"
     - "/lib/modules:/lib/modules:ro"
-  when: deploy_project != "gelato" and install_from == "container"
+  when:
+    - install_from == "container"

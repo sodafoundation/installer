@@ -24,11 +24,18 @@
   become: yes
   when: deploy_project != "gelato"
 
-- name: hotpot keystone configuration
+- name: hotpot keystone configuration when keystone is installed by script
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh config hotpot
-  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
+    - bash ./script/keystone.sh config hotpot script
+  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato" and install_keystone_with_docker != true
+  become: yes
+  
+- name: hotpot keystone configuration when keystone is installed by docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config hotpot docker
+  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato" and install_keystone_with_docker == true
   become: yes
 
 - name: configure opensds global info

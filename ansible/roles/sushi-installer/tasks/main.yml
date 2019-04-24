@@ -20,15 +20,14 @@
     mode: 0755
   with_items:
     - "{{ sushi_work_dir }}"
-  when: sushi_plugin_type != "hotpot_only"
 
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
-  when: install_from == "repository" and sushi_plugin_type != "hotpot_only"
+  when: install_from == "repository"
 
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
-  when: install_from == "release" and sushi_plugin_type != "hotpot_only"
+  when: install_from == "release"
 
 - name: include scenarios/flexvolume.yml when sushi plugin type is flexvolume
   include: scenarios/flexvolume.yml

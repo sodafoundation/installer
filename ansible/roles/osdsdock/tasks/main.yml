@@ -26,12 +26,12 @@
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
   when:
-    - use_cinder_standalone == false and "'cinder' in enabled_backends"
+    - use_cinder_standalone == false and "cinder" in enabled_backends
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
   when:
-    - use_cinder_standalone == true and "'cinder' in enabled_backends"
+    - use_cinder_standalone == true and "cinder" in enabled_backends
 
 - name: configure opensds global info
   shell: |

@@ -15,23 +15,23 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: 
-    - "lvm" in enabled_backends
+  when:
+    - "'lvm' in enabled_backends"
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: 
-    - "ceph" in enabled_backends
+  when:
+    - "'ceph' in enabled_backends"
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
-  when: 
-    - use_cinder_standalone == false and "cinder" in enabled_backends
+  when:
+    - use_cinder_standalone == false and "'cinder' in enabled_backends"
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
-  when: 
-    - use_cinder_standalone == true and "cinder" in enabled_backends
+  when:
+    - use_cinder_standalone == true and "'cinder' in enabled_backends"
 
 - name: configure opensds global info
   shell: |

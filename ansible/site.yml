@@ -27,6 +27,7 @@
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/auth.yml
   gather_facts: false
   become: True
@@ -79,6 +80,7 @@
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/auth.yml
     - group_vars/gelato.yml
   gather_facts: false
@@ -96,6 +98,7 @@
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/auth.yml
     - group_vars/sushi.yml
   gather_facts: false

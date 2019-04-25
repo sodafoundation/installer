@@ -13,12 +13,21 @@
 # limitations under the License.
 
 ---
-- name: uninstall opensds keystone
+- name: uninstall opensds keystone with the script
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh uninstall
+    - bash ./script/keystone.sh uninstall script
   when:
-    - opensds_auth_strategy == "keystone"
+    - opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  ignore_errors: yes
+  become: yes
+  
+- name: uninstall opensds keystone with the docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh uninstall docker
+  when:
+    - opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
   ignore_errors: yes
   become: yes
   

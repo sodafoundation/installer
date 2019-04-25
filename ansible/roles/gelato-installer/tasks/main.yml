@@ -35,11 +35,18 @@
     dest={{ gelato_work_dir }}/docker-compose.yml
   when: install_from != "repository"
 
-- name: gelato keystone configuration
+- name: gelato keystone configuration when keystone is installed by script
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh config gelato
-  when: opensds_auth_strategy == "keystone"
+    - bash ./script/keystone.sh config gelato script
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  become: yes
+  
+- name: gelato keystone configuration when keystone is installed by docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config gelato docker
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
   become: yes
 
 - name: set variables for docker-compose configuration

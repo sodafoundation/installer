@@ -273,10 +273,10 @@ sudo cp /opt/opensds-hotpot-linux-amd64/bin/osdsctl /usr/local/bin/
 export OPENSDS_ENDPOINT=http://{your_real_host_ip}:50040
 export OPENSDS_AUTH_STRATEGY=keystone
 
-If install_keystone_with_docker is not tue:
+# If install_keystone_with_docker is not true:
 source /opt/stack/devstack/openrc admin admin
 
-If install_keystone_with_docker is tue:
+# If install_keystone_with_docker is true:
 export OS_AUTH_URL=http://{your_real_host_ip}/identity
 export OS_USERNAME=admin 
 export OS_PASSWORD=opensds@123 

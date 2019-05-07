@@ -39,6 +39,7 @@
 - name: build hotpot binary file
   shell: make
   environment:
+    GOROOT: "{{ lookup('env', 'GOROOT') }}"
     GOPATH: "{{ go_path }}"
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds"

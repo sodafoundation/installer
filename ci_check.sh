@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
 # Validate the installation using release type
 sed -i 's/^install_from: .*/install_from: '"release"'/g' ansible/group_vars/common.yml
 sudo ansible-playbook ansible/site.yml -i ansible/local.hosts

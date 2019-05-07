@@ -40,7 +40,6 @@
 - name: build gelato docker images
   shell: make docker
   environment:
-    GOROOT: "{{ lookup('env', 'GOROOT') }}"
     GOPATH: "{{ go_path }}"
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"

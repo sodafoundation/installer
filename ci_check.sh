@@ -14,15 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Validate the installation using release type
-sed -i 's/^install_from: .*/install_from: '"release"'/g' ansible/group_vars/common.yml
-sudo ansible-playbook ansible/site.yml -i ansible/local.hosts
-sudo ansible-playbook ansible/clean.yml -i ansible/local.hosts
+set -e
 # Validate the installation using repository type
 sed -i 's/^install_from: .*/install_from: '"repository"'/g' ansible/group_vars/common.yml
-sudo ansible-playbook ansible/site.yml -i ansible/local.hosts
-sudo ansible-playbook ansible/clean.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts
+# Validate the installation using release type
+sed -i 's/^install_from: .*/install_from: '"release"'/g' ansible/group_vars/common.yml
+sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts
 # Validate the installation using container type
 sed -i 's/^install_from: .*/install_from: '"container"'/g' ansible/group_vars/common.yml
-sudo ansible-playbook ansible/site.yml -i ansible/local.hosts
-sudo ansible-playbook ansible/clean.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts

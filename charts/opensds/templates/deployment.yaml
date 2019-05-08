@@ -1,9 +1,26 @@
+# Copyright (c) 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+##########################################################################
+# Apiserver deployment
+##########################################################################
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: {{ template "fullname" . }}-opensds
+  name: {{ template "fullname" . }}-apiserver
   labels:
-    app: {{ template "fullname" . }}-opensds
+    app: {{ template "fullname" . }}-apiserver
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -11,98 +28,284 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-opensds
+      app: {{ template "fullname" . }}-apiserver
   template:
     metadata:
       labels:
-        app: {{ template "fullname" . }}-opensds
+        app: {{ template "fullname" . }}-apiserver
         chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
         release: "{{ .Release.Name }}"
         heritage: "{{ .Release.Service }}"
     spec:
       containers:
-        - name: osdsdb
-          image: {{ .Values.image.osdsdb }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
-          volumeMounts:
-            - name: etcd-cert-dir
-              mountPath: /etc/ssl/certs
-        - name: osdsapiserver
-          image: {{ .Values.image.osdsapiserver }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
-          command: ["bin/sh"]
-          args: ["-c", "/usr/bin/osdsapiserver -logtostderr"]
-          volumeMounts:
-            - name: opensds-conf-dir
-              mountPath: /etc/opensds
-        - name: osdslet
-          image: {{ .Values.image.osdslet }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
-          command: ["bin/sh"]
-          args: ["-c", "/usr/bin/osdslet -logtostderr"]
-          volumeMounts:
-            - name: opensds-conf-dir
-              mountPath: /etc/opensds
-        - name: osdsdock
-          securityContext:
-            privileged: true
-            capabilities:
-              add: ["SYS_ADMIN"]
-            allowPrivilegeEscalation: true
-          image: {{ .Values.image.osdsdock }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
-          command: ["bin/sh"]
-          args: ["-c", "/usr/sbin/tgtd; /usr/bin/osdsdock -logtostderr"]
-          volumeMounts:
-            - name: opensds-conf-dir
-              mountPath: /etc/opensds
-            - name: ceph-conf-dir
-              mountPath: /etc/ceph
-            - name: tgt-conf-dir
-              mountPath: /etc/tgt
-              mountPropagation: "Bidirectional"
-            - name: run-dir
-              mountPath: /run
-              mountPropagation: "Bidirectional"
-            - name: dev-dir
-              mountPath: /dev
-              mountPropagation: "HostToContainer"
-            - name: local-time-file
-              mountPath: /etc/localtime
-              readOnly: true
-            - name: lib-modules-dir
-              mountPath: /lib/modules
-              readOnly: true
-      volumes:
-        - name: etcd-cert-dir
-          hostPath:
-            path: /usr/share/ca-certificates/
-            type: Directory
+      - name: osdsapiserver
+        image: {{ .Values.osdsapiserver.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command: ["bin/sh"]
+        args: ["-c", "/usr/bin/osdsapiserver -logtostderr"]
+        ports:
+        - containerPort: 50040
+        volumeMounts:
         - name: opensds-conf-dir
-          hostPath:
-            path: /etc/opensds
-            type: Directory
+          mountPath: /etc/opensds
+      volumes:
+      - name: opensds-conf-dir
+        hostPath:
+          path: /etc/opensds
+          type: Directory
+---
+##########################################################################
+# Controller deployment
+##########################################################################
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "fullname" . }}-controller
+  labels:
+    app: {{ template "fullname" . }}-controller
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}-controller
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}-controller
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+    spec:
+      containers:
+      - name: osdslet
+        image: {{ .Values.osdslet.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command: ["bin/sh"]
+        args: ["-c", "/usr/bin/osdslet -logtostderr"]
+        ports:
+        - containerPort: 50049
+        volumeMounts:
+        - name: opensds-conf-dir
+          mountPath: /etc/opensds
+      volumes:
+      - name: opensds-conf-dir
+        hostPath:
+          path: /etc/opensds
+          type: Directory
+---
+##########################################################################
+# Dock deployment
+##########################################################################
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "fullname" . }}-dock
+  labels:
+    app: {{ template "fullname" . }}-dock
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}-dock
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}-dock
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+    spec:
+      containers:
+      - name: osdsdock
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+          allowPrivilegeEscalation: true
+        image: {{ .Values.osdsdock.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command: ["bin/sh"]
+        args: ["-c", "/usr/sbin/tgtd; /usr/bin/osdsdock -logtostderr"]
+        ports:
+        - containerPort: 50050
+        volumeMounts:
+        - name: opensds-conf-dir
+          mountPath: /etc/opensds
         - name: ceph-conf-dir
-          hostPath:
-            path: /etc/ceph
-            type: DirectoryOrCreate
+          mountPath: /etc/ceph
         - name: tgt-conf-dir
-          hostPath:
-            path: /etc/tgt
-            type: Directory
+          mountPath: /etc/tgt
+          mountPropagation: "Bidirectional"
         - name: run-dir
-          hostPath:
-            path: /run
-            type: Directory
+          mountPath: /run
+          mountPropagation: "Bidirectional"
         - name: dev-dir
-          hostPath:
-            path: /dev
-            type: Directory
+          mountPath: /dev
+          mountPropagation: "HostToContainer"
         - name: local-time-file
-          hostPath:
-            path: /etc/localtime
-            type: File
+          mountPath: /etc/localtime
+          readOnly: true
         - name: lib-modules-dir
-          hostPath:
-            path: /lib/modules
-            type: Directory
+          mountPath: /lib/modules
+          readOnly: true
+      volumes:
+      - name: opensds-conf-dir
+        hostPath:
+          path: /etc/opensds
+          type: Directory
+      - name: ceph-conf-dir
+        hostPath:
+          path: /etc/ceph
+          type: DirectoryOrCreate
+      - name: tgt-conf-dir
+        hostPath:
+          path: /etc/tgt
+          type: Directory
+      - name: run-dir
+        hostPath:
+          path: /run
+          type: Directory
+      - name: dev-dir
+        hostPath:
+          path: /dev
+          type: Directory
+      - name: local-time-file
+        hostPath:
+          path: /etc/localtime
+          type: File
+      - name: lib-modules-dir
+        hostPath:
+          path: /lib/modules
+          type: Directory
+---
+##########################################################################
+# Dashboard deployment
+##########################################################################
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "fullname" . }}-dashboard
+  labels:
+    app: {{ template "fullname" . }}-dashboard
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}-dashboard
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}-dashboard
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+    spec:
+      containers:
+      - name: osdsdashboard
+        image: {{ .Values.osdsdashboard.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        env:
+        - name: OPENSDS_AUTH_URL
+          value: http://{{ template "fullname" . }}-authchecker.opensds.svc.cluster.local/identity
+        - name: OPENSDS_HOTPOT_URL
+          value: http://{{ template "fullname" . }}-apiserver.opensds.svc.cluster.local:50040
+        - name: OPENSDS_GELATO_URL
+          value: http://127.0.0.1:8089
+        ports:
+        - containerPort: 8088
+---
+##########################################################################
+# DB deployment
+##########################################################################
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "fullname" . }}-db
+  labels:
+    app: {{ template "fullname" . }}-db
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}-db
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+    spec:
+      containers:
+      - name: osdsdb
+        image: {{ .Values.osdsdb.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command: ["/bin/sh"]
+        args: ["-c", "/usr/local/bin/etcd \
+          --name s1 \
+          --listen-client-urls http://0.0.0.0:2379 \
+          --advertise-client-urls http://0.0.0.0:2379 \
+          --listen-peer-urls http://0.0.0.0:2380 \
+          --initial-advertise-peer-urls http://0.0.0.0:2380 \
+          --initial-cluster s1=http://0.0.0.0:2380"]
+        ports:
+        - containerPort: 2379
+        - containerPort: 2380
+        volumeMounts:
+        - name: etcd-cert-dir
+          mountPath: /etc/ssl/certs
+      volumes:
+      - name: etcd-cert-dir
+        hostPath:
+          path: /usr/share/ca-certificates/
+          type: Directory
+---
+##########################################################################
+# Authchecker deployment
+##########################################################################
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "fullname" . }}-authchecker
+  labels:
+    app: {{ template "fullname" . }}-authchecker
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}-authchecker
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}-authchecker
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+    spec:
+      containers:
+      - name: osdsauthchecker
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+          allowPrivilegeEscalation: true
+        image: {{ .Values.osdsauthchecker.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - containerPort: 80
+---

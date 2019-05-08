@@ -20,9 +20,9 @@ spec:
       serviceAccount: csi-nodeplugin
       hostNetwork: true
       containers:
-        - name: node-driver-registrar
+        - name: driver-registrar
           # TODO: replace the following with official image when available
-          image: quay.io/k8scsi/driver-registrar:v1.0-canary #v1.0.0
+          image: quay.io/k8scsi/driver-registrar:v0.4.0
           args:
             - "--v=5"
             - "--csi-address=/csi/csi.sock"

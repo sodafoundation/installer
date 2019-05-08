@@ -31,3 +31,12 @@
   become: True
   roles:
     - cleaner
+    
+- name: uninstall grafana
+  hosts: controllers
+  remote_user: root
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: grafana-uninstaller

@@ -54,7 +54,7 @@
 	git checkout v1.13.0
 	make
 	echo alias kubectl='$HOME/kubernetes/cluster/kubectl.sh' >> /etc/profile
-	ALLOW_PRIVILEGED=true FEATURE_GATES=CSIPersistentVolume=true,MountPropagation=true,VolumeSnapshotDataSource=true,KubeletPluginsWatcher=true RUNTIME_CONFIG="storage.k8s.io/v1alpha1=true" LOG_LEVEL=5 hack/local-up-cluster.sh
+	ENABLE_DAEMON=true ALLOW_PRIVILEGED=true FEATURE_GATES="VolumeSnapshotDataSource=true" RUNTIME_CONFIG="storage.k8s.io/v1alpha1=true" LOG_LEVEL=5 hack/local-up-cluster.sh -O
 	```
 	
 ### Helm Installation ###
@@ -162,7 +162,6 @@
 
     [lvm]
     name = lvm
-
     description = LVM Test
     driver_name = lvm
     config_path = /etc/opensds/driver/lvm.yaml
@@ -184,7 +183,7 @@
     [database]
     credential = opensds:password@127.0.0.1:3306/dbname
     endpoint = localhost:2379,localhost:2380
-    driver = etcd[osdslet]
+    driver = etcd
     OPENSDS_GLOABL_CONFIG_DOC
    	
     

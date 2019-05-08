@@ -13,30 +13,13 @@
 # limitations under the License.
 
 ---
-# Defines some clean processes when banishing the cluster.
 
-- name: destory an opensds cluster
-  hosts: all
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/auth.yml
-    - group_vars/hotpot.yml
-    - group_vars/osdsdb.yml
-    - group_vars/osdsdock.yml
-    - group_vars/gelato.yml
-    - group_vars/sushi.yml
-    - group_vars/dashboard.yml
-  gather_facts: false
-  become: True
-  roles:
-    - cleaner
-    
 - name: uninstall grafana
-  hosts: controllers
-  remote_user: root
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: grafana-uninstaller
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop grafana-server
+    - apt-get purge -y grafana    
+    - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
+  ignore_errors: yes
+  become: yes
+  

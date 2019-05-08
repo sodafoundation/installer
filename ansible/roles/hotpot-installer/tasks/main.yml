@@ -13,22 +13,24 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/container.yml when installing from container
-  include: scenarios/container.yml
-  when: install_from == "container" and deploy_project != "gelato"
-
 - name: generate certificates
   shell: "{{ item }}"
   with_items:
     - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
   become: yes
-  when: deploy_project != "gelato"
 
-- name: hotpot keystone configuration
+- name: hotpot keystone configuration when keystone is installed by script
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh config hotpot
-  when: opensds_auth_strategy == "keystone" and deploy_project != "gelato"
+    - bash ./script/keystone.sh config hotpot script
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  become: yes
+  
+- name: hotpot keystone configuration when keystone is installed by docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config hotpot docker
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
   become: yes
 
 - name: configure opensds global info
@@ -56,56 +58,11 @@
   args:
     chdir: "{{ opensds_config_dir }}"
   ignore_errors: yes
-  when: deploy_project != "gelato"
 
-- name: run osdslet daemon service
-  shell:
-    cmd: |
-      i=0
-      while
-        i="$((i+1))"
-        [ "$i" -lt 4 ]
-      do
-        nohup bin/osdslet > osdslet.out 2> osdslet.err < /dev/null &
-        sleep 5
-        ps aux | grep osdslet | grep -v grep && break
-      done
-  args:
-    chdir: "{{ hotpot_work_dir }}"
-  when: deploy_project != "gelato" and install_from != "container"
+- name: include scenarios/container.yml when installing from container
+  include: scenarios/container.yml
+  when: install_from == "container"
 
-- name: run osdsapiserver daemon service
-  shell:
-    cmd: |
-      i=0
-      while
-        i="$((i+1))"
-        [ "$i" -lt 4 ]
-      do
-        nohup bin/osdsapiserver > osdsapiserver.out 2> osdsapiserver.err < /dev/null &
-        sleep 5
-        ps aux | grep osdsapiserver | grep -v grep && break
-      done
-  args:
-    chdir: "{{ hotpot_work_dir }}"
-  when: deploy_project != "gelato" and install_from != "container"
-
-- name: run osdslet containerized service
-  docker_container:
-    name: osdslet
-    image: "{{ controller_docker_image }}"
-    state: started
-    network_mode: host
-    volumes:
-    - "/etc/opensds/:/etc/opensds"
-  when: deploy_project != "gelato" and install_from == "container"
-
-- name: run osdsapiserver containerized service
-  docker_container:
-    name: apiserver
-    image: "{{ apiserver_docker_image }}"
-    state: started
-    network_mode: host
-    volumes:
-    - "/etc/opensds/:/etc/opensds"
-  when: deploy_project != "gelato" and install_from == "container"
+- name: include scenarios/source-code.yml when not installing from container
+  include: scenarios/source-code.yml
+  when: install_from != "container"

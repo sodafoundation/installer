@@ -22,7 +22,6 @@ dummy:
 # GENERAL #
 ###########
 
-
 apiserver_endpoint: "{{ host_ip }}:50040"
 controller_endpoint: "{{ host_ip }}:50049"
 
@@ -47,6 +46,7 @@ hotpot_repo_branch: master
 
 # These fields are NOT suggested to be modified
 hotpot_remote_url: https://github.com/opensds/opensds.git
+
 
 ###########
 # RELEASE #

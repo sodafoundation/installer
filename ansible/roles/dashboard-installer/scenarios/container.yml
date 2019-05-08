@@ -25,4 +25,6 @@
     network_mode: host
     restart_policy: always
     env:
-      OPENSDS_HOST_IP: "{{ host_ip }}"
+      OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
+      OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
+      OPENSDS_GELATO_URL: "http://{{ host_ip }}:8089"

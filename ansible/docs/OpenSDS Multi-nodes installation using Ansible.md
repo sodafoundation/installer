@@ -272,7 +272,17 @@ Firstly configure opensds CLI tool:
 sudo cp /opt/opensds-hotpot-linux-amd64/bin/osdsctl /usr/local/bin/
 export OPENSDS_ENDPOINT=http://{your_real_host_ip}:50040
 export OPENSDS_AUTH_STRATEGY=keystone
+
+# If install_keystone_with_docker is not true:
 source /opt/stack/devstack/openrc admin admin
+
+# If install_keystone_with_docker is true:
+export OS_AUTH_URL=http://{your_real_host_ip}/identity
+export OS_USERNAME=admin 
+export OS_PASSWORD=opensds@123 
+export OS_TENANT_NAME=admin 
+export OS_PROJECT_NAME=admin 
+export OS_USER_DOMAIN_ID=default 
 
 osdsctl pool list # Check if the pool resource is available
 ```

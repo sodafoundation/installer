@@ -25,5 +25,5 @@ sudo ansible-playbook ansible/site.yml -i ansible/local.hosts
 sudo ansible-playbook ansible/clean.yml -i ansible/local.hosts
 # Validate the installation using container type
 sed -i 's/^install_from: .*/install_from: '"container"'/g' ansible/group_vars/common.yml
-sudo ansible-playbook ansible/site.yml -i ansible/local.hosts
-sudo ansible-playbook ansible/clean.yml -i ansible/local.hosts
+sudo -E ansible-playbook ansible/site.yml -i ansible/local.hosts
+sudo -E ansible-playbook ansible/clean.yml -i ansible/local.hosts

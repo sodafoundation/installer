@@ -26,7 +26,6 @@
 - name: check for hotpot source code existed
   stat:
     path: "{{ go_path }}/src/github.com/opensds/opensds"
-  ignore_errors: yes
   register: hotpotexisted
 
 - name: download hotpot source code if not exists

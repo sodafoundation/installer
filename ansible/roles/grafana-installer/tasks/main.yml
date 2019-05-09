@@ -13,7 +13,6 @@
 # limitations under the License.
 
 ---
-
 - name: install grafana
   shell: "{{ item }}"
   with_items:
@@ -21,7 +20,7 @@
     - add-apt-repository "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
     - apt-get update
     - curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh |bash
-    - apt-get install grafana
+    - apt-get install -y grafana
     - systemctl start grafana-server
   become: yes
   
@@ -30,4 +29,3 @@
   with_items:
     - systemctl status grafana-server
   become: yes
-  

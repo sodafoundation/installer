@@ -13,13 +13,11 @@
 # limitations under the License.
 
 ---
-
 - name: uninstall grafana
   shell: "{{ item }}"
   with_items:
     - systemctl stop grafana-server
-    - apt-get purge -y grafana    
+    - apt-get purge -y grafana
     - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
   ignore_errors: yes
   become: yes
-  

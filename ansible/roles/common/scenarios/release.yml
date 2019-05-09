@@ -16,7 +16,6 @@
 - name: check for hotpot release files existed
   stat:
     path: "{{ hotpot_tarball_dir }}"
-  ignore_errors: yes
   register: hotpotreleasesexisted
 
 - name: download and extract the hotpot release tarball if not exists

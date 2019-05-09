@@ -40,3 +40,12 @@
   tasks:
     - import_role:
         name: grafana-uninstaller
+        
+- name: uninstall prometheus
+  hosts: controllers
+  remote_user: root
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: prometheus-uninstaller

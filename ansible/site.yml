@@ -131,3 +131,13 @@
   tasks:
     - import_role:
         name: grafana-installer
+        
+- name: deploy prometheus
+  hosts: controllers
+  remote_user: root
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: prometheus-installer
+

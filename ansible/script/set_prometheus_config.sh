@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
+cat > /etc/prometheus/prometheus.yml <<EOF
+global:
+  scrape_interval: 15s
 
-- name: install grafana
-  shell: "{{ item }}"
-  with_items:
-    - curl https://packagecloud.io/gpg.key | apt-key add -
-    - add-apt-repository "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
-    - apt-get update
-    - curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh |bash
-    - apt-get install grafana
-    - systemctl start grafana-server
-  become: yes
-  
-- name: check status of grafana service
-  shell: "{{ item }}"
-  with_items:
-    - systemctl status grafana-server
-  become: yes
-  
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+EOF

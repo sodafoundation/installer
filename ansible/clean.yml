@@ -29,8 +29,9 @@
     - group_vars/dashboard.yml
   gather_facts: false
   become: True
-  roles:
-    - cleaner
+  tasks:
+    - import_role:
+        name: cleaner
     
 - name: uninstall grafana
   hosts: controllers

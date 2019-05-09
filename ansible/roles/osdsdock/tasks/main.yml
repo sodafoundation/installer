@@ -50,7 +50,7 @@
     driver = {{ db_driver }}
   args:
     chdir: "{{ opensds_config_dir }}"
-  ignore_errors: yes
+  become: yes
 
 - name: run osdsdock daemon service
   shell:

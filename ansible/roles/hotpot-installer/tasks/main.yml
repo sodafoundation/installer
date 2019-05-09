@@ -40,7 +40,7 @@
     [osdslet]
     api_endpoint = {{ controller_endpoint }}
     log_file = {{ controller_log_file }}
-    
+
     [osdsapiserver]
     api_endpoint = {{ apiserver_endpoint }}
     log_file = {{ apiserver_log_file }}
@@ -57,7 +57,7 @@
     driver = {{ db_driver }}
   args:
     chdir: "{{ opensds_config_dir }}"
-  ignore_errors: yes
+  become: yes
 
 - name: include scenarios/container.yml when installing from container
   include: scenarios/container.yml

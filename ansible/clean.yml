@@ -33,20 +33,12 @@
     - import_role:
         name: cleaner
     
-- name: uninstall grafana
+- name: uninstall tools for telemetry
   hosts: controllers
   remote_user: root
   gather_facts: false
   become: True
   tasks:
     - import_role:
-        name: grafana-uninstaller
-        
-- name: uninstall prometheus
-  hosts: controllers
-  remote_user: root
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: prometheus-uninstaller
+        name: telemetry-uninstaller
+

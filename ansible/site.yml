@@ -122,22 +122,12 @@
   tasks:
     - import_role:
         name: dashboard-installer
-        
-- name: deploy grafana
-  hosts: controllers
-  remote_user: root
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: grafana-installer
-        
-- name: deploy prometheus
-  hosts: controllers
-  remote_user: root
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: prometheus-installer
 
+- name: deploy tools for telemetry
+  hosts: controllers
+  remote_user: root
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: telemetry-installer

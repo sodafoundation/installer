@@ -13,19 +13,17 @@
 # limitations under the License.
 
 ---
-- name: install grafana
+- name: uninstall prometheus
   shell: "{{ item }}"
   with_items:
-    - curl https://packagecloud.io/gpg.key | apt-key add -
-    - add-apt-repository "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
-    - apt-get update
-    - curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh |bash
-    - apt-get install -y grafana
-    - systemctl start grafana-server
-  become: yes
-  
-- name: check status of grafana service
-  shell: "{{ item }}"
-  with_items:
-    - systemctl status grafana-server
+    - systemctl stop prometheus
+    - rm -rf /etc/systemd/system/prometheus.service
+    - rm -rf /etc/prometheus/prometheus.yml
+    - rm -rf /etc/prometheus
+    - rm -rf /usr/local/bin/promtool
+    - rm -rf /usr/local/bin/prometheus
+    - rm -rf /var/lib/prometheus
+    - userdel -r prometheus
+    - userdel -r node_exporter
+  ignore_errors: yes
   become: yes

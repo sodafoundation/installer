@@ -50,7 +50,7 @@ sushi_remote_url: https://github.com/opensds/nbp.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-sushi_release: v0.5.1 # The version should be at least v0.2.1
+sushi_release: v0.5.2 # The version should be at least v0.2.1
 
 # These fields are NOT suggested to be modified
 sushi_download_url: https://github.com/opensds/nbp/releases/download/{{ sushi_release }}/opensds-sushi-{{ sushi_release }}-linux-amd64.tar.gz

@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@
 - name: check go_path
   shell: "{{ item }}"
   with_items:
-      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
-      - /bin/false
+    - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+    - /bin/false
   when: go_path == ""
 
 - name: check for sushi source code existed
   stat:
     path: "{{ go_path }}/src/github.com/opensds/nbp"
-  ignore_errors: yes
   register: sushiexisted
 
 - name: download sushi source code if not exists

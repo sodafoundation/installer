@@ -1,4 +1,6 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#!/usr/bin/env bash
+
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[controllers]
-localhost ansible_connection=local
+cat > /etc/systemd/system/prometheus.service <<EOF
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
 
-# For multi-docker DO NOT FORGET to mention "enabled_backends" and "dock_endpoint"
-[docks]
-localhost ansible_connection=local #enabled_backends=lvm dock_endpoint=<host_ip>
-#You can add more dockers to this like below example
-#{{ Dock-2 IP }} ansible_connection=ssh enabled_backends=lvm dock_endpoint=<dock_2_IP>
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /var/lib/prometheus/ --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries
 
-[worker-nodes]
-localhost ansible_connection=local
+[Install]
+WantedBy=multi-user.target
+
+EOF

@@ -13,29 +13,19 @@
 # limitations under the License.
 
 ---
-- name: uninstall opensds keystone with the script
+- name: install grafana
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh uninstall script
-  when:
-    - install_keystone_with_docker != true
-  ignore_errors: yes
+    - curl https://packagecloud.io/gpg.key | apt-key add -
+    - add-apt-repository "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
+    - apt-get update
+    - curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh |bash
+    - apt-get install -y grafana
+    - systemctl start grafana-server
   become: yes
   
-- name: uninstall opensds keystone with the docker
+- name: check status of grafana service
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh uninstall docker
-  when:
-    - install_keystone_with_docker == true
-  ignore_errors: yes
-  become: yes
-  
-- name: cleanup opensds keystone
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/keystone.sh uninstall_purge
-  when:
-    - keystone_uninstall_purge == true
-  ignore_errors: yes
+    - systemctl status grafana-server
   become: yes

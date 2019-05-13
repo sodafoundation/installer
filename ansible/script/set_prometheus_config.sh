@@ -1,4 +1,6 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+#!/usr/bin/env bash
+
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[controllers]
-localhost ansible_connection=local
+cat > /etc/prometheus/prometheus.yml <<EOF
+global:
+  scrape_interval: 15s
 
-# For multi-docker DO NOT FORGET to mention "enabled_backends" and "dock_endpoint"
-[docks]
-localhost ansible_connection=local #enabled_backends=lvm dock_endpoint=<host_ip>
-#You can add more dockers to this like below example
-#{{ Dock-2 IP }} ansible_connection=ssh enabled_backends=lvm dock_endpoint=<dock_2_IP>
-
-[worker-nodes]
-localhost ansible_connection=local
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+EOF

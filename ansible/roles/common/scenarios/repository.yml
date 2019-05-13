@@ -19,14 +19,13 @@
 - name: check go_path
   shell: "{{ item }}"
   with_items:
-      - echo "The environment variable GOPATH must be set and cannot be an empty string!"
-      - /bin/false
+    - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+    - /bin/false
   when: go_path == ""
 
 - name: check for hotpot source code existed
   stat:
     path: "{{ go_path }}/src/github.com/opensds/opensds"
-  ignore_errors: yes
   register: hotpotexisted
 
 - name: download hotpot source code if not exists

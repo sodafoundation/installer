@@ -1,0 +1,72 @@
+# Copyright (c) 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# ---------start to clean grafana---------
+- name: clean grafana
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop grafana-server
+    - apt purge -y grafana
+    - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
+  ignore_errors: yes
+  become: yes
+
+# ---------start to clean alertmanager---------
+- name: clean alertmanager
+  shell: "{{ item }}"
+  with_items:
+    - killall alertmanager  
+    - rm -rf /usr/local/bin/alertmanager
+    - rm -rf /etc/alertmanager
+    - userdel -r alertmanager
+  ignore_errors: yes
+  become: yes
+
+# ---------start to clean pushgateway---------
+- name: clean pushgateway
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop pushgateway
+    - rm -rf /etc/systemd/system/pushgateway.service
+    - rm -rf /usr/local/bin/pushgateway
+    - userdel -r pushgateway
+  ignore_errors: yes
+  become: yes
+
+# ---------start to clean node_exporter---------
+- name: clean node_exporter
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop node_exporter
+    - rm -rf /etc/systemd/system/node_exporter.service
+    - rm -rf /usr/local/bin/node_exporter
+    - userdel -r node_exporter
+  ignore_errors: yes
+  become: yes
+
+# ---------start to clean prometheus---------
+- name: clean prometheus
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop prometheus
+    - rm -rf /etc/systemd/system/prometheus.service
+    - rm -rf /etc/prometheus/prometheus.yml
+    - rm -rf /etc/prometheus
+    - rm -rf /usr/local/bin/promtool
+    - rm -rf /usr/local/bin/prometheus
+    - rm -rf /var/lib/prometheus
+    - userdel -r prometheus
+  ignore_errors: yes
+  become: yes

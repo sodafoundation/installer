@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: uninstall grafana
-  shell: "{{ item }}"
-  with_items:
-    - systemctl stop grafana-server
-    - apt-get purge -y grafana
-    - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
-  ignore_errors: yes
-  become: yes
+cat > /etc/systemd/system/pushgateway.service <<EOF
+[Unit]
+Description=Prometheus Push Gateway
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=pushgateway
+Group=pushgateway
+Type=simple
+ExecStart=/usr/local/bin/pushgateway
+
+[Install]
+WantedBy=multi-user.target
+
+EOF

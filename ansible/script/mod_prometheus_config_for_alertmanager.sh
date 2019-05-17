@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: include scenarios/clean_telemetry_tools.yml
-  include: scenarios/clean_telemetry_tools.yml
+cat >> /etc/prometheus/prometheus.yml <<EOF
 
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: ['localhost:9093']
+EOF

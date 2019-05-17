@@ -13,6 +13,16 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/clean_telemetry_tools.yml
-  include: scenarios/clean_telemetry_tools.yml
+# Dummy variable to avoid error because ansible does not recognize the
+# file as a good configuration file when no variable in it.
+dummy:
 
+###########
+# GENERAL #
+###########
+
+# Do you need to install telemetry tools?
+install_telemetry_tools: true
+
+# Is it cleaned up before installation?
+clean_up_before_installation: true

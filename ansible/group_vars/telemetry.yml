@@ -22,7 +22,7 @@ dummy:
 ###########
 
 # Do you need to install telemetry tools?
-install_telemetry_tools: true
+install_telemetry_tools: false
 
 # Is it cleaned up before installation?
-clean_up_before_installation: true
+clean_up_before_installation: false

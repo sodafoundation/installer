@@ -25,4 +25,4 @@ dummy:
 install_telemetry_tools: false
 
 # Is it cleaned up before installation?
-clean_up_before_installation: false
+clean_up_before_installation: true

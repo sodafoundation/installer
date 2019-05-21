@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+sed -i 's/^install_telemetry_tools: .*/install_telemetry_tools: '"true"'/g' ansible/group_vars/telemetry.yml
 # Validate the installation using repository type
 sed -i 's/^install_from: .*/install_from: '"repository"'/g' ansible/group_vars/common.yml
 sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts

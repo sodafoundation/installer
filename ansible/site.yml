@@ -126,6 +126,8 @@
 - name: deploy tools for telemetry
   hosts: controllers
   remote_user: root
+  vars_files:
+    - group_vars/telemetry.yml
   gather_facts: false
   become: True
   tasks:

@@ -26,18 +26,21 @@
     name: pip
     state: latest
   become: yes
+  ignore_errors: yes
 
 - name: Install python virtual environment
   pip:
     name: virtualenv
     state: latest
   become: yes
+  ignore_errors: yes
 
 - name: Install python requirements
   pip:
     requirements: '{{ orchestration_work_dir }}/requirements.txt'
     virtualenv: '{{ orchestration_work_dir }}/venv'
   become: yes
+  ignore_errors: yes
 
 - name: Install python virtual environment activate script
   template:

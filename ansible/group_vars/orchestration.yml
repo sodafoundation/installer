@@ -22,6 +22,9 @@ dummy:
 # GENERAL #
 ###########
 
+# Install Orchestration Manager (true/false)
+install_orchestration: false
+
 hotpot_endpoint: "http://{{ host_ip }}:50040"
 
 # Orchestration installation types are: 'container', 'source_code'

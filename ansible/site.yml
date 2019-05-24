@@ -146,3 +146,5 @@
     - import_role:
         name: orchestration-installer
       tags: orchestration_tag
+      when:
+        - install_orchestration == true

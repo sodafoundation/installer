@@ -60,10 +60,9 @@
   args:
     chdir: "{{ gelato_work_dir }}"
 
-# - name: wait for service to start normally
-#   wait_for:
-#     host: 127.0.0.1
-#     port: 8089
-#     delay: 15
-#     timeout: 120
-#   ignore_errors: yes
+- name: wait for service to start normally
+  wait_for:
+    host: 127.0.0.1
+    port: 8089
+    delay: 10
+    timeout: 120

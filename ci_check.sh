@@ -28,3 +28,5 @@ sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hos
 sed -i 's/^install_from: .*/install_from: '"container"'/g' ansible/group_vars/common.yml
 sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
 sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts
+# Validate the Orchestration Manager installation
+sed -i 's/^install_orchestration: .*/install_orchestration: '"true"'/g' ansible/group_vars/orchestration.yml

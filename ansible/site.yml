@@ -133,3 +133,18 @@
   tasks:
     - import_role:
         name: telemetry-installer
+
+- name: Install Orchestration Manager
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/orchestration.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: orchestration-installer
+      tags: orchestration_tag
+      when:
+        - install_orchestration == true

@@ -1,0 +1,52 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# Dummy variable to avoid error because ansible does not recognize the
+# file as a good configuration file when no variable in it.
+dummy:
+
+
+###########
+# GENERAL #
+###########
+
+# Install Orchestration Manager (true/false)
+install_orchestration: false
+
+hotpot_endpoint: "http://{{ host_ip }}:50040"
+
+# Orchestration installation types are: 'container', 'source_code'
+orchestration_installation_type: source_code
+
+# These fields are NOT suggested to be modifie
+orchestration_work_dir: /opt/orchestration-linux-amd64
+st2_installer_work_dir: /opt/st2-installer-linux-amd64
+venv: "{{ orchestration_work_dir }}/venv"
+
+
+##############
+# REPOSITORY #
+##############
+
+# If user specifies intalling from repository, then he can choose the specific
+# repository branch
+orchestration_repo_branch: master
+orchestration_st2_installer_repo_branch: master
+
+# These fields are NOT suggested to be modified
+orchestration_remote_url: https://github.com/opensds/orchestration.git
+orchestration_st2_installer_remote_url: https://github.com/StackStorm/st2-docker.git
+
+

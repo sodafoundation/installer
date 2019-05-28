@@ -27,6 +27,7 @@
     - group_vars/gelato.yml
     - group_vars/sushi.yml
     - group_vars/dashboard.yml
+    - group_vars/orchestration.yml
   gather_facts: false
   become: True
   tasks:

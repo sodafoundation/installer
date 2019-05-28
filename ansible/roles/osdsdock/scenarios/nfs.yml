@@ -1,0 +1,87 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: install external package and ibv* commands package when nfs backend enabled
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - lvm2
+    - tgt
+    - thin-provisioning-tools
+
+- name: configure nfs section in opensds global info if specify nfs backend
+  shell: |
+    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+
+    [nfs]
+    name = {{ nfs_name }}
+    description = {{ nfs_description }}
+    driver_name = {{ nfs_driver_name }}
+    config_path = {{ nfs_config_path }}
+  args:
+    chdir: "{{ opensds_config_dir }}"
+  become: yes
+
+- name: copy opensds nfs backend file to nfs config path if specify nfs backend
+  copy:
+    src: ../../../group_vars/nfs/nfs.yaml
+    dest: "{{ nfs_config_path }}"
+
+- name: update opensds nfs backend file if specify nfs backend
+  replace:
+    path: "{{ nfs_config_path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { regexp: '127.0.0.1', replace: '{{host_ip}}'}
+    - { regexp: 'opensds-nfs', replace: '{{opensds_nfs_group}}'}
+
+- name: create directory to volume group file
+  file:
+    path: "{{ hotpot_work_dir }}/volumegroups"
+    state: directory
+    recurse: yes
+
+- name: create volume group for nfs server if specify nfs backend
+  shell:
+    _raw_params: |
+      function _create_lvm_volume_group {
+          local vg=$1
+          local size=$2
+
+          local backing_file={{ hotpot_work_dir }}/volumegroups/${vg}.img
+          if ! sudo vgs $vg; then
+              # Only create if the file doesn't already exists
+              [[ -f $backing_file ]] || truncate -s $size $backing_file
+              local vg_dev
+              vg_dev=`sudo losetup -f --show $backing_file`
+
+              # Only create physical volume if it doesn't already exist
+              if ! sudo pvs $vg_dev; then
+                  sudo pvcreate $vg_dev
+              fi
+
+              # Only create volume group if it doesn't already exist
+              if ! sudo vgs $vg; then
+                  sudo vgcreate $vg $vg_dev
+              fi
+          fi
+      }
+      modprobe dm_thin_pool
+      _create_lvm_volume_group {{ opensds_nfs_group }} 10G
+  args:
+    executable: /bin/bash
+  become: true

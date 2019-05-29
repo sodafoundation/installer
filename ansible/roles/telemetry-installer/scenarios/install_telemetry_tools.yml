@@ -204,3 +204,18 @@
   with_items:
     - systemctl status grafana-server
   become: yes
+  
+# ---------start to install sysstat---------
+- name: install sysstat
+  shell: "{{ item }}"
+  with_items:
+    - apt-get install sysstat
+    - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
+    - systemctl restart sysstat
+  become: yes
+  
+- name: check status of sysstat service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status sysstat
+  become: yes

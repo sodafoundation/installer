@@ -70,3 +70,12 @@
     - userdel -r prometheus
   ignore_errors: yes
   become: yes
+  
+# ---------start to clean sysstat---------
+- name: clean sysstat
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop sysstat
+    - apt purge -y sysstat    
+  ignore_errors: yes
+  become: yes

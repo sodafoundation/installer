@@ -204,3 +204,13 @@
   with_items:
     - systemctl status grafana-server
   become: yes
+# ---------install sysstat and enable collection---------
+- name: install sysstat
+  shell: "{{ item }}"
+  tags:
+    - collection
+  with_items:
+    - apt-get install sysstat -y
+    - echo 'ENABLED="true"' > /etc/default/sysstat
+    - service sysstat restart
+  become: yes

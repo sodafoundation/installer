@@ -231,7 +231,7 @@
     - systemctl start lvm_exporter
   become: yes
 
-- name: check status of node_exporter service
+- name: check status of lvm_exporter service
   shell: "{{ item }}"
   tags:
     - lvm_exporter

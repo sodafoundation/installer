@@ -148,22 +148,36 @@ download_code(){
 }
 
 install(){
-    create_user
-    download_code
-    # If keystone is ready to start, there is no need continue next step.
-    if wait_for_url "http://$HOST_IP/identity" "keystone" 0.25 4; then
-        return
+    if [ "docker" == "$1" ]
+    then
+        docker pull opensdsio/opensds-authchecker:latest
+        docker run -d --privileged=true --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
+        docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
+    else
+        create_user
+        download_code
+        # If keystone is ready to start, there is no need continue next step.
+        if wait_for_url "http://$HOST_IP/identity" "keystone" 0.25 4; then
+            return
+        fi
+        devstack_local_conf
+        cd "${DEV_STACK_DIR}"
+        su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/stack.sh" >/dev/null
+        delete_redundancy_data
+        cp "$TOP_DIR/../../conf/keystone.policy.json" "${KEYSTONE_CONFIG_DIR}/policy.json"
     fi
-    devstack_local_conf
-    cd "${DEV_STACK_DIR}"
-    su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/stack.sh" >/dev/null
-    delete_redundancy_data
-    cp "$TOP_DIR/../../conf/keystone.policy.json" "${KEYSTONE_CONFIG_DIR}/policy.json"
 }
 
 uninstall(){
-    su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/clean.sh" >/dev/null
-    su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/unstack.sh" >/dev/null
+    if [ "docker" == "$1" ]
+    then
+        docker stop opensds-authchecker
+        docker rm opensds-authchecker
+    else
+       su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/clean.sh" >/dev/null
+       su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/unstack.sh" >/dev/null
+    fi
+    
 }
 
 uninstall_purge() {
@@ -173,12 +187,16 @@ uninstall_purge() {
 
 config_hotpot() {
     hotpot_conf
-    create_user_and_endpoint_for_hotpot
+    if [ "docker" != "$1" ] ;then
+        create_user_and_endpoint_for_hotpot
+    fi
 }
 
 config_gelato() {
     gelato_conf
-    create_user_and_endpoint_for_gelato
+    if [ "docker" != "$1" ] ;then
+        create_user_and_endpoint_for_gelato
+    fi
 }
 
 # ***************************
@@ -195,18 +213,18 @@ source "$TOP_DIR/util.sh"
 source "$TOP_DIR/sdsrc"
 
 case "$# $1" in
-    "1 install")
+    "2 install")
     echo "Starting install keystone..."
-    install
+    install $2
     ;;
-    "1 uninstall")
+    "2 uninstall")
     echo "Starting uninstall keystone..."
-    uninstall
+    uninstall $2
     ;;
-    "2 config")
+    "3 config")
     [[ X$2 != Xhotpot && X$2 != Xgelato ]] && echo "config type must be hotpot or gelato" && exit 1
     echo "Starting config $2 ..."
-    config_$2
+    config_$2 $3
     ;;
     "1 uninstall_purge")
     echo "Starting uninstall purge keystone..."

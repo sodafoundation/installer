@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +13,21 @@
 # limitations under the License.
 
 ---
-- name: uninstall opensds keystone
+- name: uninstall opensds keystone with the script
   shell: "{{ item }}"
   with_items:
-    - bash ./script/keystone.sh uninstall
+    - bash ./script/keystone.sh uninstall script
   when:
-    - opensds_auth_strategy == "keystone"
+    - install_keystone_with_docker != true
+  ignore_errors: yes
+  become: yes
+  
+- name: uninstall opensds keystone with the docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh uninstall docker
+  when:
+    - install_keystone_with_docker == true
   ignore_errors: yes
   become: yes
   
@@ -27,6 +36,6 @@
   with_items:
     - bash ./script/keystone.sh uninstall_purge
   when:
-    - opensds_auth_strategy == "keystone" and keystone_uninstall_purge == true
+    - keystone_uninstall_purge == true
   ignore_errors: yes
   become: yes

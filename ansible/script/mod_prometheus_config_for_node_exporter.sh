@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,5 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-sed -i 's/^opensds_auth_strategy: .*/opensds_auth_strategy: '"noauth"'/g' ansible/group_vars/auth.yml
-sed -i 's/^dashboard_installation_type: .*/dashboard_installation_type: '"source_code"'/g' ansible/group_vars/dashboard.yml
+cat >> /etc/prometheus/prometheus.yml <<EOF
+  - job_name: 'node_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9100']
+EOF

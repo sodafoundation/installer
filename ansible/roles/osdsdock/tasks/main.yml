@@ -15,24 +15,48 @@
 ---
 - name: include scenarios/lvm.yml
   include: scenarios/lvm.yml
-  when: deploy_project != "gelato" and "lvm" in enabled_backends
+  when:
+    - "'lvm' in enabled_backends"
 
 - name: include scenarios/ceph.yml
   include: scenarios/ceph.yml
-  when: deploy_project != "gelato" and "ceph" in enabled_backends
+  when:
+    - "'ceph' in enabled_backends"
 
 - name: include scenarios/cinder.yml
   include: scenarios/cinder.yml
   when:
-   - deploy_project != "gelato" and "cinder" in enabled_backends
-   - use_cinder_standalone == false
+    - use_cinder_standalone == false and "cinder" in enabled_backends
+
+- name: include scenarios/nfs.yml
+  include: scenarios/nfs.yml
+  when:
+    - "'nfs' in enabled_backends"
 
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
-  when: 
-   - deploy_project != "gelato" and "cinder" in enabled_backends
-   - use_cinder_standalone == true
- 
+  when:
+    - use_cinder_standalone == true and "cinder" in enabled_backends
+
+- name: configure opensds global info
+  shell: |
+    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+
+    [osdsdock]
+    api_endpoint = {{ dock_endpoint }}:{{ dock_port }}
+    log_file = {{ dock_log_file }}
+    # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
+    dock_type = {{ dock_type }}
+    # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
+    enabled_backends = {{ enabled_backends }}
+
+    [database]
+    endpoint = {{ db_endpoint }}
+    driver = {{ db_driver }}
+  args:
+    chdir: "{{ opensds_config_dir }}"
+  become: yes
+
 - name: run osdsdock daemon service
   shell:
     cmd: |
@@ -47,7 +71,8 @@
       done
   args:
     chdir: "{{ hotpot_work_dir }}"
-  when: deploy_project != "gelato" and install_from != "container"
+  when:
+    - install_from != "container"
 
 - name: run osdsdock containerized service
   docker_container:
@@ -63,4 +88,5 @@
     - "/run/:/run/:shared"
     - "/etc/localtime:/etc/localtime:ro"
     - "/lib/modules:/lib/modules:ro"
-  when: deploy_project != "gelato" and install_from == "container"
+  when:
+    - install_from == "container"

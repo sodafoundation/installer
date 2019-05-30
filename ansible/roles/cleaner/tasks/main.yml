@@ -18,6 +18,7 @@
     image: "{{ dashboard_docker_image }}"
     state: stopped
   when: dashboard_installation_type == "container"
+  ignore_errors: true
 
 - name: kill osdslet and osdsdock and osdsapiserver daemon service
   shell: killall osdslet osdsdock osdsapiserver
@@ -114,3 +115,6 @@
 
 - name: include scenarios/backend.yml for cleaning up storage backend service
   include_tasks: scenarios/backend.yml
+
+- name: include scenarios/orchestration.yml for cleaning up orchestration service
+  include_tasks: scenarios/orchestration.yml

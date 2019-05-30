@@ -1,0 +1,54 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# Install and start StackStorm Engine
+- name: Check for stackstorm installer workspace existed
+  stat:
+    path: "{{ st2_installer_work_dir }}"
+  register: st2installerexisted
+
+- name: Download stackstorm installer workspace if not exists
+  git:
+    repo: "{{ orchestration_st2_installer_remote_url }}"
+    dest: "{{ st2_installer_work_dir }}"
+    version: "{{ orchestration_st2_installer_repo_branch }}"
+  when:
+    - st2installerexisted.stat.exists is undefined or st2installerexisted.stat.exists == false
+
+- name: Build and bring up stackstorm
+  shell: "{{ item }}"
+  with_items:
+    - make env
+    - docker-compose up -d
+  args:
+    chdir: "{{ st2_installer_work_dir }}"
+    warn: false
+  become: yes
+
+- name : Get stackstorm container id
+  shell: docker ps | grep -i "stackstorm/stackstorm:latest" | awk '{print $1}'
+  register : container_id
+
+- name: Copy and register opensds packs to stackstorm container
+  shell: "{{ item }}"
+  with_items:
+   - docker cp contrib/st2/opensds {{ container_id.stdout }}:/opt/stackstorm/packs/
+   - docker exec -i {{ container_id.stdout }} st2ctl reload --register-all
+   - docker exec -i {{ container_id.stdout }} st2 run packs.setup_virtualenv packs=opensds
+  args:
+    chdir: "{{ orchestration_work_dir }}"
+    warn: false
+  become: yes
+  ignore_errors: yes

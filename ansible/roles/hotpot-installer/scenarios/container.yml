@@ -16,3 +16,21 @@
 - name: install docker-py package with pip when enabling containerized deployment
   pip:
     name: docker-py
+
+- name: run osdslet containerized service
+  docker_container:
+    name: osdslet
+    image: "{{ controller_docker_image }}"
+    state: started
+    network_mode: host
+    volumes:
+    - "/etc/opensds/:/etc/opensds"
+
+- name: run osdsapiserver containerized service
+  docker_container:
+    name: apiserver
+    image: "{{ apiserver_docker_image }}"
+    state: started
+    network_mode: host
+    volumes:
+    - "/etc/opensds/:/etc/opensds"

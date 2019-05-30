@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,19 @@
     - group_vars/gelato.yml
     - group_vars/sushi.yml
     - group_vars/dashboard.yml
+    - group_vars/orchestration.yml
   gather_facts: false
   become: True
-  roles:
-    - cleaner
+  tasks:
+    - import_role:
+        name: cleaner
+    
+- name: uninstall tools for telemetry
+  hosts: controllers
+  remote_user: root
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: telemetry-uninstaller
+

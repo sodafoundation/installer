@@ -34,7 +34,7 @@
     config_path = {{ lvm_config_path }}
   args:
     chdir: "{{ opensds_config_dir }}"
-  ignore_errors: yes
+  become: yes
 
 - name: copy opensds lvm backend file to lvm config path if specify lvm backend
   copy:

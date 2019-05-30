@@ -44,4 +44,4 @@ gelato_remote_url: https://github.com/opensds/multi-cloud.git
 #############
 
 # These fields are NOT suggested to be modified
-gelato_docker_compose_file: https://raw.githubusercontent.com/opensds/multi-cloud/master/docker-compose.yml
+gelato_docker_compose_file: https://raw.githubusercontent.com/opensds/multi-cloud/{{ gelato_repo_branch }}/docker-compose.yml

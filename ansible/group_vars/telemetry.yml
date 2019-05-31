@@ -26,3 +26,24 @@ install_telemetry_tools: false
 
 # Is it cleaned up before installation?
 clean_up_before_installation: true
+
+# Telementry configs to be updated in opensds.conf
+prometheus_conf_home: /etc/prometheus/
+prometheus_conf_file: prometheus.yml
+prometheus_url: 'http://localhost:9090'
+alertmgr_conf_home: /root/alertmanager-0.16.2.linux-amd64/
+alertmgr_conf_file: alertmanager.yml
+alertmgr_url: 'http://localhost:9093'
+grafana_conf_home: /etc/grafana/
+grafana_conf_file: grafana.ini
+grafana_url: 'http://localhost:3000'
+grafana_restart_cmd:  grafana-server
+conf_reload_url: /-/reload
+
+prometheus_push_mechanism: 'NodeExporter'
+prometheus_push_gateway_url: 'http://localhost:9091'
+node_exporter_watch_folder: /root/prom_nodeexporter_folder/
+kafka_endpoint: 'localhost:9092'
+kafka_topic: metrics
+
+opensds_conf_file: /etc/opensds/opensds.conf

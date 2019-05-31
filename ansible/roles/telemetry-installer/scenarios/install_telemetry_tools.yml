@@ -204,3 +204,66 @@
   with_items:
     - systemctl status grafana-server
   become: yes
+
+# ---------update opensds config file ---------
+- name: Set opensds.conf with telemetry options in osdsapiserver
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdsapiserver
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: prometheus_conf_home, value: "{{ prometheus_conf_home }}" }
+        - { option: prometheus_url, value: "{{ prometheus_url }}" }
+        - { option: prometheus_conf_file, value: "{{ prometheus_conf_file }}" }
+        - { option: alertmgr_conf_home, value: "{{ alertmgr_conf_home }}" }
+        - { option: alertmgr_url, value: "{{ alertmgr_url }}" }
+        - { option: alertmgr_conf_file, value: "{{ alertmgr_conf_file }}" }
+        - { option: grafana_conf_home, value: "{{ grafana_conf_home }}" }
+        - { option: grafana_restart_cmd, value: "{{ grafana_restart_cmd }}" }
+        - { option: grafana_conf_file, value: "{{ grafana_conf_file }}" }
+        - { option: grafana_url, value: "{{ grafana_url }}" }
+        - { option: conf_reload_url, value: "{{ conf_reload_url }}" }
+  become: yes
+  tags: telemetry_conf
+
+- name: Set opensds.conf with telemetry options in osdslet
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: prometheus_push_mechanism, value: "{{ prometheus_push_mechanism }}" }
+        - { option: kafka_endpoint, value: "{{ kafka_endpoint }}" }
+        - { option: kafka_topic, value: "{{ kafka_topic }}" }
+  become: yes
+  tags: telemetry_conf
+
+- name: Set push mechanism when NodeExporter is selected
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: node_exporter_watch_folder, value: "{{ node_exporter_watch_folder }}" }
+  become: yes
+  when: prometheus_push_mechanism == 'NodeExporter'
+  tags: telemetry_conf
+
+- name: Set push mechanism when PushGateway is selected
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: prometheus_push_gateway_url, value: "{{ prometheus_push_gateway_url }}" }
+  become: yes
+  when: prometheus_push_mechanism == 'PushGateway'
+  tags: telemetry_conf

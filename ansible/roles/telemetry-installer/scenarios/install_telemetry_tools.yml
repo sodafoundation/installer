@@ -272,7 +272,7 @@
 - name: install sysstat
   shell: "{{ item }}"
   with_items:
-    - apt-get install sysstat
+    - apt-get install -y sysstat
     - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
     - systemctl restart sysstat
   become: yes
@@ -282,3 +282,4 @@
   with_items:
     - systemctl status sysstat
   become: yes
+

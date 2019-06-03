@@ -139,6 +139,14 @@
     - systemctl status pushgateway
   become: yes
 
+- name: configure, restart and check status of prometheus for pushgateway service
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/mod_prometheus_config_for_pushgateway.sh
+    - systemctl restart prometheus
+    - systemctl status prometheus
+  become: yes
+
 # ---------start to install alertmanager---------
 - name: download alertmanager
   shell: "{{ item }}"

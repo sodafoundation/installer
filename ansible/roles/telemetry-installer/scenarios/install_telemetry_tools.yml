@@ -31,6 +31,8 @@
     - tar xvf prometheus-2.9.2.linux-amd64.tar.gz
     - cp prometheus-2.9.2.linux-amd64/prometheus /usr/local/bin/prometheus
     - cp prometheus-2.9.2.linux-amd64/promtool /usr/local/bin/promtool
+    - chown -R prometheus:prometheus /usr/local/bin/prometheus
+    - chown -R prometheus:prometheus /usr/local/bin/promtool
     - cp -r prometheus-2.9.2.linux-amd64/consoles /etc/prometheus
     - cp -r prometheus-2.9.2.linux-amd64/console_libraries /etc/prometheus
     - chown -R prometheus:prometheus /etc/prometheus/consoles
@@ -156,25 +158,27 @@
     - cp alertmanager-0.16.2.linux-amd64/alertmanager /usr/local/bin/
     - mkdir -p /etc/alertmanager
     - cp alertmanager-0.16.2.linux-amd64/alertmanager.yml /etc/alertmanager
+    - mkdir -p /var/lib/alertmanager
     - useradd --no-create-home --shell /bin/false alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager
     - chown alertmanager:alertmanager /usr/local/bin/alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager/alertmanager.yml
+    - chown alertmanager:alertmanager /var/lib/alertmanager
     - rm -rf alertmanager-0.16.2.linux-amd64.tar.gz alertmanager-0.16.2.linux-amd64
   become: yes
 
-- name: run alertmanager
-  shell:
-    cmd: |
-      i=0
-      while
-        i="$((i+1))"
-        [ "$i" -lt 4 ]
-      do
-        nohup alertmanager --config.file=/etc/alertmanager/alertmanager.yml > alertmanager.out 2> alertmanager.err < /dev/null &
-        sleep 5
-        ps aux | grep alertmanager | grep -v grep && echo "Successfully running alertmanager!" && break
-      done
+- name: edit alertmanager.service
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/set_alertmanager_service.sh
+  become: yes
+
+- name: start alertmanager
+  shell: "{{ item }}"
+  with_items:
+    - systemctl daemon-reload
+    - systemctl start alertmanager
+    - systemctl enable alertmanager
   become: yes
 
 - name: configuring prometheus to scrape alertmanager

@@ -27,7 +27,8 @@
 - name: clean alertmanager
   shell: "{{ item }}"
   with_items:
-    - killall alertmanager  
+    - systemctl stop alertmanager
+    - rm -rf /etc/systemd/system/alertmanager.service
     - rm -rf /usr/local/bin/alertmanager
     - rm -rf /etc/alertmanager
     - userdel -r alertmanager

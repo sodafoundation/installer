@@ -34,27 +34,28 @@
   become: yes
 
 - name: configure opensds global info
-  shell: |
-    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+  shell:
+    cmd: |
+      cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
 
-    [osdslet]
-    api_endpoint = {{ controller_endpoint }}
-    log_file = {{ controller_log_file }}
+      [osdslet]
+      api_endpoint = {{ controller_endpoint }}
+      log_file = {{ controller_log_file }}
 
-    [osdsapiserver]
-    api_endpoint = {{ apiserver_endpoint }}
-    log_file = {{ apiserver_log_file }}
-    auth_strategy = {{ opensds_auth_strategy }}
-    # If https is enabled, the default value of cert file
-    # is /opt/opensds-security/opensds/opensds-cert.pem, 
-    # and key file is /opt/opensds-security/opensds/opensds-key.pem
-    https_enabled = False
-    beego_https_cert_file =
-    beego_https_key_file =
+      [osdsapiserver]
+      api_endpoint = {{ apiserver_endpoint }}
+      log_file = {{ apiserver_log_file }}
+      auth_strategy = {{ opensds_auth_strategy }}
+      # If https is enabled, the default value of cert file
+      # is /opt/opensds-security/opensds/opensds-cert.pem,
+      # and key file is /opt/opensds-security/opensds/opensds-key.pem
+      https_enabled = False
+      beego_https_cert_file =
+      beego_https_key_file =
 
-    [database]
-    endpoint = {{ db_endpoint }}
-    driver = {{ db_driver }}
+      [database]
+      endpoint = {{ db_endpoint }}
+      driver = {{ db_driver }}
   args:
     chdir: "{{ opensds_config_dir }}"
   become: yes

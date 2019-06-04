@@ -21,6 +21,7 @@
     - lvm2
     - tgt
     - thin-provisioning-tools
+    - nfs-kernel-server
 
 - name: configure nfs section in opensds global info if specify nfs backend
   shell: |

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: include scenarios/clean_telemetry_tools.yml
-  include: scenarios/clean_telemetry_tools.yml
-  when: clean_up_before_installation == true
+cat > /etc/systemd/system/alertmanager.service <<EOF
+[Unit]
+Description=Prometheus Alert Manager
+Wants=network-online.target
+After=network-online.target
 
-- name: include scenarios/install_telemetry_tools.yml
-  include: scenarios/install_telemetry_tools.yml
+[Service]
+User=alertmanager
+Group=alertmanager
+Type=simple
+ExecStart=/usr/local/bin/alertmanager \
+    --config.file /etc/alertmanager/alertmanager.yml \
+    --storage.path /var/lib/alertmanager
+
+[Install]
+WantedBy=multi-user.target
+
+EOF

@@ -5,7 +5,7 @@ replicaCount: 1
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
 osdsapiserver:
-  image: opensdsio/opensds-apiserver:latest
+  image: opensdsio/opensds-apiserver:v0.5.3
   # Attributes of the apiserver's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"

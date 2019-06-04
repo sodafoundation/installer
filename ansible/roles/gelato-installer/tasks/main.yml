@@ -24,7 +24,7 @@
     mode: 0755
   with_items:
     - "{{ gelato_work_dir }}"
- 
+
 - name: include scenarios/repository.yml when installing from repository
   include: scenarios/repository.yml
   when: install_from == "repository"
@@ -41,7 +41,7 @@
     - bash ./script/keystone.sh config gelato script
   when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
   become: yes
-  
+
 - name: gelato keystone configuration when keystone is installed by docker
   shell: "{{ item }}"
   with_items:
@@ -50,10 +50,17 @@
   become: yes
 
 - name: set variables for docker-compose configuration
-  shell: |
-     sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }},"  docker-compose.yml
-  args:
-    chdir: "{{ gelato_work_dir }}"
+  replace:
+    path: "{{ gelato_work_dir }}/docker-compose.yml"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { regexp: 'OS_AUTH_AUTHSTRATEGY=.*$', replace: 'OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }}'}
+    - { regexp: 'opensdsio/multi-cloud-api.*$', replace: 'opensdsio/multi-cloud-api:{{ gelato_image_tag }}'}
+    - { regexp: 'opensdsio/multi-cloud-backend.*$', replace: 'opensdsio/multi-cloud-backend:{{ gelato_image_tag }}'}
+    - { regexp: 'opensdsio/multi-cloud-s3.*$', replace: 'opensdsio/multi-cloud-s3:{{ gelato_image_tag }}'}
+    - { regexp: 'opensdsio/multi-cloud-dataflow.*$', replace: 'opensdsio/multi-cloud-dataflow:{{ gelato_image_tag }}'}
+    - { regexp: 'opensdsio/multi-cloud-datamover.*$', replace: 'opensdsio/multi-cloud-datamover:{{ gelato_image_tag }}'}
 
 - name: start service
   shell: docker-compose up -d

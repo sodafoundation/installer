@@ -22,7 +22,6 @@ dummy:
 # GENERAL #
 ###########
 
-
 # These fields are NOT suggested to be modifie
 gelato_work_dir: /opt/opensds-gelato-linux-amd64
 
@@ -42,6 +41,9 @@ gelato_remote_url: https://github.com/opensds/multi-cloud.git
 #############
 # CONTAINER #
 #############
+
+
+gelato_image_tag: latest
 
 # These fields are NOT suggested to be modified
 gelato_docker_compose_file: https://raw.githubusercontent.com/opensds/multi-cloud/{{ gelato_repo_branch }}/docker-compose.yml

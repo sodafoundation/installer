@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: uninstall prometheus
-  shell: "{{ item }}"
-  with_items:
-    - systemctl stop prometheus
-    - rm -rf /etc/systemd/system/prometheus.service
-    - rm -rf /etc/prometheus/prometheus.yml
-    - rm -rf /etc/prometheus
-    - rm -rf /usr/local/bin/promtool
-    - rm -rf /usr/local/bin/prometheus
-    - rm -rf /var/lib/prometheus
-    - userdel -r prometheus
-    - userdel -r node_exporter
-  ignore_errors: yes
-  become: yes
+cat >> /etc/prometheus/prometheus.yml <<EOF
+  - job_name: 'node_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9100']
+EOF

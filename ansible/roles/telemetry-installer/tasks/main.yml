@@ -13,8 +13,11 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/grafana.yml
-  include: scenarios/grafana.yml
+- name: include scenarios/clean_telemetry_tools.yml
+  include: scenarios/clean_telemetry_tools.yml
+  when: install_telemetry_tools == true and clean_up_before_installation == true
 
-- name: include scenarios/prometheus.yml
-  include: scenarios/prometheus.yml
+- name: include scenarios/install_telemetry_tools.yml
+  include: scenarios/install_telemetry_tools.yml
+  when: install_telemetry_tools == true
+

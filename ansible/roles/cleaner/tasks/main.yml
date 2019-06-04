@@ -115,3 +115,6 @@
 
 - name: include scenarios/backend.yml for cleaning up storage backend service
   include_tasks: scenarios/backend.yml
+
+- name: include scenarios/orchestration.yml for cleaning up orchestration service
+  include_tasks: scenarios/orchestration.yml

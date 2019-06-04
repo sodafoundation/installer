@@ -13,6 +13,23 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/clean_telemetry_tools.yml
-  include: scenarios/clean_telemetry_tools.yml
+- name: uninstall opensds orchestration manager
+  shell: "{{ item }}"
+  with_items:
+    - kill -9 `lsof -i :5000 |  grep 5000 | awk '{print $2}'`
+  args:
+    chdir: "{{ st2_installer_work_dir }}"
+    warn: false
+  ignore_errors: yes
+  become: yes
 
+- name: bring down stackstorm docker instances
+  shell: "{{ item }}"
+  with_items:
+    - docker-compose down
+  args:
+    chdir: "{{ st2_installer_work_dir }}"
+    warn: false
+  ignore_errors: yes
+  become: yes
+  

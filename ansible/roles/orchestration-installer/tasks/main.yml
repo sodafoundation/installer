@@ -13,11 +13,13 @@
 # limitations under the License.
 
 ---
-- name: uninstall grafana
-  shell: "{{ item }}"
-  with_items:
-    - systemctl stop grafana-server
-    - apt-get purge -y grafana
-    - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
-  ignore_errors: yes
-  become: yes
+- name: Get orchestration manager source code
+  include_tasks: scenarios/source-code.yml
+  when: orchestration_installation_type == "source_code"
+
+- name: Install stackstorm workflow engine
+  include_tasks: scenarios/stackstorm.yml
+
+- name: Start orchestration manager
+  include_tasks: scenarios/start-orchestration.yml
+  when: orchestration_installation_type == "source_code"

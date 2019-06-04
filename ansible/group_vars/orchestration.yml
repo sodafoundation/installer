@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,29 +22,31 @@ dummy:
 # GENERAL #
 ###########
 
-# Dashboard installation types are: 'container', 'source_code'
-dashboard_installation_type: container
+# Install Orchestration Manager (true/false)
+install_orchestration: false
 
-# These fields are NOT suggested to be modified
-dashboard_work_dir: /opt/opensds-dashboard-linux-amd64
+hotpot_endpoint: "http://{{ host_ip }}:50040"
 
-#Dashboard Console Login Address
-console_login_url: "{{ host_ip }}:8088"
+# Orchestration installation types are: 'container', 'source_code'
+orchestration_installation_type: source_code
 
-##########
-# DOCKER #
-##########
-
-dashboard_docker_image: opensdsio/dashboard:v0.5.3
+# These fields are NOT suggested to be modifie
+orchestration_work_dir: /opt/orchestration-linux-amd64
+st2_installer_work_dir: /opt/st2-installer-linux-amd64
+venv: "{{ orchestration_work_dir }}/venv"
 
 
 ##############
-# SOURCECODE #
+# REPOSITORY #
 ##############
 
-# If user specifies intalling from source code, then he can choose the specific
+# If user specifies intalling from repository, then he can choose the specific
 # repository branch
-dashboard_repo_branch: master
+orchestration_repo_branch: master
+orchestration_st2_installer_repo_branch: master
 
 # These fields are NOT suggested to be modified
-dashboard_remote_url: https://github.com/opensds/opensds-dashboard.git
+orchestration_remote_url: https://github.com/opensds/orchestration.git
+orchestration_st2_installer_remote_url: https://github.com/StackStorm/st2-docker.git
+
+

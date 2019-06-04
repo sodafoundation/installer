@@ -22,10 +22,10 @@ dummy:
 # GENERAL #
 ###########
 
-# Change it according to your backend, currently support 'lvm', 'ceph', 'cinder'
+# Change it according to your backend, currently support 'lvm', 'ceph', 'cinder', 'nfs'
 # DISABLE OR COMMENT "enabled_backends: lvm" IF YOU WANT TO INSTALL DIFFERENT BACKENDS ON MULTI-NODES AND mention it in "local.hosts" file
 # Comment this part if you want to use different backends on different nodes
-enabled_backends: lvm #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder
+enabled_backends: lvm,nfs #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder,nfs
 
 # Change it according to your node type (host or target), currently support
 # 'provisioner', 'attacher'
@@ -94,3 +94,16 @@ cinder_name: cinder backend
 cinder_description: This is a cinder backend service
 cinder_driver_name: cinder
 cinder_config_path: "{{ opensds_driver_config_dir }}/cinder.yaml"
+
+
+###########
+#   NFS   #
+###########
+
+
+# These fields are NOT suggested to be modified
+nfs_name: nfs backend
+nfs_description: This is a nfs backend service
+nfs_driver_name: nfs
+nfs_config_path: "{{ opensds_driver_config_dir }}/nfs.yaml"
+opensds_nfs_group: opensds-nfs

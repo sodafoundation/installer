@@ -28,6 +28,11 @@
   when:
     - use_cinder_standalone == false and "cinder" in enabled_backends
 
+- name: include scenarios/nfs.yml
+  include: scenarios/nfs.yml
+  when:
+    - "'nfs' in enabled_backends"
+
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
   when:

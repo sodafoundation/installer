@@ -1,0 +1,297 @@
+# Copyright (c) 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# ---------start to install prometheus---------
+- name: add users and give permissions for prometheus
+  shell: "{{ item }}"
+  with_items:
+    - useradd --no-create-home --shell /bin/false prometheus
+    - mkdir /etc/prometheus
+    - mkdir /var/lib/prometheus
+    - chown prometheus:prometheus /etc/prometheus
+    - chown prometheus:prometheus /var/lib/prometheus
+  become: yes
+
+- name: download and install prometheus
+  shell: "{{ item }}"
+  with_items:
+    - curl -LO https://github.com/prometheus/prometheus/releases/download/v2.9.2/prometheus-2.9.2.linux-amd64.tar.gz
+    - tar xvf prometheus-2.9.2.linux-amd64.tar.gz
+    - cp prometheus-2.9.2.linux-amd64/prometheus /usr/local/bin/prometheus
+    - cp prometheus-2.9.2.linux-amd64/promtool /usr/local/bin/promtool
+    - chown -R prometheus:prometheus /usr/local/bin/prometheus
+    - chown -R prometheus:prometheus /usr/local/bin/promtool
+    - cp -r prometheus-2.9.2.linux-amd64/consoles /etc/prometheus
+    - cp -r prometheus-2.9.2.linux-amd64/console_libraries /etc/prometheus
+    - chown -R prometheus:prometheus /etc/prometheus/consoles
+    - chown -R prometheus:prometheus /etc/prometheus/console_libraries
+    - rm -rf prometheus-2.9.2.linux-amd64.tar.gz prometheus-2.9.2.linux-amd64
+  become: yes
+
+- name: configuring prometheus
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/set_prometheus_config.sh
+    - chown prometheus:prometheus /etc/prometheus/prometheus.yml
+  become: yes
+
+- name: running prometheus
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/set_prometheus_service.sh
+    - systemctl daemon-reload
+    - systemctl start prometheus
+  become: yes
+
+- name: check status of prometheus service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status prometheus
+  become: yes
+
+# ---------start to install node_exporter---------
+- name: download node_exporter
+  shell: "{{ item }}"
+  with_items:
+    - curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+    - tar xvf node_exporter-0.17.0.linux-amd64.tar.gz
+    - cp node_exporter-0.17.0.linux-amd64/node_exporter /usr/local/bin/
+    - useradd --no-create-home --shell /bin/false node_exporter
+    - chown node_exporter:node_exporter /usr/local/bin/node_exporter
+    - rm -rf node_exporter-0.17.0.linux-amd64.tar.gz node_exporter-0.17.0.linux-amd64
+  become: yes
+
+- name: edit node_exporter.service
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/set_node_exporter_service.sh
+  become: yes
+
+- name: start node_exporter
+  shell: "{{ item }}"
+  with_items:
+    - systemctl daemon-reload
+    - systemctl start node_exporter
+  become: yes
+
+- name: check status of node_exporter service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status node_exporter
+  become: yes
+
+- name: configuring prometheus to scrape node_exporter
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/mod_prometheus_config_for_node_exporter.sh
+  become: yes
+
+- name: restart prometheus
+  shell: "{{ item }}"
+  with_items:
+    - systemctl restart prometheus
+  become: yes
+
+- name: check status of prometheus service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status prometheus
+  become: yes
+
+# ---------start to install pushgateway---------
+- name: download pushgateway
+  shell: "{{ item }}"
+  with_items:
+    - curl -LO https://github.com/prometheus/pushgateway/releases/download/v0.8.0/pushgateway-0.8.0.linux-amd64.tar.gz
+    - tar xvf pushgateway-0.8.0.linux-amd64.tar.gz
+    - cp pushgateway-0.8.0.linux-amd64/pushgateway /usr/local/bin/
+    - useradd --no-create-home --shell /bin/false pushgateway
+    - chown pushgateway:pushgateway /usr/local/bin/pushgateway
+    - rm -rf pushgateway-0.8.0.linux-amd64.tar.gz pushgateway-0.8.0.linux-amd64
+  become: yes
+
+- name: edit pushgateway.service
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/set_pushgateway_service.sh
+  become: yes
+
+- name: start pushgateway
+  shell: "{{ item }}"
+  with_items:
+    - systemctl daemon-reload
+    - systemctl start pushgateway
+  become: yes
+
+- name: check status of pushgateway service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status pushgateway
+  become: yes
+
+- name: configure, restart and check status of prometheus for pushgateway service
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/mod_prometheus_config_for_pushgateway.sh
+    - systemctl restart prometheus
+    - systemctl status prometheus
+  become: yes
+
+# ---------start to install alertmanager---------
+- name: download alertmanager
+  shell: "{{ item }}"
+  with_items:
+    - curl -LO https://github.com/prometheus/alertmanager/releases/download/v0.16.2/alertmanager-0.16.2.linux-amd64.tar.gz
+    - tar xvf alertmanager-0.16.2.linux-amd64.tar.gz
+    - cp alertmanager-0.16.2.linux-amd64/alertmanager /usr/local/bin/
+    - mkdir -p /etc/alertmanager
+    - cp alertmanager-0.16.2.linux-amd64/alertmanager.yml /etc/alertmanager
+    - mkdir -p /var/lib/alertmanager
+    - useradd --no-create-home --shell /bin/false alertmanager
+    - chown alertmanager:alertmanager /etc/alertmanager
+    - chown alertmanager:alertmanager /usr/local/bin/alertmanager
+    - chown alertmanager:alertmanager /etc/alertmanager/alertmanager.yml
+    - chown alertmanager:alertmanager /var/lib/alertmanager
+    - rm -rf alertmanager-0.16.2.linux-amd64.tar.gz alertmanager-0.16.2.linux-amd64
+  become: yes
+
+- name: edit alertmanager.service
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/set_alertmanager_service.sh
+  become: yes
+
+- name: start alertmanager
+  shell: "{{ item }}"
+  with_items:
+    - systemctl daemon-reload
+    - systemctl start alertmanager
+    - systemctl enable alertmanager
+  become: yes
+
+- name: configuring prometheus to scrape alertmanager
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/mod_prometheus_config_for_alertmanager.sh
+  become: yes
+
+- name: restart prometheus
+  shell: "{{ item }}"
+  with_items:
+    - systemctl restart prometheus
+  become: yes
+
+- name: check status of prometheus service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status prometheus
+  become: yes
+
+# ---------start to install grafana---------
+- name: install grafana
+  shell: "{{ item }}"
+  with_items:
+    - curl https://packagecloud.io/gpg.key | apt-key add -
+    - add-apt-repository "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
+    - apt-get update
+    - curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh |bash
+    - apt install -y grafana
+    - systemctl start grafana-server
+  become: yes
+  
+- name: check status of grafana service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status grafana-server
+  become: yes
+
+# ---------update opensds config file ---------
+- name: Set opensds.conf with telemetry options in osdsapiserver
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdsapiserver
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: prometheus_conf_home, value: "{{ prometheus_conf_home }}" }
+        - { option: prometheus_url, value: "{{ prometheus_url }}" }
+        - { option: prometheus_conf_file, value: "{{ prometheus_conf_file }}" }
+        - { option: alertmgr_conf_home, value: "{{ alertmgr_conf_home }}" }
+        - { option: alertmgr_url, value: "{{ alertmgr_url }}" }
+        - { option: alertmgr_conf_file, value: "{{ alertmgr_conf_file }}" }
+        - { option: grafana_conf_home, value: "{{ grafana_conf_home }}" }
+        - { option: grafana_restart_cmd, value: "{{ grafana_restart_cmd }}" }
+        - { option: grafana_conf_file, value: "{{ grafana_conf_file }}" }
+        - { option: grafana_url, value: "{{ grafana_url }}" }
+        - { option: conf_reload_url, value: "{{ conf_reload_url }}" }
+  become: yes
+  tags: telemetry_conf
+
+- name: Set opensds.conf with telemetry options in osdslet
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: prometheus_push_mechanism, value: "{{ prometheus_push_mechanism }}" }
+        - { option: kafka_endpoint, value: "{{ kafka_endpoint }}" }
+        - { option: kafka_topic, value: "{{ kafka_topic }}" }
+  become: yes
+  tags: telemetry_conf
+
+- name: Set push mechanism when NodeExporter is selected
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: node_exporter_watch_folder, value: "{{ node_exporter_watch_folder }}" }
+  become: yes
+  when: prometheus_push_mechanism == 'NodeExporter'
+  tags: telemetry_conf
+
+- name: Set push mechanism when PushGateway is selected
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: prometheus_push_gateway_url, value: "{{ prometheus_push_gateway_url }}" }
+  become: yes
+  when: prometheus_push_mechanism == 'PushGateway'
+  tags: telemetry_conf
+
+# ---------start to install sysstat---------
+- name: install sysstat
+  shell: "{{ item }}"
+  with_items:
+    - apt-get install -y sysstat
+    - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
+    - systemctl restart sysstat
+  become: yes
+  
+- name: check status of sysstat service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status sysstat
+  become: yes
+

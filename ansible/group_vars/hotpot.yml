@@ -64,7 +64,7 @@ hotpot_tarball_dir: /tmp/opensds-hotpot-{{ hotpot_release }}-linux-amd64
 # CONTAINER #
 #############
 
-hotpot_image_tag: latest
+hotpot_image_tag: v0.5.3
 
 # These fields are NOT suggested to be modified
 apiserver_docker_image: opensdsio/opensds-apiserver:{{ hotpot_image_tag }}

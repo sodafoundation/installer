@@ -26,7 +26,7 @@ osdsapiserver:
       cpu: 100m
       memory: 30Mi
 osdslet:
-  image: opensdsio/opensds-controller:latest
+  image: opensdsio/opensds-controller:v0.5.3
   # Attributes of the controller's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -47,7 +47,7 @@ osdslet:
       cpu: 100m
       memory: 30Mi
 osdsdock:
-  image: opensdsio/opensds-dock:latest
+  image: opensdsio/opensds-dock:v0.5.3
   # Attributes of the dock's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -68,7 +68,7 @@ osdsdock:
       cpu: 100m
       memory: 40Mi
 osdsdashboard:
-  image: opensdsio/dashboard:latest
+  image: opensdsio/dashboard:v0.5.3
   # Attributes of the dashboard's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"

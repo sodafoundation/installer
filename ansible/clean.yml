@@ -37,9 +37,12 @@
 - name: uninstall tools for telemetry
   hosts: controllers
   remote_user: root
+  vars_files:
+    - group_vars/telemetry.yml
   gather_facts: false
   become: True
   tasks:
     - import_role:
         name: telemetry-uninstaller
-
+      when:
+        - install_telemetry_tools == true

@@ -15,9 +15,7 @@
 ---
 - name: include scenarios/clean_telemetry_tools.yml
   include: scenarios/clean_telemetry_tools.yml
-  when: install_telemetry_tools == true and clean_up_before_installation == true
+  when: clean_up_before_installation == true
 
 - name: include scenarios/install_telemetry_tools.yml
   include: scenarios/install_telemetry_tools.yml
-  when: install_telemetry_tools == true
-

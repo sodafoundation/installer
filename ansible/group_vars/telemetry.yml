@@ -37,7 +37,7 @@ alertmgr_url: 'http://localhost:9093'
 grafana_conf_home: /etc/grafana/
 grafana_conf_file: grafana.ini
 grafana_url: 'http://localhost:3000'
-grafana_restart_cmd:  grafana-server
+grafana_restart_cmd: grafana-server
 conf_reload_url: /-/reload
 
 prometheus_push_mechanism: 'NodeExporter'

@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Huawei Technologies Co., Ltd. All Rights Reserved.
+# Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,10 @@ deploy_project: all
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
 install_from: release
+# These fields below will specify the tag based on install_from type
+repo_branch: master
+release_version: v0.5.3
+image_tag: v0.5.3
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'

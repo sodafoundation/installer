@@ -133,6 +133,8 @@
   tasks:
     - import_role:
         name: telemetry-installer
+      when:
+        - install_telemetry_tools == true
 
 - name: Install Orchestration Manager
   hosts: controllers

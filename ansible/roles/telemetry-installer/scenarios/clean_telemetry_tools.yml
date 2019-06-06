@@ -80,3 +80,15 @@
     - apt purge -y sysstat    
   ignore_errors: yes
   become: yes
+
+# ---------start to clean lvm_exporter---------
+- name: clean lvm_exporter
+  shell: "{{ item }}"
+  tags:
+    - lvm_exporter_clean
+  with_items:
+    - systemctl stop lvm_exporter
+    - rm -rf /etc/systemd/system/lvm_exporter.service
+    - rm -rf /usr/local/bin/lvm_exporter
+  ignore_errors: yes
+  become: yes

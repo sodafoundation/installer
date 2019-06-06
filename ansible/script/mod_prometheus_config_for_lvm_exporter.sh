@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- name: include scenarios/clean_telemetry_tools.yml
-  tags:
-    - telemetry
-  include: scenarios/clean_telemetry_tools.yml
-  when: clean_up_before_installation == true
+cat >> /etc/prometheus/prometheus.yml <<EOF
+  - job_name: 'lvm_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:8080']
+EOF
 
-- name: include scenarios/install_telemetry_tools.yml
-  tags:
-    - telemetry
-  include: scenarios/install_telemetry_tools.yml

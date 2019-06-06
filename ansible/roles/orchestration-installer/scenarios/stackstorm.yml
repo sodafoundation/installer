@@ -46,7 +46,13 @@
   with_items:
    - docker cp contrib/st2/opensds {{ container_id.stdout }}:/opt/stackstorm/packs/
    - docker exec -i {{ container_id.stdout }} st2ctl reload --register-all
-   - docker exec -i {{ container_id.stdout }} st2 run packs.setup_virtualenv packs=opensds
+  args:
+    chdir: "{{ orchestration_work_dir }}"
+    warn: false
+  become: yes
+
+- name: Install virtualenv for opensds packs [This task is known failure]
+  shell: docker exec -i {{ container_id.stdout }} st2 run packs.setup_virtualenv packs=opensds
   args:
     chdir: "{{ orchestration_work_dir }}"
     warn: false

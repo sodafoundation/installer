@@ -20,3 +20,4 @@ cat >> /etc/prometheus/prometheus.yml <<EOF
     static_configs:
       - targets: ['localhost:8080']
 EOF
+

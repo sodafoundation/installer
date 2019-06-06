@@ -27,7 +27,8 @@
 - name: clean alertmanager
   shell: "{{ item }}"
   with_items:
-    - killall alertmanager  
+    - systemctl stop alertmanager
+    - rm -rf /etc/systemd/system/alertmanager.service
     - rm -rf /usr/local/bin/alertmanager
     - rm -rf /etc/alertmanager
     - userdel -r alertmanager
@@ -68,5 +69,14 @@
     - rm -rf /usr/local/bin/prometheus
     - rm -rf /var/lib/prometheus
     - userdel -r prometheus
+  ignore_errors: yes
+  become: yes
+  
+# ---------start to clean sysstat---------
+- name: clean sysstat
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop sysstat
+    - apt purge -y sysstat    
   ignore_errors: yes
   become: yes

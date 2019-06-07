@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Install Orchestration Manager (true/false)
-install_orchestration: false
+enable_orchestration: false
 
 hotpot_endpoint: "http://{{ host_ip }}:50040"
 

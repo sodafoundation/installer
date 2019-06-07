@@ -13,12 +13,6 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/clean_telemetry_tools.yml
-  tags:
-    - telemetry
-  include: scenarios/clean_telemetry_tools.yml
-  when: clean_up_before_installation == true
-
 - name: include scenarios/install_telemetry_tools.yml
   tags:
     - telemetry

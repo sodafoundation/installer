@@ -21,11 +21,8 @@ dummy:
 # GENERAL #
 ###########
 
-# Do you need to install telemetry tools?
-install_telemetry_tools: false
-
-# Is it cleaned up before installation?
-clean_up_before_installation: true
+# Do you need to install or clean up telemetry tools?
+enable_telemetry_tools: false
 
 # Telementry configs to be updated in opensds.conf
 prometheus_conf_home: /etc/prometheus/

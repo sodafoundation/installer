@@ -15,4 +15,5 @@
 ---
 - name: include scenarios/clean_telemetry_tools.yml
   include: scenarios/clean_telemetry_tools.yml
+  when: enable_telemetry_tools == true
 

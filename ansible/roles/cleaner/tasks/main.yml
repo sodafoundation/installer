@@ -118,4 +118,5 @@
 
 - name: include scenarios/orchestration.yml for cleaning up orchestration service
   include_tasks: scenarios/orchestration.yml
-  when: install_orchestration == true
+  when: enable_orchestration == true
+  tags: orchestration_tag

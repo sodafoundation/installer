@@ -133,8 +133,9 @@
   tasks:
     - import_role:
         name: telemetry-installer
+      tags: telemetry_tag
       when:
-        - install_telemetry_tools == true
+        - enable_telemetry_tools == true
 
 - name: Install Orchestration Manager
   hosts: controllers
@@ -149,4 +150,4 @@
         name: orchestration-installer
       tags: orchestration_tag
       when:
-        - install_orchestration == true
+        - enable_orchestration == true

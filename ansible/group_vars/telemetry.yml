@@ -31,7 +31,7 @@ clean_up_before_installation: true
 prometheus_conf_home: /etc/prometheus/
 prometheus_conf_file: prometheus.yml
 prometheus_url: 'http://localhost:9090'
-alertmgr_conf_home: /root/alertmanager-0.16.2.linux-amd64/
+alertmgr_conf_home: /etc/alertmanager/
 alertmgr_conf_file: alertmanager.yml
 alertmgr_url: 'http://localhost:9093'
 grafana_conf_home: /etc/grafana/

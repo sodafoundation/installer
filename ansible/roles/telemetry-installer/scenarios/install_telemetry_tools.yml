@@ -251,6 +251,8 @@
         - { option: prometheus_push_mechanism, value: "{{ prometheus_push_mechanism }}" }
         - { option: kafka_endpoint, value: "{{ kafka_endpoint }}" }
         - { option: kafka_topic, value: "{{ kafka_topic }}" }
+        - { option: alertmgr_url, value: "{{ alertmgr_url }}" }
+        - { option: grafana_url, value: "{{ grafana_url }}" }
   become: yes
   tags: telemetry_conf
 

@@ -5,7 +5,7 @@ replicaCount: 1
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
 osdsapiserver:
-  image: opensdsio/opensds-apiserver:v0.5.3
+  image: opensdsio/opensds-apiserver:latest
   # Attributes of the apiserver's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -26,7 +26,7 @@ osdsapiserver:
       cpu: 100m
       memory: 30Mi
 osdslet:
-  image: opensdsio/opensds-controller:v0.5.3
+  image: opensdsio/opensds-controller:latest
   # Attributes of the controller's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -47,7 +47,7 @@ osdslet:
       cpu: 100m
       memory: 30Mi
 osdsdock:
-  image: opensdsio/opensds-dock:v0.5.3
+  image: opensdsio/opensds-dock:latest
   # Attributes of the dock's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -68,7 +68,7 @@ osdsdock:
       cpu: 100m
       memory: 40Mi
 osdsdashboard:
-  image: opensdsio/dashboard:v0.5.3
+  image: opensdsio/dashboard:latest
   # Attributes of the dashboard's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"

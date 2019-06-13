@@ -45,6 +45,7 @@
     - group_vars/auth.yml
     - group_vars/hotpot.yml
     - group_vars/osdsdb.yml
+    - group_vars/telemetry.yml
   gather_facts: false
   become: True
   tasks:

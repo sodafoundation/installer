@@ -148,7 +148,79 @@
     - systemctl restart prometheus
     - systemctl status prometheus
   become: yes
+# ---------start to install sysstat---------
+- name: install sysstat
+  shell: "{{ item }}"
+  with_items:
+    - apt-get install -y sysstat
+    - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
+    - systemctl restart sysstat
+  become: yes
 
+- name: check status of sysstat service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status sysstat
+  become: yes
+
+# ---------start  lvm_exporter---------
+- name: copy lvm_exporter
+  shell: "{{ item }}"
+  tags:
+    - lvm_exporter
+  with_items:
+    - cp /opt/opensds-hotpot-linux-amd64/bin/lvm_exporter /usr/local/bin/
+    - chown root:root /usr/local/bin/lvm_exporter
+  become: yes
+
+- name: edit lvm_exporter.service
+  shell: "{{ item }}"
+  tags:
+    - lvm_exporter
+  with_items:
+    - bash ./script/set_lvm_exporter_service.sh
+  become: yes
+
+- name: start lvm_exporter
+  shell: "{{ item }}"
+  tags:
+    - lvm_exporter
+  with_items:
+    - systemctl daemon-reload
+    - systemctl start lvm_exporter
+  become: yes
+
+- name: check status of lvm_exporter service
+  shell: "{{ item }}"
+  tags:
+    - lvm_exporter
+  with_items:
+    - systemctl status lvm_exporter
+  become: yes
+
+- name: configuring prometheus to scrape lvm_exporter
+  tags:
+    - lvm_exporter
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/mod_prometheus_config_for_lvm_exporter.sh
+  become: yes
+
+- name: restart prometheus
+  tags:
+    - lvm_exporter
+  shell: "{{ item }}"
+  with_items:
+    - systemctl restart prometheus
+  become: yes
+
+- name: check status of prometheus service
+  tags:
+    - lvm_exporter
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status prometheus
+  become: yes
 # ---------start to install alertmanager---------
 - name: download alertmanager
   shell: "{{ item }}"
@@ -251,6 +323,8 @@
         - { option: prometheus_push_mechanism, value: "{{ prometheus_push_mechanism }}" }
         - { option: kafka_endpoint, value: "{{ kafka_endpoint }}" }
         - { option: kafka_topic, value: "{{ kafka_topic }}" }
+        - { option: alertmgr_url, value: "{{ alertmgr_url }}" }
+        - { option: grafana_url, value: "{{ grafana_url }}" }
   become: yes
   tags: telemetry_conf
 
@@ -280,18 +354,5 @@
   when: prometheus_push_mechanism == 'PushGateway'
   tags: telemetry_conf
 
-# ---------start to install sysstat---------
-- name: install sysstat
-  shell: "{{ item }}"
-  with_items:
-    - apt-get install -y sysstat
-    - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
-    - systemctl restart sysstat
-  become: yes
-  
-- name: check status of sysstat service
-  shell: "{{ item }}"
-  with_items:
-    - systemctl status sysstat
-  become: yes
 
+  

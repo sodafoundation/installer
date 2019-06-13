@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Install Orchestration Manager (true/false)
-install_orchestration: false
+enable_orchestration: false
 
 hotpot_endpoint: "http://{{ host_ip }}:50040"
 
@@ -42,11 +42,9 @@ venv: "{{ orchestration_work_dir }}/venv"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-orchestration_repo_branch: master
+orchestration_repo_branch: "{{ repo_branch }}"
 orchestration_st2_installer_repo_branch: master
 
 # These fields are NOT suggested to be modified
 orchestration_remote_url: https://github.com/opensds/orchestration.git
 orchestration_st2_installer_remote_url: https://github.com/StackStorm/st2-docker.git
-
-

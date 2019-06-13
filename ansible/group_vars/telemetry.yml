@@ -21,23 +21,20 @@ dummy:
 # GENERAL #
 ###########
 
-# Do you need to install telemetry tools?
-install_telemetry_tools: false
-
-# Is it cleaned up before installation?
-clean_up_before_installation: true
+# Do you need to install or clean up telemetry tools?
+enable_telemetry_tools: false
 
 # Telementry configs to be updated in opensds.conf
 prometheus_conf_home: /etc/prometheus/
 prometheus_conf_file: prometheus.yml
 prometheus_url: 'http://localhost:9090'
-alertmgr_conf_home: /root/alertmanager-0.16.2.linux-amd64/
+alertmgr_conf_home: /etc/alertmanager/
 alertmgr_conf_file: alertmanager.yml
 alertmgr_url: 'http://localhost:9093'
 grafana_conf_home: /etc/grafana/
 grafana_conf_file: grafana.ini
 grafana_url: 'http://localhost:3000'
-grafana_restart_cmd:  grafana-server
+grafana_restart_cmd: grafana-server
 conf_reload_url: /-/reload
 
 prometheus_push_mechanism: 'NodeExporter'

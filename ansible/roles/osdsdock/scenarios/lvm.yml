@@ -41,6 +41,15 @@
     src: ../../../group_vars/lvm/lvm.yaml
     dest: "{{ lvm_config_path }}"
 
+- name: update opensds lvm backend file if specify lvm backend
+  replace:
+    path: "{{ lvm_config_path }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { regexp: '127.0.0.1', replace: '{{ host_ip }}'}
+    - { regexp: 'opensds-volumes', replace: '{{ opensds_volume_group }}'}
+
 - name: create directory to volume group file
   file:
     path: "{{ hotpot_work_dir }}/volumegroups"

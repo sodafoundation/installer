@@ -90,3 +90,7 @@
 - name: Execute orchestration manager
   shell: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/server.py </dev/null >/dev/null 2>&1 &'
   become: yes
+
+- name: Register orchestration services
+  script: ./script/orchestration_addservices.py "{{ host_ip }}" "{{ orchestration_ip }}" "{{ orchestration_port }}"
+  become: yes

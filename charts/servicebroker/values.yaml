@@ -1,5 +1,6 @@
 # Default values for OpenSDS Service Broker
 # Image to use
+name: servicebroker
 image:
   service-broker: opensdsio/service-broker:v0.5.4
   etcd-store: quay.io/coreos/etcd:latest

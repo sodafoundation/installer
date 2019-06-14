@@ -17,7 +17,8 @@
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 source "$TOP_DIR/util.sh"
 source "$TOP_DIR/sdsrc"
-
+#FIXME The /orchestration/  changes are to fix  Issue #106 in opensds/opensds-dashboard. 
+#This is a temporary fix for the API not being reachable. The Orchestration API endpoint will be changed and this fix will be removed.
 cat > /etc/nginx/sites-available/default <<EOF
     server {
         listen 8088 default_server;
@@ -30,6 +31,9 @@ cat > /etc/nginx/sites-available/default <<EOF
         }
         location /v1beta/ {
             proxy_pass http://$HOST_IP:50040/$OPENSDS_VERSION/;
+        }
+        location /orchestration/ {
+            proxy_pass http://$HOST_IP:5000/orchestration/;
         }
         location /v1/ {
             proxy_pass http://$HOST_IP:8089/v1/;

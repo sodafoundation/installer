@@ -4,24 +4,32 @@
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "fullname" . }}-csi-nodeplugin-opensdsplugin
+  name: {{ template "csiplugin-nodeplugin.fullname" . }}
+  labels:
+    app: {{ template "csiplugin-nodeplugin.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-csi-nodeplugin-opensdsplugin
+      app: {{ template "csiplugin-nodeplugin.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name: {{ template "csiplugin-nodeplugin.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-csi-nodeplugin-opensdsplugin
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "csiplugin-nodeplugin.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
       serviceAccount: csi-nodeplugin
       hostNetwork: true
       containers:
         - name: node-driver-registrar
-          image: quay.io/k8scsi/csi-node-driver-registrar:v1.0.1
+          image: quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
           args:
             - "--v=5"
             - "--csi-address=/csi/csi.sock"
@@ -39,7 +47,7 @@ spec:
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
-        - name: opensds
+        - name: {{ template "csiplugin-nodeplugin.fullname" . }}
           securityContext:
             privileged: true
             capabilities:
@@ -50,7 +58,7 @@ spec:
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
             - "--opensdsAuthStrategy=$(OPENSDS_AUTH_STRATEGY)"
-            - "-v8"
+            - "--v=8"
           env:
             - name: CSI_ENDPOINT
               value: unix://var/lib/kubelet/plugins/csi-opensdsplugin/csi.sock

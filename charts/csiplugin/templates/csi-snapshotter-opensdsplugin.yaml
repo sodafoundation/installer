@@ -4,15 +4,16 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "fullname" . }}-csi-snapshotter-opensdsplugin
+  name: {{ .Values.csiplugin-snapshotter.name }}
   labels:
-    app: {{ template "fullname" . }}-csi-snapshotter-opensdsplugin
+    app: {{ template "csiplugin-snapshotter.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "fullname" . }}-csi-snapshotter-opensdsplugin
+    app: {{ template "csiplugin-snapshotter.fullname" . }}
+    release: {{ .Release.Name }}
   ports:
     - name: dummy
       port: 12345
@@ -21,25 +22,30 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "fullname" . }}-csi-snapshotter-opensdsplugin
+  name: {{ template "csiplugin-snapshotter.fullname" . }}
+  labels:
+    app: {{ template "csiplugin-snapshotter.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  serviceName: "csi-snapshotter-opensdsplugin"
-  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Values.csiplugin-snapshotter.name }}
+  replicas: {{ .Values.csiplugin-snapshotter.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-csi-snapshotter-opensdsplugin
+      app: {{ template "csiplugin-snapshotter.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name: {{ template "csiplugin-snapshotter.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-csi-snapshotter-opensdsplugin
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "csiplugin-snapshotter.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
       serviceAccount: csi-snapshotter
       containers:
         - name: csi-snapshotter
-          image: quay.io/k8scsi/csi-snapshotter:v1.0.1
+          image: quay.io/k8scsi/csi-snapshotter:v1.1.0
           args:
             - "--snapshotter=csi-opensdsplugin"
             - "--csi-address=$(ADDRESS)"
@@ -51,13 +57,13 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: opensds
+        - name: {{ template "csiplugin-snapshotter.fullname" . }}
           image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
             - "--opensdsAuthStrategy=$(OPENSDS_AUTH_STRATEGY)"
-            - "-v8"
+            - "--v=8"
           env:
             - name: CSI_ENDPOINT
               value: unix://csi/csi.sock

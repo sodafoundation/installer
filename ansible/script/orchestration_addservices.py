@@ -96,7 +96,9 @@ def get_user_id(ip, token):
 
 
 def add_services(ip, port, pid, uid):
-    url = "http://" + ip  + ":" + port + "/v1beta/" + pid + "/orchestration/services"
+    # FIXME: Modify URL end-point temporarily as a workaround for an integration issue.
+    # url = "http://" + ip  + ":" + port + "/v1beta/" + pid + "/orchestration/services"
+    url = "http://" + ip  + ":" + port + "/orchestration/" + pid + "/services"
     headers = {
         'content-type': 'application/json'
     }

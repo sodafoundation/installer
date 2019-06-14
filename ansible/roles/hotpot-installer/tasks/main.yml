@@ -59,7 +59,7 @@
   args:
     chdir: "{{ opensds_config_dir }}"
   become: yes
-# ---------update opensds config file ---------
+# ---------update opensds config file with telemtetry configs---------
 - name: Set opensds.conf with telemetry options in osdsapiserver
   ini_file:
     create: no
@@ -81,7 +81,8 @@
         - { option: conf_reload_url, value: "{{ conf_reload_url }}" }
   become: yes
   tags: telemetry_conf
-
+  when:
+        - enable_telemetry_tools == true
 - name: Set opensds.conf with telemetry options in osdslet
   ini_file:
     create: no
@@ -97,6 +98,8 @@
         - { option: grafana_url, value: "{{ grafana_url }}" }
   become: yes
   tags: telemetry_conf
+  when:
+        - enable_telemetry_tools == true
 
 - name: Set push mechanism when NodeExporter is selected
   ini_file:
@@ -108,7 +111,7 @@
   with_items:
         - { option: node_exporter_watch_folder, value: "{{ node_exporter_watch_folder }}" }
   become: yes
-  when: prometheus_push_mechanism == 'NodeExporter'
+  when: prometheus_push_mechanism == 'NodeExporter' and enable_telemetry_tools == true
   tags: telemetry_conf
 
 - name: Set push mechanism when PushGateway is selected
@@ -121,7 +124,7 @@
   with_items:
         - { option: prometheus_push_gateway_url, value: "{{ prometheus_push_gateway_url }}" }
   become: yes
-  when: prometheus_push_mechanism == 'PushGateway'
+  when: prometheus_push_mechanism == 'PushGateway' and enable_telemetry_tools == true
   tags: telemetry_conf
 
 

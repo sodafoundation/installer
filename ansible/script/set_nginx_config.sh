@@ -32,8 +32,8 @@ cat > /etc/nginx/sites-available/default <<EOF
         location /v1beta/ {
             proxy_pass http://$HOST_IP:50040/$OPENSDS_VERSION/;
         }
-        location /orchestration/ {
-            proxy_pass http://$HOST_IP:5000/orchestration/;
+        location /orch/ {
+            proxy_pass http://$HOST_IP:5000/$OPENSDS_VERSION/;
         }
         location /v1/ {
             proxy_pass http://$HOST_IP:8089/v1/;

@@ -21,13 +21,6 @@
     warn: false
   register: st2_pass
 
-- name: Install python pip
-  easy_install:
-    name: pip
-    state: latest
-  become: yes
-  ignore_errors: yes
-
 - name: Install python virtual environment
   pip:
     name: virtualenv
@@ -77,10 +70,6 @@
         - { option: phrase, value: "" }
   become: yes
 
-- name: Install stackstorm credentials
-  command: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/connectionmanager/credcreator.py set "St2" "{{ host_ip }}" "st2admin" "{{ st2_pass.stdout }}"'
-  become: yes
-
 - name: Install orchestration manager
   command: '{{ venv }}/exec setup.py install'
   args:
@@ -96,3 +85,4 @@
 - name: Register orchestration services
   script: ./script/orchestration_addservices.py "{{ host_ip }}" "{{ orchestration_ip }}" "{{ orchestration_port }}"
   become: yes
+  ignore_errors: yes

@@ -33,7 +33,7 @@
   ignore_errors: yes
   become: yes
   
-- name: clean up all Orchestration dirctories
+- name: clean up all Orchestration directories
   file:
     path: "{{ item }}"
     state: absent

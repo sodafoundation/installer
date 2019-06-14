@@ -17,6 +17,7 @@
 import requests
 import json
 import sys
+import time
 
 
 def get_opensds_token(ip):
@@ -143,6 +144,8 @@ def add_services(ip, port, pid, uid):
         raise Exception('Request for Register Provision volume Services failed')
 
     print(resp.text)
+    # Wait for session to expire, until fixed in orchestration code
+    time.sleep(60)
 
     resp = requests.post(url=url, data=json.dumps(migrate_vol_data), headers=headers)
     if resp.status_code != 200:

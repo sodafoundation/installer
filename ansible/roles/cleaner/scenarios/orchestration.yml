@@ -33,3 +33,12 @@
   ignore_errors: yes
   become: yes
   
+- name: clean up all Orchestration dirctories
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ st2_installer_work_dir }}"
+    - "{{ orchestration_work_dir }}"
+  ignore_errors: yes

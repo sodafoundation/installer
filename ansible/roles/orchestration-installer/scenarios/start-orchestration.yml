@@ -88,7 +88,9 @@
   become: yes
 
 - name: Execute orchestration manager
-  shell: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/server.py </dev/null >/dev/null 2>&1 &'
+  shell: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/server.py {{ orchestration_work_dir }}/orchestration.conf </dev/null >/dev/null 2>&1 &'
+  args:
+    chdir: "{{ orchestration_work_dir }}"
   become: yes
 
 - name: Register orchestration services

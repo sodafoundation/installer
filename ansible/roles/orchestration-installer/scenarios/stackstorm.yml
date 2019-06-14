@@ -50,6 +50,7 @@
     chdir: "{{ orchestration_work_dir }}"
     warn: false
   become: yes
+  ignore_errors: yes
 
 - name: Install virtualenv for opensds packs [This task is known failure]
   shell: docker exec -i {{ container_id.stdout }} st2 run packs.setup_virtualenv packs=opensds

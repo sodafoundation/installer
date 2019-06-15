@@ -4,22 +4,22 @@
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csiplugin-nodeplugin.fullname" . }}
+  name: {{ template "csipluginNodeplugin.fullname" . }}
   labels:
-    app: {{ template "csiplugin-nodeplugin.fullname" . }}
+    app: {{ template "csipluginNodeplugin.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "csiplugin-nodeplugin.fullname" . }}
+      app: {{ template "csipluginNodeplugin.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csiplugin-nodeplugin.fullname" . }}
+      name: {{ template "csipluginNodeplugin.fullname" . }}
       labels:
-        app: {{ template "csiplugin-nodeplugin.fullname" . }}
+        app: {{ template "csipluginNodeplugin.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       tolerations:
@@ -47,7 +47,7 @@ spec:
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
-        - name: {{ template "csiplugin-nodeplugin.fullname" . }}
+        - name: {{ template "csipluginNodeplugin.fullname" . }}
           securityContext:
             privileged: true
             capabilities:

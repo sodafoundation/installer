@@ -4,15 +4,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.csiplugin-attacher.name }}
+  name: {{ .Values.csipluginAttacher.name }}
   labels:
-    app: {{ template "csiplugin-attacher.fullname" . }}
+    app: {{ template "csipluginAttacher.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "csiplugin-attacher.fullname" . }}
+    app: {{ template "csipluginAttacher.fullname" . }}
     release: {{ .Release.Name }}
   ports:
     - name: dummy
@@ -22,24 +22,24 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csiplugin-attacher.fullname" . }}
+  name: {{ template "csipluginAttacher.fullname" . }}
   labels:
-    app: {{ template "csiplugin-attacher.fullname" . }}
+    app: {{ template "csipluginAttacher.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: {{ .Values.csiplugin-attacher.name }}
-  replicas: {{ .Values.csiplugin-attacher.replicaCount }}
+  serviceName: {{ .Values.csipluginAttacher.name }}
+  replicas: {{ .Values.csipluginAttacher.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "csiplugin-attacher.fullname" . }}
+      app: {{ template "csipluginAttacher.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csiplugin-attacher.fullname" . }}
+      name: {{ template "csipluginAttacher.fullname" . }}
       labels:
-        app: {{ template "csiplugin-attacher.fullname" . }}
+        app: {{ template "csipluginAttacher.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccount: csi-attacher
@@ -70,7 +70,7 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: {{ template "csiplugin-attacher.fullname" . }}
+        - name: {{ template "csipluginAttacher.fullname" . }}
           image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"

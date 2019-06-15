@@ -4,15 +4,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.csiplugin-snapshotter.name }}
+  name: {{ .Values.csipluginSnapshotter.name }}
   labels:
-    app: {{ template "csiplugin-snapshotter.fullname" . }}
+    app: {{ template "csipluginSnapshotter.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "csiplugin-snapshotter.fullname" . }}
+    app: {{ template "csipluginSnapshotter.fullname" . }}
     release: {{ .Release.Name }}
   ports:
     - name: dummy
@@ -22,24 +22,24 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csiplugin-snapshotter.fullname" . }}
+  name: {{ template "csipluginSnapshotter.fullname" . }}
   labels:
-    app: {{ template "csiplugin-snapshotter.fullname" . }}
+    app: {{ template "csipluginSnapshotter.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: {{ .Values.csiplugin-snapshotter.name }}
-  replicas: {{ .Values.csiplugin-snapshotter.replicaCount }}
+  serviceName: {{ .Values.csipluginSnapshotter.name }}
+  replicas: {{ .Values.csipluginSnapshotter.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "csiplugin-snapshotter.fullname" . }}
+      app: {{ template "csipluginSnapshotter.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csiplugin-snapshotter.fullname" . }}
+      name: {{ template "csipluginSnapshotter.fullname" . }}
       labels:
-        app: {{ template "csiplugin-snapshotter.fullname" . }}
+        app: {{ template "csipluginSnapshotter.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccount: csi-snapshotter
@@ -57,7 +57,7 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: {{ template "csiplugin-snapshotter.fullname" . }}
+        - name: {{ template "csipluginSnapshotter.fullname" . }}
           image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"

@@ -4,15 +4,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.csiplugin-provisioner.name }}
+  name: {{ .Values.csipluginProvisioner.name }}
   labels:
-    app: {{ template "csiplugin-provisioner.fullname" . }}
+    app: {{ template "csipluginProvisioner.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "csiplugin-provisioner.fullname" . }}
+    app: {{ template "csipluginProvisioner.fullname" . }}
     release: {{ .Release.Name }}
   ports:
     - name: dummy
@@ -22,24 +22,24 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csiplugin-provisioner.fullname" . }}
+  name: {{ template "csipluginProvisioner.fullname" . }}
   labels:
-    app: {{ template "csiplugin-provisioner.fullname" . }}
+    app: {{ template "csipluginProvisioner.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: {{ .Values.csiplugin-provisioner.name }}
-  replicas: {{ .Values.csiplugin-provisioner.replicaCount }}
+  serviceName: {{ .Values.csipluginProvisioner.name }}
+  replicas: {{ .Values.csipluginProvisioner.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "csiplugin-provisioner.fullname" . }}
+      app: {{ template "csipluginProvisioner.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csiplugin-provisioner.fullname" . }}
+      name: {{ template "csipluginProvisioner.fullname" . }}
       labels:
-        app: {{ template "csiplugin-provisioner.fullname" . }}
+        app: {{ template "csipluginProvisioner.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccount: csi-provisioner
@@ -58,7 +58,7 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: {{ template "csiplugin-provisioner.fullname" . }}
+        - name: {{ template "csipluginProvisioner.fullname" . }}
           image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"

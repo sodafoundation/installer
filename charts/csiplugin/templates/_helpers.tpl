@@ -2,57 +2,57 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "csiplugin-provisioner.name" -}}
-{{- default .Chart.Name .Values.csiplugin-provisioner.name | trunc 63 | trimSuffix "-" -}}
+{{- define "csipluginProvisioner.name" -}}
+{{- default .Chart.Name .Values.csipluginProvisioner.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "csiplugin-provisioner.fullname" -}}
+{{- define "csipluginProvisioner.fullname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s-%s" .Release.Name $name .Values.csiplugin-provisioner.name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.csipluginProvisioner.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 
-{{- define "csiplugin-attacher.name" -}}
-{{- default .Chart.Name .Values.csiplugin-attacher.name | trunc 63 | trimSuffix "-" -}}
+{{- define "csipluginAttacher.name" -}}
+{{- default .Chart.Name .Values.csipluginAttacher.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "csiplugin-attacher.fullname" -}}
+{{- define "csipluginAttacher.fullname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s-%s" .Release.Name $name .Values.csiplugin-attacher.name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.csipluginAttacher.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 
-{{- define "csiplugin-nodeplugin.name" -}}
-{{- default .Chart.Name .Values.csiplugin-nodeplugin.name | trunc 63 | trimSuffix "-" -}}
+{{- define "csipluginNodeplugin.name" -}}
+{{- default .Chart.Name .Values.csipluginNodeplugin.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "csiplugin-nodeplugin.fullname" -}}
+{{- define "csipluginNodeplugin.fullname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s-%s" .Release.Name $name .Values.csiplugin-nodeplugin.name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.csipluginNodeplugin.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 
-{{- define "csiplugin-snapshotter.name" -}}
-{{- default .Chart.Name .Values.csiplugin-snapshotter.name | trunc 63 | trimSuffix "-" -}}
+{{- define "csipluginSnapshotter.name" -}}
+{{- default .Chart.Name .Values.csipluginSnapshotter.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "csiplugin-snapshotter.fullname" -}}
+{{- define "csipluginSnapshotter.fullname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s-%s" .Release.Name $name .Values.csiplugin-snapshotter.name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.csipluginSnapshotter.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}

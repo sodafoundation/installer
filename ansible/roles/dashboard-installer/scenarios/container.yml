@@ -28,3 +28,4 @@
       OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
       OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
       OPENSDS_GELATO_URL: "http://{{ host_ip }}:8089"
+      OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"

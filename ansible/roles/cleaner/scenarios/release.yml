@@ -21,4 +21,5 @@
   with_items:
     - "{{ hotpot_tarball_dir }}"
     - "{{ sushi_tarball_dir }}"
+    - "{{ orchestration_tarball_dir }}"
   ignore_errors: yes

@@ -20,19 +20,19 @@ data:
   passwordEncrypter: aes
   enableEncrypted: F
 
-# csiplugin-provisioner spec
-csiplugin-provisioner:
+# csipluginProvisioner spec
+csipluginProvisioner:
   name: csi-provisioner-opensdsplugin
   replicaCount: 1
-# csiplugin-attacher spec
-csiplugin-attacher:
+# csipluginAttacher spec
+csipluginAttacher:
   name: csi-attacher-opensdsplugin
   replicaCount: 1
-# csiplugin-nodeplugin spec
-csiplugin-nodeplugin:
+# csipluginNodeplugin spec
+csipluginNodeplugin:
   name: csi-nodeplugin-opensdsplugin
   replicaCount: 1
-# csiplugin-snapshotter spec
-csiplugin-snapshotter:
+# csipluginSnapshotter spec
+csipluginSnapshotter:
   name: csi-snapshotter-opensdsplugin
   replicaCount: 1

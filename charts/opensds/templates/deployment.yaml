@@ -270,6 +270,8 @@ spec:
           value: http://{{ .Values.osdsapiserver.name }}.{{ .Release.Namespace }}.svc.cluster.local:50040
         - name: OPENSDS_GELATO_URL
           value: http://127.0.0.1:8089
+        - name: OPENSDS_ORCHESTRATION_URL
+          value: http://127.0.0.1:5000
         ports:
         - containerPort: 8088
 {{- end }}

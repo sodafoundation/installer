@@ -63,11 +63,35 @@
     value: "{{ item.value }}"
   with_items:
         - { option: tech, value: "St2" }
-        - { option: host, value: "{{ orchestration_ip }}" }
+        - { option: host, value: "{{ workflow_ip }}" }
         - { option: username, value: "st2admin" }
         - { option: password, value: "{{ st2_pass.stdout }}" }
         - { option: encrypted_password, value: "false" }
         - { option: phrase, value: "" }
+  become: yes
+
+- name: Set orchestration.conf with hotpot options
+  ini_file:
+    create: no
+    path: "{{ orchestration_work_dir }}/orchestration.conf"
+    section: hotpot
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: host, value: "{{ hotpot_ip }}" }
+        - { option: port, value: "{{ hotpot_port }}" }
+  become: yes
+
+- name: Set orchestration.conf with gelato options
+  ini_file:
+    create: no
+    path: "{{ orchestration_work_dir }}/orchestration.conf"
+    section: gelato
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: host, value: "{{ gelato_ip }}" }
+        - { option: port, value: "{{ gelato_port }}" }
   become: yes
 
 - name: Install orchestration manager

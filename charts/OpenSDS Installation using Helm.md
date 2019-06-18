@@ -286,6 +286,20 @@ osdsctl pool list
 ```
 osdsctl profile create '{"name": "default", "description": "default policy", "storageType": "block"}'
 ```
+#### Create a volume.
+```
+osdsctl volume create 1 --name=test-001
+```
+
+#### List all volumes.
+```
+osdsctl volume list
+```
+
+#### Delete the volume.
+```
+osdsctl volume delete <your_volume_id>
+```
 
 ### OpenSDS UI
 OpenSDS UI dashboard is available at `http://{your_host_ip}:31975`, please login the dashboard using the default admin credentials: `admin/opensds@123`. Create `tenant`, `user`, and `profiles` as admin. Multi-Cloud service is also supported by dashboard.

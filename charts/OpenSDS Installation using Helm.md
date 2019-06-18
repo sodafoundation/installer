@@ -265,9 +265,9 @@ helm install csiplugin/ --name={ service_name }
 ### OpenSDS CLI tool
 #### Download cli tool.
 ```
-wget https://github.com/opensds/opensds/releases/download/v0.5.2/opensds-hotpot-v0.5.2-linux-amd64.tar.gz 
-tar zxvf opensds-hotpot-v0.5.2-linux-amd64.tar.gz
-cp opensds-hotpot-v0.5.2-linux-amd64/bin/* /usr/local/bin
+wget https://github.com/opensds/opensds/releases/download/v0.5.4/opensds-hotpot-v0.5.4-linux-amd64.tar.gz 
+tar zxvf opensds-hotpot-v0.5.4-linux-amd64.tar.gz
+cp opensds-hotpot-v0.5.4-linux-amd64/bin/* /usr/local/bin
 chmod 755 /usr/local/bin/osdsctl
 
 export OPENSDS_ENDPOINT=http://{{ apiserver_cluster_ip }}:50040

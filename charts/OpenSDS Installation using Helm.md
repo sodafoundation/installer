@@ -76,17 +76,6 @@ chmod 700 get_helm.sh
 helm init
 ```
 
-### Keystone installation and configuration ###
-* You can install keystone with docker or can do it manually:
-```
-apt-get install -y sudo nano git telnet net-tools iptables gnutls-bin ca-certificates
-wget https://github.com/opensds/opensds/blob/master/install/opensds-authchecker/keystone.sh
-wget https://github.com/opensds/opensds/blob/master/install/opensds-authchecker/entrypoint.sh
-mkdir -p /opt/stack/
-chmod 777 keystone.sh entrypoint.sh
-./keystone.sh ./entrypoint.sh
-```
-
 ### Ceph Installation
 * Here we are creating only 1 ceph-osd node and Ceph luminous version ( For more details please refer [link](http://docs.ceph.com/ceph-ansible/master/)  )
 * Clone Ceph repository
@@ -234,13 +223,6 @@ pool:
         diskType: SSD
         latency: 5ms
 OPENSDS_DRIVER_CONFIG_DOC
-```
-
-* Copy keystone.policy.json and policy.json to /etc/opensds/
-```
-cd $HOME/kubernetes/opensds-installer/conf
-cp -r keystone.policy.json /etc/opensds/
-cp -r policy.json /etc/opensds
 ```
 
 ##### Run OpenSDS and CSI-Plugin Helm Charts

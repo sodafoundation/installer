@@ -203,7 +203,7 @@ pool:
 OPENSDS_DRIVER_CONFIG_DOC
 ```
 
-If you choose `ceph` as backend, you need to make sure physical volume and volume group existed. Besides, you need to configure lvm driver.
+If you choose `ceph` as backend, you need to configure ceph driver.
 ```
 mkdir -p /etc/opensds/driver && sudo cat > /etc/opensds/driver/ceph.yaml <<OPENSDS_DRIVER_CONFIG_DOC
 configFile: /etc/ceph/ceph.conf

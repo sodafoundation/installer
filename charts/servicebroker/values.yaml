@@ -2,7 +2,7 @@
 # Image to use
 name: servicebroker
 image:
-  service-broker: opensdsio/service-broker:v0.5.4
+  service-broker: opensdsio/service-broker:v0.5.5
   etcd-store: quay.io/coreos/etcd:latest
 # ImagePullPolicy; valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent

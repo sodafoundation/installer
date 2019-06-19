@@ -166,7 +166,7 @@ spec:
       - name: tgt-conf-dir
         hostPath:
           path: /etc/tgt
-          type: Directory
+          type: DirectoryOrCreate
       - name: run-dir
         hostPath:
           path: /run

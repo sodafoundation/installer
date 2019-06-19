@@ -25,7 +25,14 @@ dummy:
 # Install Orchestration Manager (true/false)
 enable_orchestration: false
 
-hotpot_endpoint: "http://{{ host_ip }}:50040"
+# Orchestration configuration input
+hotpot_ip: "{{ host_ip }}"
+hotpot_port: "50040"
+gelato_ip: "{{ host_ip }}"
+gelato_port: "8089"
+orchestration_ip: "{{ host_ip }}"
+orchestration_port: "5000"
+workflow_ip: "{{ host_ip }}"
 
 # Orchestration installation types are: 'container', 'source_code'
 orchestration_installation_type: source_code
@@ -48,3 +55,14 @@ orchestration_st2_installer_repo_branch: master
 # These fields are NOT suggested to be modified
 orchestration_remote_url: https://github.com/opensds/orchestration.git
 orchestration_st2_installer_remote_url: https://github.com/StackStorm/st2-docker.git
+
+###########
+# RELEASE #
+###########
+
+# If user specifies intalling from release,then he can choose the specific version
+orchestration_release: "{{ release_version }}" # The version should be greater than v0.5.4
+
+# These fields are NOT suggested to be modified
+orchestration_download_url: https://github.com/opensds/orchestration/archive/{{ orchestration_release }}.tar.gz
+orchestration_tarball_dir: /tmp/opensds-orchestration-{{ orchestration_release }}-linux-amd64

@@ -4,8 +4,9 @@ Installer tool of opensds projects to simplify cluster deployment and configurat
 ## Introduction
 This project is designed for locating the code for installing all required
 components to set up a cluster, including [Hotpot](https://github.com/opensds/opensds),
-[Sushi](https://github.com/opensds/nbp), [Gelato](https://github.com/opensds/multi-cloud)
-and [opensds-dashboard](https://github.com/opensds/opensds-dashboard). Currently we
+[Sushi](https://github.com/opensds/nbp), [Gelato](https://github.com/opensds/multi-cloud),
+[Orchestration](https://github.com/opensds/orchestration) and [opensds-dashboard]
+(https://github.com/opensds/opensds-dashboard). Currently we
 support several install tools for diversity.
 
 ### Ansible

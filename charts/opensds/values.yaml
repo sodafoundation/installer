@@ -1,11 +1,21 @@
 # Default values for opensds.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-replicaCount: 1
-# ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
-imagePullPolicy: IfNotPresent
+
+# Select what to deploy
+deployments:
+  # Specify if to deploy dashboard service
+  osdsdashboard: true
+  # Specify if to deploy authchecker service
+  osdsauthchecker: true
+
+# osdsapiserver spec
 osdsapiserver:
-  image: opensdsio/opensds-apiserver:v0.5.4
+  name: apiserver
+  replicaCount: 1
+  image: opensdsio/opensds-apiserver:v0.5.5
+  # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+  imagePullPolicy: IfNotPresent
   # Attributes of the apiserver's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -25,8 +35,14 @@ osdsapiserver:
     limits:
       cpu: 100m
       memory: 30Mi
+
+# osdslet spec
 osdslet:
-  image: opensdsio/opensds-controller:v0.5.4
+  name: controller
+  replicaCount: 1
+  image: opensdsio/opensds-controller:v0.5.5
+  # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+  imagePullPolicy: IfNotPresent
   # Attributes of the controller's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -38,7 +54,7 @@ osdslet:
       # Available port in allowable range (e.g. 30000 - 32767 on minikube)
       # The TLS-enabled endpoint will be exposed here
       # securePort: 30049
-  # Apiserver resource requests and limits
+  # Controller resource requests and limits
   resources:
     requests:
       cpu: 100m
@@ -46,8 +62,14 @@ osdslet:
     limits:
       cpu: 100m
       memory: 30Mi
+
+# osdsdock spec
 osdsdock:
-  image: opensdsio/opensds-dock:v0.5.4
+  name: dock
+  replicaCount: 1
+  image: opensdsio/opensds-dock:v0.5.5
+  # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+  imagePullPolicy: IfNotPresent
   # Attributes of the dock's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -59,7 +81,7 @@ osdsdock:
       # Available port in allowable range (e.g. 30000 - 32767 on minikube)
       # The TLS-enabled endpoint will be exposed here
       # securePort: 30050
-  # Apiserver resource requests and limits
+  # Dock resource requests and limits
   resources:
     requests:
       cpu: 100m
@@ -67,8 +89,14 @@ osdsdock:
     limits:
       cpu: 100m
       memory: 40Mi
+
+# osdsdashboard spec
 osdsdashboard:
-  image: opensdsio/dashboard:v0.5.4
+  name: dashboard
+  replicaCount: 1
+  image: opensdsio/dashboard:v0.5.5
+  # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+  imagePullPolicy: IfNotPresent
   # Attributes of the dashboard's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -88,8 +116,14 @@ osdsdashboard:
     limits:
       cpu: 100m
       memory: 200Mi
+
+# osdsdb spec
 osdsdb:
+  name: db
+  replicaCount: 1
   image: quay.io/coreos/etcd:latest
+  # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+  imagePullPolicy: IfNotPresent
   # Attributes of the database's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"
@@ -109,8 +143,14 @@ osdsdb:
     limits:
       cpu: 100m
       memory: 40Mi
+
+# osdsauthchecker spec
 osdsauthchecker:
+  name: authchecker
+  replicaCount: 1
   image: opensdsio/opensds-authchecker:latest
+  # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+  imagePullPolicy: IfNotPresent
   # Attributes of the authchecker's service resource
   service:
     # Type of service; valid values are "LoadBalancer", "NodePort" and "ClusterIP"

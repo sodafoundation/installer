@@ -11,6 +11,7 @@ imageRestartPolicy: Never
 data:
   opensdsEndpoint: http://127.0.0.1:50040
   opensdsAuthStrategy: keystone
+  opensdsStorageType: block
   osAuthURL: http://127.0.0.1/identity
   osUsername: admin
   osPassword: opensds@123

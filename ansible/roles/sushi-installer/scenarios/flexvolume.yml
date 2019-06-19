@@ -29,7 +29,7 @@
   lineinfile:
     dest: "{{ sushi_work_dir }}/provisioner/deploy/configmap.yaml"
     regexp: '^  opensdsendpoint'
-    line: '  opensdsendpoint: {{ opensds_endpoint }}'
+    line: '  opensdsendpoint: {{ hotpot_endpoint }}'
     backup: yes
 
 - name: Configure opensds auth strategy in opensds external provisioner plugin

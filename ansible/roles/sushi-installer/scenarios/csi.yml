@@ -17,7 +17,7 @@
   lineinfile:
     dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
     regexp: '^  opensdsendpoint'
-    line: '  opensdsendpoint: {{ opensds_endpoint }}'
+    line: '  opensdsendpoint: {{ hotpot_endpoint }}'
     backup: yes
 
 - name: Configure opensds auth strategy in opensds csi plugin

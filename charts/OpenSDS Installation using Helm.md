@@ -80,8 +80,7 @@ helm init
 * Here we are creating only 1 ceph-osd node and Ceph luminous version ( For more details please refer [link](http://docs.ceph.com/ceph-ansible/master/)  )
 * Clone Ceph repository
 ```
-cd $HOME/kubernetes
-git clone -b stable-3.0 https://github.com/ceph/ceph-ansible.git
+cd $HOME && git clone -b stable-3.0 https://github.com/ceph/ceph-ansible.git
 
 ```
 
@@ -101,23 +100,26 @@ git clone -b stable-3.0 https://github.com/ceph/ceph-ansible.git
     ```
 * Install Ansible and Ceph
 ```
-cd $HOME/kubernetes
-cp opensds-installer/ansible/group_vars/ceph/ceph.hosts ceph-ansible/
-git clone https://github.com/opensds/opensds-installer.git
+# Download ansible tool
+cd $HOME && git clone https://github.com/opensds/opensds-installer.git
 cd opensds-installer/ansible
 chmod +x ./install_ansible.sh && ./install_ansible.sh
-cd $HOME/kubernetes/ceph-ansible
-ansible-playbook site.yml -i ceph.hosts
+
+# Install Ceph using ansible tool
+cd $HOME && cp opensds-installer/ansible/group_vars/ceph/ceph.hosts ceph-ansible/
+ansible-playbook ceph-ansible/site.yml -i ceph-ansible/ceph.hosts
+
 # Create pools if not available
 ceph osd crush tunables hammer
 grep -q "^rbd default features" /etc/ceph/ceph.conf || sed -i '/\[global\]/arbd default features = 1' /etc/ceph/ceph.conf
 ceph osd pool create rbd 100 && ceph osd pool set rbd size 1 
 ```
+
 ### OpenSDS helm chart installation
-### Configuration
+#### Configuration
 Firstly, you need to configure some global files with command below:
 ```
-export BackendType="sample" # 'sample' is the default option, currently also support 'lvm'
+export BackendType="lvm" # 'lvm' is the default option, currently also support 'ceph'
 
 mkdir -p /etc/opensds && sudo cat > /etc/opensds/opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
 [osdsapiserver]
@@ -159,17 +161,18 @@ dock_type = provisioner
 # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
 enabled_backends = $BackendType
 
-[sample]
-name = sample
-description = Sample Test
-driver_name = sample
-
 [lvm]
 name = lvm
 description = LVM Test
 driver_name = lvm
 config_path = /etc/opensds/driver/lvm.yaml
 host_based_replication_driver = DRBD
+
+[ceph]
+name = ceph
+description = Ceph Test
+driver_name = ceph
+config_path = /etc/opensds/driver/ceph.yaml
 
 [database]
 endpoint = db.opensds.svc.cluster.local:2379,db.opensds.svc.cluster.local:2380
@@ -208,7 +211,7 @@ If you choose `ceph` as backend, you need to configure ceph driver.
 mkdir -p /etc/opensds/driver && sudo cat > /etc/opensds/driver/ceph.yaml <<OPENSDS_DRIVER_CONFIG_DOC
 configFile: /etc/ceph/ceph.conf
 pool:
-  rbd: # change pool name same to ceph pool, but don't change it if you choose lvm backend
+  {{ ceph_pool_name }}: # change pool name same to ceph pool, but don't change it if you choose lvm backend
     storageType: block
     availabilityZone: default
     extras:
@@ -227,21 +230,26 @@ OPENSDS_DRIVER_CONFIG_DOC
 
 ##### Run OpenSDS and CSI-Plugin Helm Charts
 
- * Tiller  Permission:
-    Tiller is the in-cluster server component of Helm. By default, helm init installs the Tiller pod into the kube-system namespace, and configures Tiller to use the default service account.
-    
-```
+* Tiller Permissions
+
+Tiller is the in-cluster server component of Helm. By default,
+`helm init` installs the Tiller pod into the `kube-system` namespace,
+and configures Tiller to use the `default` service account:
+
+```console
 kubectl create clusterrolebinding tiller-cluster-admin \
---clusterrole=cluster-admin \
---serviceaccount=kube-system:default
+    --clusterrole=cluster-admin \
+    --serviceaccount=kube-system:default
 ```
+
+Then run opensds helm chart in `opensds` namespace:
 
 ```
 kubectl create ns opensds
-cd $HOME/kubernetes/opensds-installer/charts
-helm install opensds/ --name={ service_name } --namespace=opensds
+cd $HOME/opensds-installer/charts
+helm install opensds/ --name={ opensds_service_name } --namespace=opensds
 ```
-check the result using `kubectl get po -n opensds`
+After that, check the result using `kubectl get po -n opensds`
 ```$xslt
 NAME                                                   READY   STATUS    RESTARTS   AGE
 opensds-service-opensds-apiserver-54f9dc9776-6zwhv     1/1     Running   0          1h40m
@@ -250,24 +258,23 @@ opensds-service-opensds-controller-9d7b89c7c-4qln8     1/1     Running   0      
 opensds-service-opensds-dashboard-5f6c5d958b-ddv7d     1/1     Running   0          1h40m
 opensds-service-opensds-db-6cfcd45598-jxx2f            1/1     Running   0          1h40m
 opensds-service-opensds-dock-76b95bf9dd-78smj          1/1     Running   0          1h40m
-
 ```
 
-Now you are ready to run csiplugin helm chart
+Now you are ready to run csiplugin helm chart:
 
 ```
-#Please update csiplugin/values.yaml before running csiplugin helm chart
-helm install csiplugin/ --name={ service_name }
-
+# Please update csiplugin/values.yaml before running csiplugin helm chart
+vim csiplugin/values.yaml # Change the opensds endpoint to { opensds_cluster_ip }
+helm install csiplugin/ --name={ csiplugin_service_name }
 ```
 
 ## Testing steps
 ### OpenSDS CLI tool
-#### Download cli tool.
+#### Download cli tool
 ```
-wget https://github.com/opensds/opensds/releases/download/v0.5.4/opensds-hotpot-v0.5.4-linux-amd64.tar.gz 
-tar zxvf opensds-hotpot-v0.5.4-linux-amd64.tar.gz
-cp opensds-hotpot-v0.5.4-linux-amd64/bin/* /usr/local/bin
+wget https://github.com/opensds/opensds/releases/download/v0.5.5/opensds-hotpot-v0.5.5-linux-amd64.tar.gz 
+tar zxvf opensds-hotpot-v0.5.5-linux-amd64.tar.gz
+cp opensds-hotpot-v0.5.5-linux-amd64/bin/* /usr/local/bin
 chmod 755 /usr/local/bin/osdsctl
 
 export OPENSDS_ENDPOINT=http://{{ apiserver_cluster_ip }}:50040
@@ -309,8 +316,8 @@ Logout of the dashboard as admin and login the dashboard again as a non-admin us
 
 #### For CSI Plugin
 ```
-wget https://github.com/opensds/nbp/releases/download/v0.5.4/opensds-sushi-v0.5.4-linux-amd64.tar.gz
-tar zxvf opensds-sushi-v0.5.4-linux-amd64.tar.gz
+wget https://github.com/opensds/nbp/releases/download/v0.5.5/opensds-sushi-v0.5.5-linux-amd64.tar.gz
+tar zxvf opensds-sushi-v0.5.5-linux-amd64.tar.gz
 cd /opensds-sushi-linux-amd64
 ```
 
@@ -327,4 +334,10 @@ This example will mount a opensds volume into `/var/lib/www/html`.
 Clean up example nginx application and opensds CSI pods by the following commands:
 ```bash
 kubectl delete -f csi/examples/kubernetes/nginx.yaml
+```
+
+If you want to remove the existing cluster, please run the command below:
+```bash
+helm delete { csiplugin_service_name } --purge 
+helm delete { opensds_service_name } --purge
 ```

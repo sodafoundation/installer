@@ -24,7 +24,7 @@ After=network-online.target
 User=root
 Group=root
 Type=simple
-ExecStart=/usr/local/bin/lvm_exporter
+ExecStart=/usr/local/bin/lvm_exporter $1
 
 [Install]
 WantedBy=multi-user.target

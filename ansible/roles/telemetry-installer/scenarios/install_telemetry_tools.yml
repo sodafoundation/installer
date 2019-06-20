@@ -178,7 +178,7 @@
   tags:
     - lvm_exporter
   with_items:
-    - bash ./script/set_lvm_exporter_service.sh
+    - bash ./script/set_lvm_exporter_service.sh {{ lvm_exporter_port }}
   become: yes
 
 - name: start lvm_exporter
@@ -203,7 +203,7 @@
     - lvm_exporter
   shell: "{{ item }}"
   with_items:
-    - bash ./script/mod_prometheus_config_for_lvm_exporter.sh
+    - bash ./script/mod_prometheus_config_for_lvm_exporter.sh {{ lvm_exporter_port }}
   become: yes
 
 - name: restart prometheus

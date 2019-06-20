@@ -18,5 +18,5 @@ cat >> /etc/prometheus/prometheus.yml <<EOF
   - job_name: 'lvm_exporter'
     scrape_interval: 5s
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['localhost:$1']
 EOF

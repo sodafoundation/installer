@@ -40,7 +40,7 @@ conf_reload_url: /-/reload
 prometheus_push_mechanism: 'NodeExporter'
 prometheus_push_gateway_url: 'http://{{ host_ip }}:9091'
 node_exporter_watch_folder: /root/prom_nodeexporter_folder/
-lvm_exporter_port: '9094'
+lvm_exporter_port: '9601'
 kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 

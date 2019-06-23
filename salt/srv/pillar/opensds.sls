@@ -113,6 +113,48 @@ opensds:
       osdsdock:
         strategy: config-systemd
 
+  ############ OPENSDS TELEMETRY ###########
+  telemetry: {}
+
+  grafana:
+    pkg:
+      use_upstream_archive: True
+      archive:
+        uri: https://dl.grafana.com/oss/release
+
+  prometheus:
+    use_upstream_archive: True
+    wanted:
+      - prometheus
+      - alertmanager
+      - node_exporter
+    config:
+      alertmanager:
+        global:
+          smtp_smarthost: 'localhost:25'
+          smtp_from: 'alertmanager@example.org'
+          smtp_auth_username: 'alertmanager'
+          smtp_auth_password: "multiline\nmysecret"
+          smtp_hello: "host.example.org"
+        route:
+          group_by: ['alertname', 'cluster', 'service']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 3h
+          receiver: team-X-mails
+          routes:
+            - match_re:
+                service: ^(foo1|foo2|baz)$
+                receiver: team-X-mails
+              routes:
+              - match:
+                  severity: critical
+                receiver: team-X-mails
+        receivers:
+        - name: 'team-X-mails'
+          email_configs:
+          - to: 'team-X+alerts@example.org'
+
   ############ OPENSDS GELATO #############
   gelato:
     release: {{ site.gelato_release }}
@@ -254,11 +296,11 @@ lvm:
       'truncate  ':
         {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img:
           options:
-            size: 1G
+            size: 10G
       'truncate   ':
         {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img:
           options:
-            size: 1G
+            size: 10GM
 
       ### setup backing devices
       losetup:
@@ -312,7 +354,7 @@ firewalld:
       ports:
         tcp:
           - 4369         ## epmd peer discovery
-          - 5671:5672    #a #AMQP clients
+          - 5671:5672    ## AMQP clients
           - 25672        ## internet-node/cli
           - 35672:35682  ## clitools
           - 15672        ## http-api, mngt-ui, rabbitmqadm

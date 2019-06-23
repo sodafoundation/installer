@@ -129,6 +129,16 @@ opensds:
       - alertmanager
       - node_exporter
     config:
+      prometheus:
+        - job_name: 'node_exporter'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:9100']
+        alerting:
+          alertmanagers:
+          - static_configs:
+            - targets: ['localhost:9093']
+
       alertmanager:
         global:
           smtp_smarthost: 'localhost:25'

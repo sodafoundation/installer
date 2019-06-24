@@ -35,6 +35,12 @@ Reboot if kernel got upgraded. If in doubt, reboot anyway.
 init 6
 ```
 
+Change to root-user and navigate to installer directory.
+```
+ sudo -s
+ cd /root/opensds-installer/salt/
+```
+
 Review site deployment data to double check ipv4 adddres. Set "auth_strategy: noauth" if not using keystone.
 ```
  ip addr
@@ -43,8 +49,7 @@ Review site deployment data to double check ipv4 adddres. Set "auth_strategy: no
 
 Deploy OpenSDS on UBUNTU/CENTOS/OpenSUSE_15
 ```
-sudo -s
-cd /root/opensds-installer/salt/; ./install.sh -i opensds
+./install.sh -i opensds
 ```
 
 How to test opensds cluster

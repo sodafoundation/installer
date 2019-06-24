@@ -389,9 +389,23 @@ firewalld:
           - 11211                 ## memcached
           - 3260                  ## tgt
           - 5672                  ## docker-proxy
-          - 33060:33070           ## cinder
+          - 33060:33070           ## cinder ?
+          - 3306:3307             ## mysql
           - 8776                  ## cinder-api
           - 35357                 ## openstack
+          - 9090                  ## prometheus server
+          - 9091                  ## pushgateway
+          - 9093                  ## alertmanager
+          - 9094                  ## alertmanager clustering
+          - 9100                  ## node exporter
+          - 9128                  ## ceph exporter
+          - 9274                  ## Kubernetes PersistentVolumeDisk usage exporter
+          - 9283                  ## ceph ceph-mgr prometheus plugin
+          - 9287                  ## ceph iscsi gateway stats
+          - 9423                  ## HP RAID exporter
+          - 9437                  ## Dell EMC Isilon exporter
+          - 9438                  ## Dell EMC ECS exporter
+
   zones:
     public:
       short: Public

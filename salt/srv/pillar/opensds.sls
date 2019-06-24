@@ -130,6 +130,7 @@ opensds:
       - node_exporter
     config:
       prometheus:
+        scrape_configs:
         - job_name: 'node_exporter'
           scrape_interval: 5s
           static_configs:
@@ -544,36 +545,35 @@ resolver:
     - attempts:5
 
 nginx:
-  ng:
-    servers:
-      managed:
-        default:
-              {%- if grains.os_family in ('RedHat', 'Debian',) %}
-          available_dir: /etc/nginx/sites-available
-          enabled_dir: /etc/nginx/sites-available
-              {%- endif %}
-          enabled: True
-          overwrite: True
-          config:
-            - server:
-              - root:
-                - /var/www/html
-              - server_name: '_'
-              - listen:
-                - '8088 default_server'
-              - listen:
-                - '[::]:8088 default_server'
-          {%- if grains.os_family == 'Debian' %}
-              - index: 'index.html index.htm index.nginx-debian.html'
-          {%- else %}
-              - index: 'index.html index.htm'
-          {%- endif %}
-              - location /{{ site.hotpot_release }}/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
-              - location /v3/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
-              - location /v1beta/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
+  servers:
+    managed:
+      default:
+            {%- if grains.os_family in ('RedHat', 'Debian',) %}
+        available_dir: /etc/nginx/sites-available
+        enabled_dir: /etc/nginx/sites-available
+            {%- endif %}
+        enabled: True
+        overwrite: True
+        config:
+          - server:
+            - root:
+              - /var/www/html
+            - server_name: '_'
+            - listen:
+              - '8088 default_server'
+            - listen:
+              - '[::]:8088 default_server'
+        {%- if grains.os_family == 'Debian' %}
+            - index: 'index.html index.htm index.nginx-debian.html'
+        {%- else %}
+            - index: 'index.html index.htm'
+        {%- endif %}
+            - location /{{ site.hotpot_release }}/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
+            - location /v3/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
+            - location /v1beta/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
 
 memcached:
   daemonize: True
@@ -770,3 +770,6 @@ salt_formulas:
      - mongodb-formula
      - node-formula
      - apache-formula
+     - prometheus-formula
+     - grafana-formula
+     - sysstat-formula

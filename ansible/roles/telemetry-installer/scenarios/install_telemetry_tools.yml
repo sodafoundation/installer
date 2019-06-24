@@ -279,6 +279,30 @@
   become: yes
 
 # ---------start to install grafana---------
+
+- name: create grafana configuration config/data directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ grafana_conf_home }}"
+    - "{{ grafana_data_home }}"
+
+- name: copy configuration for grafana
+  shell: "{{ item }}"
+  with_items:
+    - "cp -f ./telemetry/grafana/grafana.ini {{ grafana_conf_home }}"
+    - "cp -rf ./telemetry/grafana/dashboards {{ grafana_data_home }}"
+    - "cp -rf ./telemetry/grafana/provisioning {{ grafana_data_home }}"
+
+- name: Setting prometheus url in grafana datasource
+  lineinfile:
+    dest: "{{ grafana_data_home }}/provisioning/datasources/prom_osds.yml"
+    regexp: '^(.*)  url: (.*)$'
+    line: "  url: {{ prometheus_url }}"
+    backrefs: yes
+
 - name: install grafana
   shell: "{{ item }}"
   with_items:

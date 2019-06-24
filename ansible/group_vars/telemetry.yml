@@ -32,6 +32,7 @@ alertmgr_conf_home: /etc/alertmanager/
 alertmgr_conf_file: alertmanager.yml
 alertmgr_url: 'http://{{ host_ip }}:9093'
 grafana_conf_home: /etc/grafana/
+grafana_data_home: /var/lib/grafana
 grafana_conf_file: grafana.ini
 grafana_url: 'http://{{ host_ip }}:3000'
 grafana_restart_cmd: grafana-server

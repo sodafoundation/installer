@@ -304,19 +304,14 @@
     line: "  url: {{ prometheus_url }}"
     backrefs: yes
 
-- name: install grafana
-  shell: "{{ item }}"
-  with_items:
-    - curl https://packagecloud.io/gpg.key | apt-key add -
-    - add-apt-repository "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
-    - apt-get update
-    - curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh |bash
-    - apt install -y grafana
-    - systemctl start grafana-server
-  become: yes
-  
-- name: check status of grafana service
-  shell: "{{ item }}"
-  with_items:
-    - systemctl status grafana-server
-  become: yes
+- name: start grafana
+  shell: docker-compose -f grafana.yml up -d 
+  args:
+    chdir: "./telemetry/grafana"
+    
+- name: wait for grafana to start normally
+  wait_for:
+    host: 127.0.0.1
+    port: 3000
+    delay: 10
+    timeout: 120

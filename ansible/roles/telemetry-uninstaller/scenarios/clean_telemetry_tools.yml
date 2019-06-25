@@ -15,13 +15,9 @@
 ---
 # ---------start to clean grafana---------
 - name: clean grafana
-  shell: "{{ item }}"
-  with_items:
-    - systemctl stop grafana-server
-    - apt purge -y grafana
-    - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
-  ignore_errors: yes
-  become: yes
+  shell: docker-compose -f grafana.yml down
+  args:
+    chdir: "./telemetry/grafana"
 
 # ---------start to clean alertmanager---------
 - name: clean alertmanager

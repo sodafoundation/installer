@@ -19,12 +19,13 @@
   with_items:
     - systemctl stop prometheus node_exporter alertmanager pushgateway sysstat lvm_exporter
   become: yes
+  ignore_errors: yes
 
 # ---------start to install prometheus---------
 - name: add users and give permissions for prometheus
   shell: "{{ item }}"
   with_items:
-    - id -u prometheus &>/dev/null || useradd --no-create-home --shell /bin/false prometheus 
+    - id -u prometheus || useradd --no-create-home --shell /bin/false prometheus 
     - mkdir -p /etc/prometheus
     - mkdir -p /var/lib/prometheus
     - chown prometheus:prometheus /etc/prometheus
@@ -75,7 +76,7 @@
     - curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
     - tar xvf node_exporter-0.17.0.linux-amd64.tar.gz
     - cp node_exporter-0.17.0.linux-amd64/node_exporter /usr/local/bin/
-    - id -u node_exporter &>/dev/null || useradd --no-create-home --shell /bin/false node_exporter
+    - id -u node_exporter || useradd --no-create-home --shell /bin/false node_exporter
     - chown node_exporter:node_exporter /usr/local/bin/node_exporter
     - rm -rf node_exporter-0.17.0.linux-amd64.tar.gz node_exporter-0.17.0.linux-amd64
   become: yes
@@ -124,7 +125,7 @@
     - curl -LO https://github.com/prometheus/pushgateway/releases/download/v0.8.0/pushgateway-0.8.0.linux-amd64.tar.gz
     - tar xvf pushgateway-0.8.0.linux-amd64.tar.gz
     - cp pushgateway-0.8.0.linux-amd64/pushgateway /usr/local/bin/
-    - id -u pushgateway &>/dev/null || useradd --no-create-home --shell /bin/false pushgateway
+    - id -u pushgateway || useradd --no-create-home --shell /bin/false pushgateway
     - chown pushgateway:pushgateway /usr/local/bin/pushgateway
     - rm -rf pushgateway-0.8.0.linux-amd64.tar.gz pushgateway-0.8.0.linux-amd64
   become: yes
@@ -238,7 +239,7 @@
     - mkdir -p /etc/alertmanager
     - cp alertmanager-0.16.2.linux-amd64/alertmanager.yml /etc/alertmanager
     - mkdir -p /var/lib/alertmanager
-    - id -u alertmanager &>/dev/null || useradd --no-create-home --shell /bin/false alertmanager
+    - id -u alertmanager || useradd --no-create-home --shell /bin/false alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager
     - chown alertmanager:alertmanager /usr/local/bin/alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager/alertmanager.yml

@@ -19,7 +19,7 @@
   with_items:
     - systemctl stop grafana-server
     - apt purge -y grafana
-    - add-apt-repository -r "deb https://packagecloud.io/grafana/stable/debian/ stretch main"
+    - add-apt-repository -r "{{ grafana_repositroy }}"
   ignore_errors: yes
   become: yes
 

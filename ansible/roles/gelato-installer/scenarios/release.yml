@@ -13,27 +13,21 @@
 # limitations under the License.
 
 ---
-- name: check for sushi release files existed
+- name: check for gelato release files existed
   stat:
-    path: "{{ sushi_tarball_dir }}"
-  register: sushireleasesexisted
+    path: "{{ gelato_tarball_dir }}/docker-compose.yml"
+  register: gelatoreleasesexisted
 
-- name: download and extract the sushi release tarball if not exists
+- name: download and extract the gelato release tarball if not exists
   unarchive:
-    src: "{{ sushi_download_url }}"
-    dest: /tmp/
+    src: "{{ gelato_download_url }}"
+    dest: "{{ gelato_tarball_dir }}"
     remote_src: yes
+    extra_opts: [--strip-components=1]
   when:
-    - sushireleasesexisted.stat.exists is undefined or sushireleasesexisted.stat.exists == false
+    - gelatoreleasesexisted.stat.exists is undefined or gelatoreleasesexisted.stat.exists == false
 
-- name: change the mode of all binary files in sushi release
-  file:
-    path: "{{ sushi_tarball_dir }}/bin"
-    mode: 0755
-    recurse: yes
-
-- name: copy sushi tarball into sushi work directory
+- name: copy docker-compose.yml into gelato work directory
   copy:
-    src: "{{ sushi_tarball_dir }}/"
-    dest: "{{ sushi_work_dir }}"
-    mode: 0755
+    src: "{{ gelato_tarball_dir }}/docker-compose.yml"
+    dest: "{{ gelato_work_dir }}"

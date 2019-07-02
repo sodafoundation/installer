@@ -18,29 +18,29 @@
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: {{ template "fullname" . }}-apiserver
+  name: {{ template "osdsapiserver.fullname" . }}
   labels:
-    app: {{ template "fullname" . }}-apiserver
+    app: {{ template "osdsapiserver.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.osdsapiserver.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-apiserver
+      app: {{ template "osdsapiserver.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name: {{ template "osdsapiserver.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-apiserver
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "osdsapiserver.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
-      - name: osdsapiserver
+      - name: {{ template "osdsapiserver.fullname" . }}
         image: {{ .Values.osdsapiserver.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.osdsapiserver.imagePullPolicy }}
         command: ["bin/sh"]
         args: ["-c", "/usr/bin/osdsapiserver -logtostderr"]
         ports:
@@ -60,29 +60,29 @@ spec:
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: {{ template "fullname" . }}-controller
+  name: {{ template "osdslet.fullname" . }}
   labels:
-    app: {{ template "fullname" . }}-controller
+    app: {{ template "osdslet.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.osdslet.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-controller
+      app: {{ template "osdslet.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name: {{ template "osdslet.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-controller
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "osdslet.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
-      - name: osdslet
+      - name: {{ template "osdslet.fullname" . }}
         image: {{ .Values.osdslet.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.osdslet.imagePullPolicy }}
         command: ["bin/sh"]
         args: ["-c", "/usr/bin/osdslet -logtostderr"]
         ports:
@@ -102,34 +102,34 @@ spec:
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: {{ template "fullname" . }}-dock
+  name: {{ template "osdsdock.fullname" . }}
   labels:
-    app: {{ template "fullname" . }}-dock
+    app: {{ template "osdsdock.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.osdsdock.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-dock
+      app: {{ template "osdsdock.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name: {{ template "osdsdock.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-dock
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "osdsdock.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
-      - name: osdsdock
+      - name: {{ template "osdsdock.fullname" . }}
         securityContext:
           privileged: true
           capabilities:
             add: ["SYS_ADMIN"]
           allowPrivilegeEscalation: true
         image: {{ .Values.osdsdock.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.osdsdock.imagePullPolicy }}
         command: ["bin/sh"]
         args: ["-c", "/usr/sbin/tgtd; /usr/bin/osdsdock -logtostderr"]
         ports:
@@ -166,7 +166,7 @@ spec:
       - name: tgt-conf-dir
         hostPath:
           path: /etc/tgt
-          type: Directory
+          type: DirectoryOrCreate
       - name: run-dir
         hostPath:
           path: /run
@@ -185,73 +185,34 @@ spec:
           type: Directory
 ---
 ##########################################################################
-# Dashboard deployment
-##########################################################################
-kind: Deployment
-apiVersion: extensions/v1beta1
-metadata:
-  name: {{ template "fullname" . }}-dashboard
-  labels:
-    app: {{ template "fullname" . }}-dashboard
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ template "fullname" . }}-dashboard
-  template:
-    metadata:
-      labels:
-        app: {{ template "fullname" . }}-dashboard
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
-    spec:
-      containers:
-      - name: osdsdashboard
-        image: {{ .Values.osdsdashboard.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
-        env:
-        - name: OPENSDS_AUTH_URL
-          value: http://{{ template "fullname" . }}-authchecker.opensds.svc.cluster.local/identity
-        - name: OPENSDS_HOTPOT_URL
-          value: http://{{ template "fullname" . }}-apiserver.opensds.svc.cluster.local:50040
-        - name: OPENSDS_GELATO_URL
-          value: http://127.0.0.1:8089
-        ports:
-        - containerPort: 8088
----
-##########################################################################
 # DB deployment
 ##########################################################################
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: {{ template "fullname" . }}-db
+  name: {{ template "osdsdb.fullname" . }}
   labels:
-    app: {{ template "fullname" . }}-db
+    app: {{ template "osdsdb.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.osdsdb.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-db
+      app: {{ template "osdsdb.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name: {{ template "osdsdb.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-db
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "osdsdb.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
-      - name: osdsdb
+      - name: {{ template "osdsdb.fullname" . }}
         image: {{ .Values.osdsdb.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.osdsdb.imagePullPolicy }}
         command: ["/bin/sh"]
         args: ["-c", "/usr/local/bin/etcd \
           --name s1 \
@@ -271,41 +232,85 @@ spec:
         hostPath:
           path: /usr/share/ca-certificates/
           type: Directory
+##########################################################################
+# Dashboard deployment
+##########################################################################
+{{- if .Values.deployments.osdsdashboard }}
 ---
-##########################################################################
-# Authchecker deployment
-##########################################################################
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: {{ template "fullname" . }}-authchecker
+  name: {{ template "osdsdashboard.fullname" . }}
   labels:
-    app: {{ template "fullname" . }}-authchecker
+    app: {{ template "osdsdashboard.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.osdsdashboard.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}-authchecker
+      app: {{ template "osdsdashboard.fullname" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
+      name:  {{ template "osdsdashboard.fullname" . }}
       labels:
-        app: {{ template "fullname" . }}-authchecker
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: "{{ .Release.Name }}"
-        heritage: "{{ .Release.Service }}"
+        app: {{ template "osdsdashboard.fullname" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
-      - name: osdsauthchecker
+      - name:  {{ template "osdsdashboard.fullname" . }}
+        image: {{ .Values.osdsdashboard.image }}
+        imagePullPolicy: {{ .Values.osdsdashboard.imagePullPolicy }}
+        env:
+        - name: OPENSDS_AUTH_URL
+          value: http://{{ .Values.osdsauthchecker.name }}.{{ .Release.Namespace }}.svc.cluster.local/identity
+        - name: OPENSDS_HOTPOT_URL
+          value: http://{{ .Values.osdsapiserver.name }}.{{ .Release.Namespace }}.svc.cluster.local:50040
+        - name: OPENSDS_GELATO_URL
+          value: http://127.0.0.1:8089
+        - name: OPENSDS_ORCHESTRATION_URL
+          value: http://127.0.0.1:5000
+        ports:
+        - containerPort: 8088
+{{- end }}
+##########################################################################
+# Authchecker deployment
+##########################################################################
+{{- if .Values.deployments.osdsauthchecker }}
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "osdsauthchecker.fullname" . }}
+  labels:
+    app: {{ template "osdsauthchecker.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.osdsauthchecker.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osdsauthchecker.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: {{ template "osdsauthchecker.fullname" . }}
+      labels:
+        app: {{ template "osdsauthchecker.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ template "osdsauthchecker.fullname" . }}
         securityContext:
           privileged: true
           capabilities:
             add: ["SYS_ADMIN"]
           allowPrivilegeEscalation: true
         image: {{ .Values.osdsauthchecker.image }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.osdsauthchecker.imagePullPolicy }}
         ports:
         - containerPort: 80
----
+{{- end }}

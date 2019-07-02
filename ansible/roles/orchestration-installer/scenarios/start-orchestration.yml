@@ -21,13 +21,6 @@
     warn: false
   register: st2_pass
 
-- name: Install python pip
-  easy_install:
-    name: pip
-    state: latest
-  become: yes
-  ignore_errors: yes
-
 - name: Install python virtual environment
   pip:
     name: virtualenv
@@ -70,15 +63,35 @@
     value: "{{ item.value }}"
   with_items:
         - { option: tech, value: "St2" }
-        - { option: host, value: "{{ orchestration_ip }}" }
+        - { option: host, value: "{{ workflow_ip }}" }
         - { option: username, value: "st2admin" }
         - { option: password, value: "{{ st2_pass.stdout }}" }
         - { option: encrypted_password, value: "false" }
         - { option: phrase, value: "" }
   become: yes
 
-- name: Install stackstorm credentials
-  command: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/connectionmanager/credcreator.py set "St2" "{{ host_ip }}" "st2admin" "{{ st2_pass.stdout }}"'
+- name: Set orchestration.conf with hotpot options
+  ini_file:
+    create: no
+    path: "{{ orchestration_work_dir }}/orchestration.conf"
+    section: hotpot
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: host, value: "{{ hotpot_ip }}" }
+        - { option: port, value: "{{ hotpot_port }}" }
+  become: yes
+
+- name: Set orchestration.conf with gelato options
+  ini_file:
+    create: no
+    path: "{{ orchestration_work_dir }}/orchestration.conf"
+    section: gelato
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: host, value: "{{ gelato_ip }}" }
+        - { option: port, value: "{{ gelato_port }}" }
   become: yes
 
 - name: Install orchestration manager
@@ -88,5 +101,12 @@
   become: yes
 
 - name: Execute orchestration manager
-  shell: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/server.py </dev/null >/dev/null 2>&1 &'
+  shell: '{{ venv }}/exec {{ orchestration_work_dir }}/orchestration/server.py {{ orchestration_work_dir }}/orchestration.conf </dev/null >/dev/null 2>&1 &'
+  args:
+    chdir: "{{ orchestration_work_dir }}"
   become: yes
+
+- name: Register orchestration services
+  script: ./script/orchestration_addservices.py "{{ host_ip }}" "{{ orchestration_ip }}" "{{ orchestration_port }}"
+  become: yes
+  ignore_errors: yes

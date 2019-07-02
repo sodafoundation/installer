@@ -18,15 +18,16 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "fullname" . }}-apiserver
+  name: {{ .Values.osdsapiserver.name }}
   labels:
-    app: {{ template "fullname" . }}-apiserver
+    app: {{ template "osdsapiserver.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "fullname" . }}-apiserver
+    app: {{ template "osdsapiserver.fullname" . }}
+    release: {{ .Release.Name }}
   type: {{ .Values.osdsapiserver.service.type }}
   ports:
   - name: http-apiserver
@@ -41,15 +42,16 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "fullname" . }}-controller
+  name: {{ .Values.osdslet.name }}
   labels:
-    app: {{ template "fullname" . }}-controller
+    app: {{ template "osdslet.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "fullname" . }}-controller
+    app: {{ template "osdslet.fullname" . }}
+    release: {{ .Release.Name }}
   type: {{ .Values.osdslet.service.type }}
   ports:
   - name: tcp-controller
@@ -64,15 +66,16 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "fullname" . }}-dock
+  name: {{ .Values.osdsdock.name }}
   labels:
-    app: {{ template "fullname" . }}-dock
+    app: {{ template "osdsdock.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "fullname" . }}-dock
+    app: {{ template "osdsdock.fullname" . }}
+    release: {{ .Release.Name }}
   type: {{ .Values.osdsdock.service.type }}
   ports:
   - name: tcp-dock
@@ -82,43 +85,21 @@ spec:
     {{- end }}
 ---
 ##########################################################################
-# Dashboard service
-##########################################################################
-kind: Service
-apiVersion: v1
-metadata:
-  name: {{ template "fullname" . }}-dashboard
-  labels:
-    app: {{ template "fullname" . }}-dashboard
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-spec:
-  selector:
-    app: {{ template "fullname" . }}-dashboard
-  type: {{ .Values.osdsdashboard.service.type }}
-  ports:
-  - name: http-dashboard
-    port: 8088
-    {{- if eq .Values.osdsdashboard.service.type "NodePort" }}
-    nodePort: {{ .Values.osdsdashboard.service.nodePort.securePort }}
-    {{- end }}
----
-##########################################################################
 # DB service
 ##########################################################################
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "fullname" . }}-db
+  name: {{ .Values.osdsdb.name }}
   labels:
-    app: {{ template "fullname" . }}-db
+    app: {{ template "osdsdb.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "fullname" . }}-db
+    app: {{ template "osdsdb.fullname" . }}
+    release: {{ .Release.Name }}
   type: {{ .Values.osdsdb.service.type }}
   ports:
   - name: tcp-db1
@@ -131,22 +112,50 @@ spec:
     {{- if eq .Values.osdsdb.service.type "NodePort" }}
     nodePort: {{ .Values.osdsdb.service.nodePort.securePort }}
     {{- end }}
+##########################################################################
+# Dashboard service
+##########################################################################
+{{- if .Values.deployments.osdsdashboard }}
 ---
-##########################################################################
-# Authchecker service
-##########################################################################
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "fullname" . }}-authchecker
+  name: {{ .Values.osdsdashboard.name }}
   labels:
-    app: {{ template "fullname" . }}-authchecker
+    app: {{ template "osdsdashboard.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "fullname" . }}-authchecker
+    app: {{ template "osdsdashboard.fullname" . }}
+    release: {{ .Release.Name }}
+  type: {{ .Values.osdsdashboard.service.type }}
+  ports:
+  - name: http-dashboard
+    port: 8088
+    {{- if eq .Values.osdsdashboard.service.type "NodePort" }}
+    nodePort: {{ .Values.osdsdashboard.service.nodePort.securePort }}
+    {{- end }}
+{{- end }}
+##########################################################################
+# Authchecker service
+##########################################################################
+{{- if .Values.deployments.osdsauthchecker }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.osdsauthchecker.name }}
+  labels:
+    app: {{ template "osdsauthchecker.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    app: {{ template "osdsauthchecker.fullname" . }}
+    release: {{ .Release.Name }}
   type: {{ .Values.osdsauthchecker.service.type }}
   ports:
   - name: http-authchecker
@@ -154,4 +163,4 @@ spec:
     {{- if eq .Values.osdsauthchecker.service.type "NodePort" }}
     nodePort: {{ .Values.osdsauthchecker.service.nodePort.securePort }}
     {{- end }}
----
+{{- end }}

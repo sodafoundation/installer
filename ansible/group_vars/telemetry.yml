@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The OpenSDS Authors.
+# Copyright 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,20 +27,21 @@ enable_telemetry_tools: false
 # Telementry configs to be updated in opensds.conf
 prometheus_conf_home: /etc/prometheus/
 prometheus_conf_file: prometheus.yml
-prometheus_url: 'http://localhost:9090'
+prometheus_url: 'http://{{ host_ip }}:9090'
 alertmgr_conf_home: /etc/alertmanager/
 alertmgr_conf_file: alertmanager.yml
-alertmgr_url: 'http://localhost:9093'
+alertmgr_url: 'http://{{ host_ip }}:9093'
 grafana_conf_home: /etc/grafana/
 grafana_conf_file: grafana.ini
-grafana_url: 'http://localhost:3000'
+grafana_url: 'http://{{ host_ip }}:3000'
 grafana_restart_cmd: grafana-server
 conf_reload_url: /-/reload
 
 prometheus_push_mechanism: 'NodeExporter'
-prometheus_push_gateway_url: 'http://localhost:9091'
+prometheus_push_gateway_url: 'http://{{ host_ip }}:9091'
 node_exporter_watch_folder: /root/prom_nodeexporter_folder/
-kafka_endpoint: 'localhost:9092'
+lvm_exporter_port: '9601'
+kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 
 opensds_conf_file: /etc/opensds/opensds.conf

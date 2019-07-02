@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The OpenSDS Authors.
+# Copyright 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -178,7 +178,7 @@
   tags:
     - lvm_exporter
   with_items:
-    - bash ./script/set_lvm_exporter_service.sh
+    - bash ./script/set_lvm_exporter_service.sh {{ lvm_exporter_port }}
   become: yes
 
 - name: start lvm_exporter
@@ -203,7 +203,7 @@
     - lvm_exporter
   shell: "{{ item }}"
   with_items:
-    - bash ./script/mod_prometheus_config_for_lvm_exporter.sh
+    - bash ./script/mod_prometheus_config_for_lvm_exporter.sh {{ lvm_exporter_port }}
   become: yes
 
 - name: restart prometheus
@@ -288,5 +288,3 @@
   with_items:
     - systemctl status grafana-server
   become: yes
-
-  

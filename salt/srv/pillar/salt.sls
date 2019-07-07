@@ -5,14 +5,22 @@ salt:
   master:
     file_roots:
       base:
+            {%- if grains['kernel'] in ['FreeBSD', 'OpenBSD', 'NetBSD'] %}
+        - /usr/local/etc/salt/states
+            {%- else %}
         - /srv/salt
+            {%- endif %}
     pillar_roots:
       base:
         - /srv/pillar
   minion:
     file_roots:
       base:
+            {%- if grains['kernel'] in ['FreeBSD', 'OpenBSD', 'NetBSD'] %}
+        - /usr/local/etc/salt/states
+            {%- else %}
         - /srv/salt
+            {%- endif %}
     pillar_roots:
       base:
         - /srv/pillar
@@ -26,11 +34,19 @@ salt_formulas:
   git_opts:
     default:
       baseurl: https://github.com/saltstack-formulas
+         {%- if grains['kernel'] in ['FreeBSD', 'OpenBSD', 'NetBSD'] %}
+      basedir: /usr/local/etc/salt/formulas
+         {%- else %}
       basedir: /srv/formulas
+         {%- endif %}
   basedir_opts:
     makedirs: True
     user: root
+      {%- if grains['kernel'] in ['FreeBSD', 'OpenBSD', 'NetBSD'] %}
+    group: wheel
+      {%- else %}
     group: root
+      {%- endif %}
     mode: 755
   minion_conf:
     create_from_list: True
@@ -61,3 +77,6 @@ salt_formulas:
      - nginx-formula
      - mongodb-formula
      - apache-formula
+     - prometheus-formula
+     - grafana-formula
+     - sysstat-formula

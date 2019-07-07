@@ -254,11 +254,11 @@ lvm:
       'truncate  ':
         {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img:
           options:
-            size: 1G
+            size: 10G
       'truncate   ':
         {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img:
           options:
-            size: 1G
+            size: 10GM
 
       ### setup backing devices
       losetup:
@@ -312,7 +312,7 @@ firewalld:
       ports:
         tcp:
           - 4369         ## epmd peer discovery
-          - 5671:5672    #a #AMQP clients
+          - 5671:5672    ## AMQP clients
           - 25672        ## internet-node/cli
           - 35672:35682  ## clitools
           - 15672        ## http-api, mngt-ui, rabbitmqadm
@@ -336,9 +336,11 @@ firewalld:
           - 11211                 ## memcached
           - 3260                  ## tgt
           - 5672                  ## docker-proxy
-          - 33060:33070           ## cinder
+          - 33060:33070           ## cinder ?
+          - 3306:3307             ## mysql
           - 8776                  ## cinder-api
           - 35357                 ## openstack
+
   zones:
     public:
       short: Public
@@ -492,36 +494,35 @@ resolver:
     - attempts:5
 
 nginx:
-  ng:
-    servers:
-      managed:
-        default:
-              {%- if grains.os_family in ('RedHat', 'Debian',) %}
-          available_dir: /etc/nginx/sites-available
-          enabled_dir: /etc/nginx/sites-available
-              {%- endif %}
-          enabled: True
-          overwrite: True
-          config:
-            - server:
-              - root:
-                - /var/www/html
-              - server_name: '_'
-              - listen:
-                - '8088 default_server'
-              - listen:
-                - '[::]:8088 default_server'
-          {%- if grains.os_family == 'Debian' %}
-              - index: 'index.html index.htm index.nginx-debian.html'
-          {%- else %}
-              - index: 'index.html index.htm'
-          {%- endif %}
-              - location /{{ site.hotpot_release }}/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
-              - location /v3/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
-              - location /v1beta/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
+  servers:
+    managed:
+      default:
+            {%- if grains.os_family in ('RedHat', 'Debian',) %}
+        available_dir: /etc/nginx/sites-available
+        enabled_dir: /etc/nginx/sites-available
+            {%- endif %}
+        enabled: True
+        overwrite: True
+        config:
+          - server:
+            - root:
+              - /var/www/html
+            - server_name: '_'
+            - listen:
+              - '8088 default_server'
+            - listen:
+              - '[::]:8088 default_server'
+        {%- if grains.os_family == 'Debian' %}
+            - index: 'index.html index.htm index.nginx-debian.html'
+        {%- else %}
+            - index: 'index.html index.htm'
+        {%- endif %}
+            - location /{{ site.hotpot_release }}/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
+            - location /v3/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
+            - location /v1beta/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
 
 memcached:
   daemonize: True
@@ -574,6 +575,12 @@ etcd:
 
 ceph:
   use_upstream_repo: true
+
+sysstat:
+  pkg:
+    use_upstream_source: True
+    archive:
+      uri: https://dl.sysstat.com/oss/release
 
 packages:
   pips:
@@ -656,65 +663,3 @@ packages:
       - {{ site.hotpot_path }}
       # /var/lib/mysql/
 
-salt:
-  install_packages: False
-  master:
-    file_roots:
-      base:
-        - /srv/salt
-    pillar_roots:
-      base:
-        - /srv/pillar
-  minion:
-    file_roots:
-      base:
-        - /srv/salt
-    pillar_roots:
-      base:
-        - /srv/pillar
-  ssh_roster:
-    hotpot1:
-      host: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
-      user: stack
-      sudo: True
-      priv: /etc/salt/ssh_keys/sshkey.pem
-salt_formulas:
-  git_opts:
-    default:
-      baseurl: https://github.com/saltstack-formulas
-      basedir: /srv/formulas
-  basedir_opts:
-    makedirs: True
-    user: root
-    group: root
-    mode: 755
-  minion_conf:
-    create_from_list: True
-  list:
-    base:
-     {{ '- epel-formula' if grains.os_family in ('RedHat',) else '' }}
-     - salt-formula
-     - openssh-formula
-     - packages-formula
-     - firewalld-formula
-     - etcd-formula
-     - ceph-formula
-     - deepsea-formula
-     - docker-formula
-     - etcd-formula
-     - firewalld-formula
-     - helm-formula
-     - iscsi-formula
-     - lvm-formula
-     - packages-formula
-     - devstack-formula
-     - golang-formula
-     - memcached-formula
-     - opensds-formula
-     - mysql-formula
-     - timezone-formula
-     - resolver-formula
-     - nginx-formula
-     - mongodb-formula
-     - node-formula
-     - apache-formula

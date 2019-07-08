@@ -24,7 +24,7 @@ dummy:
 # Do you need to install or clean up telemetry tools?
 enable_telemetry_tools: false
 
-#Grafana Repository config
+# Grafana Repository config
 grafana_repositroy: "deb https://packages.grafana.com/oss/deb stable main"
 grafana_gpg_key: https://packages.grafana.com/gpg.key
 

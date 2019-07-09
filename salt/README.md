@@ -1,10 +1,10 @@
 # Deploying OpenSDS with Salt
 
-Deploy OpenSDS (www.opensds.io) using Salt. This is an experimental solution using repeatable patterns of jinja/yaml to deploy cloud-native stack using infrastructure as code. Please use Salt 2018.3.4 or earlier while potential impacts from the <a href="https://docs.saltstack.com/en/develop/topics/releases/2019.2.0.html#non-backward-compatible-change-to-yaml-renderer">NON-BACKWARD-COMPATIBLE-CHANGE-TO-YAML-RENDERER</a> are reviewed by the <a href="https://github.com/saltstack-formulas">saltstack-formulas community</a>.
+Deploy OpenSDS (www.opensds.io) using Salt. This is an experimental solution using repeatable patterns of jinja/yaml to deploy cloud-native stack using infrastructure as code.
 
 Software versions
 =================
-Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15 with Salt version 2018.3.
+Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15 with Salt 2018.3 and 2019.2 releases.
 
 Solution View
 =============

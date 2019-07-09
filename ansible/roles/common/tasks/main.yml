@@ -74,3 +74,6 @@
     src: ../../../../conf/
     dest: "{{ opensds_config_dir }}"
   when: deploy_project != "gelato"
+
+- set_fact: common_role_done=True
+  when: common_role_done is not defined

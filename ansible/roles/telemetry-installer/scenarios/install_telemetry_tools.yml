@@ -25,7 +25,7 @@
 - name: add users and give permissions for prometheus
   shell: "{{ item }}"
   with_items:
-    - id -u prometheus || useradd --no-create-home --shell /bin/false prometheus 
+    - id -u prometheus || useradd --no-create-home --shell /bin/false prometheus
     - mkdir -p /etc/prometheus
     - mkdir -p /var/lib/prometheus
     - chown prometheus:prometheus /etc/prometheus

@@ -280,7 +280,6 @@
   become: yes
 
 # ---------start to install grafana---------
-
 - name: create grafana configuration config/data directory if it doesn't exist
   file:
     path: "{{ item }}"

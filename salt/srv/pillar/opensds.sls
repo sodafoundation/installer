@@ -113,6 +113,9 @@ opensds:
       osdsdock:
         strategy: config-systemd
 
+  ############ OPENSDS TELEMETRY ###########
+  telemetry: {}
+
   ############ OPENSDS GELATO #############
   gelato:
     release: {{ site.gelato_release }}
@@ -340,6 +343,18 @@ firewalld:
           - 3306:3307             ## mysql
           - 8776                  ## cinder-api
           - 35357                 ## openstack
+          - 9090                  ## prometheus server
+          - 9091                  ## pushgateway
+          - 9093                  ## alertmanager
+          - 9094                  ## alertmanager clustering
+          - 9100                  ## node exporter
+          - 9128                  ## ceph exporter
+          - 9274                  ## Kubernetes PersistentVolumeDisk usage exporter
+          - 9283                  ## ceph ceph-mgr prometheus plugin
+          - 9287                  ## ceph iscsi gateway stats
+          - 9423                  ## HP RAID exporter
+          - 9437                  ## Dell EMC Isilon exporter
+          - 9438                  ## Dell EMC ECS exporter
 
   zones:
     public:
@@ -582,6 +597,56 @@ sysstat:
     archive:
       uri: https://dl.sysstat.com/oss/release
 
+grafana:
+  pkg:
+    use_upstream_archive: True
+    archive:
+      uri: https://dl.grafana.com/oss/release
+
+prometheus:
+  use_upstream_archive: True
+  wanted:
+    - prometheus
+    - alertmanager
+    - node_exporter
+  config:
+    prometheus:
+      scrape_configs:
+      - job_name: 'node_exporter'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['localhost:9100']
+      alerting:
+        alertmanagers:
+        - static_configs:
+          - targets: ['localhost:9093']
+
+    alertmanager:
+      global:
+        smtp_smarthost: 'localhost:25'
+        smtp_from: 'alertmanager@example.org'
+        smtp_auth_username: 'alertmanager'
+        smtp_auth_password: "multiline\nmysecret"
+        smtp_hello: "host.example.org"
+      route:
+        group_by: ['alertname', 'cluster', 'service']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 3h
+        receiver: team-X-mails
+        routes:
+          - match_re:
+              service: ^(foo1|foo2|baz)$
+              receiver: team-X-mails
+            routes:
+            - match:
+                severity: critical
+              receiver: team-X-mails
+      receivers:
+      - name: 'team-X-mails'
+        email_configs:
+        - to: 'team-X+alerts@example.org'
+
 packages:
   pips:
     wanted:
@@ -662,4 +727,3 @@ packages:
       - {{ site.sushi_path }}
       - {{ site.hotpot_path }}
       # /var/lib/mysql/
-

@@ -65,7 +65,7 @@ if [ -f "/usr/bin/zypper" ] || [ -f "/usr/sbin/pkg" ]; then
     # No major version pegged packages support for suse/freebsd
     SALT_VERSION=""
 else
-    SALT_VERSION='stable git 2018.3.4'
+    SALT_VERSION='stable 2019.2.0'
 fi
 
 usage()
@@ -79,7 +79,7 @@ usage()
     echo 1>&2
     echo "     opensds   Apply all OpenSDS states" 1>&2
     echo 1>&2
-    echo " infra|keystone|config|database|auth|hotpot|dashboard|backend|dock|sushi|gelato|freespace" 1>&2
+    echo " infra|keystone|config|database|auth|hotpot|dashboard|backend|dock|sushi|gelato|freespace|telemetry" 1>&2
     echo "               Apply specific OpenSDS state" 1>&2
     echo 1>&2
     echo "  See://github.com/saltstack-formulas/opensds-formula.git" 1>&2
@@ -347,6 +347,7 @@ EOF
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install infra
+            apply-salt-state-model install telemetry
             apply-salt-state-model install keystone
             show_logger /tmp/devstack/stack.sh.log
             apply-salt-state-model install config
@@ -362,7 +363,7 @@ EOF
             (( $? == 0 )) && opensds
             ;;
 
-    gelato|auth|hotpot|dashboard|database|dock|keystone|config|infra|backend|sushi|deepsea|freespace)
+    gelato|auth|hotpot|dashboard|database|dock|keystone|config|infra|backend|sushi|deepsea|freespace|telemetry)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model install ${INSTALL_TARGET}
@@ -374,7 +375,7 @@ EOF
 elif [[ -z "${INSTALL_TARGET}" ]]
 then
     case "${REMOVE_TARGET}" in
-    opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace)
+    opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry)
             get-salt-master-hostname
             salt-key -A --yes >/dev/null 2>&1
             apply-salt-state-model remove ${REMOVE_TARGET}

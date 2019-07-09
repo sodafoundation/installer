@@ -61,3 +61,6 @@ salt_formulas:
      - nginx-formula
      - mongodb-formula
      - apache-formula
+     - prometheus-formula
+     - grafana-formula
+     - sysstat-formula

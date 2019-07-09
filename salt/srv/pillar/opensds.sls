@@ -113,6 +113,9 @@ opensds:
       osdsdock:
         strategy: config-systemd
 
+  ############ OPENSDS TELEMETRY ###########
+  telemetry: {}
+
   ############ OPENSDS GELATO #############
   gelato:
     release: {{ site.gelato_release }}
@@ -254,11 +257,11 @@ lvm:
       'truncate  ':
         {{ site.hotpot_path }}/volumegroups/{{ site.dorado_poolname }}.img:
           options:
-            size: 1G
+            size: 10G
       'truncate   ':
         {{ site.hotpot_path }}/volumegroups/{{ site.fusionstorage_poolname }}.img:
           options:
-            size: 1G
+            size: 10GM
 
       ### setup backing devices
       losetup:
@@ -312,7 +315,7 @@ firewalld:
       ports:
         tcp:
           - 4369         ## epmd peer discovery
-          - 5671:5672    #a #AMQP clients
+          - 5671:5672    ## AMQP clients
           - 25672        ## internet-node/cli
           - 35672:35682  ## clitools
           - 15672        ## http-api, mngt-ui, rabbitmqadm
@@ -336,9 +339,23 @@ firewalld:
           - 11211                 ## memcached
           - 3260                  ## tgt
           - 5672                  ## docker-proxy
-          - 33060:33070           ## cinder
+          - 33060:33070           ## cinder ?
+          - 3306:3307             ## mysql
           - 8776                  ## cinder-api
           - 35357                 ## openstack
+          - 9090                  ## prometheus server
+          - 9091                  ## pushgateway
+          - 9093                  ## alertmanager
+          - 9094                  ## alertmanager clustering
+          - 9100                  ## node exporter
+          - 9128                  ## ceph exporter
+          - 9274                  ## Kubernetes PersistentVolumeDisk usage exporter
+          - 9283                  ## ceph ceph-mgr prometheus plugin
+          - 9287                  ## ceph iscsi gateway stats
+          - 9423                  ## HP RAID exporter
+          - 9437                  ## Dell EMC Isilon exporter
+          - 9438                  ## Dell EMC ECS exporter
+
   zones:
     public:
       short: Public
@@ -492,36 +509,35 @@ resolver:
     - attempts:5
 
 nginx:
-  ng:
-    servers:
-      managed:
-        default:
-              {%- if grains.os_family in ('RedHat', 'Debian',) %}
-          available_dir: /etc/nginx/sites-available
-          enabled_dir: /etc/nginx/sites-available
-              {%- endif %}
-          enabled: True
-          overwrite: True
-          config:
-            - server:
-              - root:
-                - /var/www/html
-              - server_name: '_'
-              - listen:
-                - '8088 default_server'
-              - listen:
-                - '[::]:8088 default_server'
-          {%- if grains.os_family == 'Debian' %}
-              - index: 'index.html index.htm index.nginx-debian.html'
-          {%- else %}
-              - index: 'index.html index.htm'
-          {%- endif %}
-              - location /{{ site.hotpot_release }}/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
-              - location /v3/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
-              - location /v1beta/:
-                - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
+  servers:
+    managed:
+      default:
+            {%- if grains.os_family in ('RedHat', 'Debian',) %}
+        available_dir: /etc/nginx/sites-available
+        enabled_dir: /etc/nginx/sites-available
+            {%- endif %}
+        enabled: True
+        overwrite: True
+        config:
+          - server:
+            - root:
+              - /var/www/html
+            - server_name: '_'
+            - listen:
+              - '8088 default_server'
+            - listen:
+              - '[::]:8088 default_server'
+        {%- if grains.os_family == 'Debian' %}
+            - index: 'index.html index.htm index.nginx-debian.html'
+        {%- else %}
+            - index: 'index.html index.htm'
+        {%- endif %}
+            - location /{{ site.hotpot_release }}/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}'
+            - location /v3/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/identity/v3/'
+            - location /v1beta/:
+              - proxy_pass: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}/{{ site.hotpot_release }}/'
 
 memcached:
   daemonize: True
@@ -574,6 +590,62 @@ etcd:
 
 ceph:
   use_upstream_repo: true
+
+sysstat:
+  pkg:
+    use_upstream_source: True
+    archive:
+      uri: https://dl.sysstat.com/oss/release
+
+grafana:
+  pkg:
+    use_upstream_archive: True
+    archive:
+      uri: https://dl.grafana.com/oss/release
+
+prometheus:
+  use_upstream_archive: True
+  wanted:
+    - prometheus
+    - alertmanager
+    - node_exporter
+  config:
+    prometheus:
+      scrape_configs:
+      - job_name: 'node_exporter'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['localhost:9100']
+      alerting:
+        alertmanagers:
+        - static_configs:
+          - targets: ['localhost:9093']
+
+    alertmanager:
+      global:
+        smtp_smarthost: 'localhost:25'
+        smtp_from: 'alertmanager@example.org'
+        smtp_auth_username: 'alertmanager'
+        smtp_auth_password: "multiline\nmysecret"
+        smtp_hello: "host.example.org"
+      route:
+        group_by: ['alertname', 'cluster', 'service']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 3h
+        receiver: team-X-mails
+        routes:
+          - match_re:
+              service: ^(foo1|foo2|baz)$
+              receiver: team-X-mails
+            routes:
+            - match:
+                severity: critical
+              receiver: team-X-mails
+      receivers:
+      - name: 'team-X-mails'
+        email_configs:
+        - to: 'team-X+alerts@example.org'
 
 packages:
   pips:
@@ -718,3 +790,6 @@ salt_formulas:
      - mongodb-formula
      - node-formula
      - apache-formula
+     - prometheus-formula
+     - grafana-formula
+     - sysstat-formula

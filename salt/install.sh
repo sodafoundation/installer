@@ -43,12 +43,30 @@ WORKDIR=$(pwd)
 LOGDIR=/tmp/opensds-installer-salt
 LOG=""
 BASE=/srv
-MODELS=$( pwd )/${BASE}
+BASE_ETC=/etc
+DIR=
+STATES=salt
+if [[ `uname` == 'FreeBSD' ]]
+then
+    BASE=/usr/local/etc
+    BASE_ETC=/usr/local/etc
+    DIR=salt
+    STATES=states
+fi
+MODELS=$( pwd )/srv
 REPO=https://github.com/saltstack-formulas
 FORK_REPO=https://example.com/your_forked_repo
 FORK_FORMULAS=""
 FORK_BRANCH="fixes"
-SALT_VERSION='git v2019.2.0'
+
+## salt bootstrap
+SALT_OPTS="-x python3"
+if [ -f "/usr/bin/zypper" ] || [ -f "/usr/sbin/pkg" ]; then
+    # No major version pegged packages support for suse/freebsd
+    SALT_VERSION=""
+else
+    SALT_VERSION='stable 2019.2.0'
+fi
 
 usage()
 {
@@ -72,10 +90,6 @@ usage()
     echo 1>&2
     echo "   [ -t debug ]    Debug output and valgrind in logs." 1>&2
     echo 1>&2
-    echo "   [ -m <name>]    Install; needed if /etc/salt/minion unparseable" 1>&2
-    echo 1>&2
-    echo "   [ -x python3 ]  Install the Python3 salt packages" 1>&2
-    echo 1>&2
     echo "   [ -v yyyy.m.n ] Install specific salt release; i.e. 2017.7.2" 1>&2
     echo 1>&2
     exit ${1}
@@ -94,52 +108,75 @@ salt-bootstrap()
        echo "Failed to install wget"
        exit 1
     fi
-    wget -O install_salt.sh https://bootstrap.saltstack.com || exit 10
-    (sh install_salt.sh ${1} && rm -f install_salt.sh) || exit 10
+    # hack for https://github.com/saltstack/salt-bootstrap/pull/1356
+    sh salt-bootstrap.sh ${1}
+    #wget -O install_salt.sh https://bootstrap.saltstack.com || exit 10
+    #(sh install_salt.sh ${1} && rm -f install_salt.sh) || exit 10
     return 0
-} 
+}
 
 ### Pull down formula
 clone_formula()
 {
     f="${1}"
-    rm -fr ${BASE}/formulas/${f}-formula 2>/dev/null
-    git clone ${REPO}/${f}-formula.git ${BASE}/formulas/${f}-formula >/dev/null 2>&1
+    rm -fr ${BASE}/${DIR}/formulas/${f}-formula 2>/dev/null
+    git clone ${REPO}/${f}-formula.git ${BASE}/${DIR}/formulas/${f}-formula >/dev/null 2>&1
     (( $? > 0 )) && exit 11
-    ln -s ${BASE}/formulas/${f}-formula/${f} ${BASE}/salt/${f} 2>/dev/null
-    [[ ! -z "${2}" ]] && cd $BASE/formulas/${f}-formula && git checkout ${2} && cd $OLDPWD
+    ln -s ${BASE}/${DIR}/formulas/${f}-formula/${f} ${BASE}/${DIR}/${STATES}/${f} 2>/dev/null
+    [[ ! -z "${2}" ]] && cd $BASE/${DIR}/formulas/${f}-formula && git checkout ${2} && cd $OLDPWD
 }
 
-### Get 'salt-master' hostname - either from /etc/salt/minion or user - else error!
+### Get 'salt-master' hostname - either from salt minion or user or 'hostname'
 get-salt-master-hostname()
 {
-    if [[ -f "/etc/salt/minion" ]]
+    if [[ -f "${BASE_ETC}/salt/minion" ]]
     then
-        MASTER=$( grep '^\s*master\s*:\s*' /etc/salt/minion | awk '{print $2}')
+        MASTER=$( grep '^\s*master\s*:\s*' ${BASE_ETC}/salt/minion | awk '{print $2}')
         [[ -z "${MASTER_HOST}" ]] && MASTER_HOST=${MASTER}
-        [[ -z "${MASTER_HOST}" ]] && usage 2
+        [[ -z "${MASTER_HOST}" ]] && MASTER_HOST=$( hostname )
     else
         MASTER_HOST=$( hostname )
     fi
+}
+
+### Enable and/or start a service
+enable-start-service()
+{
+    if [[ -x "/usr/sbin/systemctl" || -x "/usr/bin/systemctl" ]]
+    then
+        systemctl restart ${1}
+        systemctl enable ${1}
+    elif [[ -x "/usr/sbin/service" ]]; then
+        service ${1} restart
+    fi
+    return $?
 }
 
 ### Enable Salt Minion agent on this host
 salt-minion-service()
 {
     get-salt-master-hostname
-    sed -i "s@^\s*#*\s*master\s*:\s*salt\s*\$@master: ${MASTER_HOST}@g" /etc/salt/minion
-    systemctl restart salt-minion
-    systemctl enable salt-minion
-    return $?
+    if [[ "`uname`" == 'FreeBSD' ]]; then
+        sed -i '' "s@^\s*#*\s*master\s*: salt\s*\$@master: ${MASTER_HOST}@" ${BASE_ETC}/salt/minion
+    else
+        sed -i "s@^\s*#*\s*master\s*: salt\s*\$@master: ${MASTER_HOST}@" ${BASE_ETC}/salt/minion
+    fi
+    enable-start-service salt-minion
 }
 
 ### Enable Salt Master role; accept pending registrations
 salt-master-service()
 {
-    mkdir -p ${BASE}/salt ${BASE}/formulas ${BASE}/pillar 2>/dev/null
-    systemctl enable salt-master
-    systemctl restart salt-master
+    mkdir -p ${BASE}/${DIR}/${STATES} ${BASE}/${DIR}/formulas ${BASE}/${DIR}/pillar 2>/dev/null
+    enable-start-service salt-master
     salt-key -A --yes >/dev/null 2>&1
+    return $?
+}
+
+### Enable Salt Api
+salt-api-service()
+{
+    enable-start-service salt-api
     return $?
 }
 
@@ -152,8 +189,8 @@ setup_logger()
     mkdir -p ${LOGDIR} 2>/dev/null
     LOG=${LOGDIR}/log.$( date '+%Y%m%d%H%M' )
     salt-call --versions >>${LOG} 2>&1
-    cat ${BASE}/pillar/site.j2 >>${LOG} 2>&1
-    cat ${BASE}/pillar/${2}.sls >>${LOG} 2>&1
+    cat ${BASE}/${DIR}/pillar/site.j2 >>${LOG} 2>&1
+    cat ${BASE}/${DIR}/pillar/${2}.sls >>${LOG} 2>&1
 }
 
 show_logger()
@@ -170,15 +207,15 @@ show_logger()
 ### Prepare salt deployment model for salt middleware and formulas
 apply-salt-state-model()
 {
-    if [[ ! -d "${BASE}/salt" ]]
+    if [[ ! -d "${BASE}/${DIR}/${STATES}" ]]
     then
        echo "error"
        exit 32
     fi
-    cp ${MODELS}/salt/${1}/${2}.sls ${BASE}/salt/top.sls 2>/dev/null
-    cp ${BASE}/pillar/site.j2 ${BASE}/pillar/site.bak 2>/dev/null
-    cp ${MODELS}/pillar/* ${BASE}/pillar/
-    ln -s ${BASE}/pillar/opensds.sls ${BASE}/pillar/${2}.sls 2>/dev/null
+    cp ${MODELS}/salt/${1}/${2}.sls ${BASE}/${DIR}/${STATES}/top.sls 2>/dev/null
+    cp ${BASE}/pillar/site.j2 ${BASE}/${DIR}/pillar/site.bak 2>/dev/null
+    cp ${MODELS}/pillar/* ${BASE}/${DIR}/pillar/
+    ln -s ${BASE}/pillar/opensds.sls ${BASE}/${DIR}/pillar/${2}.sls 2>/dev/null
     [[ "${2}" == 'salt' ]] && clone_formula salt
 
     echo "run salt: this takes a while, please be patient ..."
@@ -203,7 +240,7 @@ apply-salt-state-model()
 deepsea()
 {
     salt-call --local grains.append deepsea default ${MASTER_HOST}
-    cp ${MODELS}/salt/deepsea_post.sls ${BASE}/salt/top.sls
+    cp ${MODELS}/salt/deepsea_post.sls ${BASE}/${DIR}/${STATES}/top.sls
     return 0
 }
 
@@ -232,11 +269,11 @@ use_branch_instead()
   for f in $(echo -n ${1})
   do
     echo "using [${f}] ${2} branch"
-    [[ -d "${BASE}/formulas/${f}-formula" ]] && rm -fr ${BASE}/formulas/${f}* 2>/dev/null
-    git clone ${FORK_REPO}/${f}-formula.git ${BASE}/formulas/${f}-formula >/dev/null 2>&1
+    [[ -d "${BASE}/formulas/${f}-formula" ]] && rm -fr ${BASE}/${DIR}/formulas/${f}* 2>/dev/null
+    git clone ${FORK_REPO}/${f}-formula.git ${BASE}/${DIR}/formulas/${f}-formula >/dev/null 2>&1
     if (( $? == 0 ))
     then
-        cd ${BASE}/formulas/${f}-formula/
+        cd ${BASE}/${DIR}/formulas/${f}-formula/
         git checkout ${2} >/dev/null 2>&1
         (( $? > 0 )) && echo "Failed to checkout ${f} ${2} branch" && return 1
     fi
@@ -247,7 +284,7 @@ use_branch_instead()
 
 #*** MAIN
 
-while getopts ":i:m:l:t:x:r:v:" option; do
+while getopts ":i:l:t:r:v:" option; do
     case "${option}" in
     m)  MASTER_HOST=${OPTARG} ;;
     i)  INSTALL_TARGET=${OPTARG}
@@ -258,15 +295,11 @@ while getopts ":i:m:l:t:x:r:v:" option; do
         ;;
     l)  DEBUGG_ON="-ldebug" ;;
     t)  DEBUGG_ON="-tdebug" ;;
-    x)  SALT_OPTS="-x python3" ;;
     v)  SALT_VERSION="git v${OPTARG}" ;;
     esac
 done
 shift $((OPTIND-1))
 KERNEL_RELEASE=$( uname -r | awk -F. '{print $1"."$2"."$3"."$4"."$5}' )
-
-#trying workaround for https://github.com/saltstack/salt/issues/44062 noise
-${WORKDIR}/${PACKAGE_MGR} -r python2-botocore >/dev/null 2>&1
 
 if [[ -z "${REMOVE_TARGET}" ]]
 then
@@ -276,10 +309,25 @@ then
             if [[ -z "${SALT_VERSION}" ]]
             then
                 salt-bootstrap "${SALT_OPTS}"
-                ${WORKDIR}/${PACKAGE_MGR} -i salt-api
             else
                 salt-bootstrap "${SALT_OPTS} -M ${SALT_VERSION}"
             fi
+
+            ### workaround https://github.com/saltstack/salt-bootstrap/issues/1355
+            if [ -f "/usr/bin/apt-get" ]; then
+                ### prevent dpkg from starting daemons: https://wiki.debian.org/chroot
+                cat > /usr/sbin/policy-rc.d <<EOF
+#!/bin/sh
+exit 101
+EOF
+                chmod a+x /usr/sbin/policy-rc.d
+                ### Enforce python3
+                rm /usr/bin/python 2>/dev/null; ln -s /usr/bin/python3 /usr/bin/python
+            fi
+
+            ### salt services
+            ${WORKDIR}/${PACKAGE_MGR} -i salt-api
+            salt-api-service
             salt-master-service
             salt-minion-service
             apply-salt-state-model install salt

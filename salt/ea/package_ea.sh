@@ -64,7 +64,7 @@ while getopts ":i:u:r:q:" action; do
                      /usr/bin/yum install -y ${PACKAGES} || exit 1 
                  elif [[ -f "/usr/bin/apt-get" ]]; then
                      /usr/bin/apt-get update -y || exit 1
-                     /usr/bin/apt-get install -y python-msgpack ${PACKAGES} || exit 1
+                     /usr/bin/apt-get install -y ${PACKAGES} || exit 1
                  fi
                  ;;
         esac

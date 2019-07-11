@@ -51,6 +51,7 @@
   tasks:
     - import_role:
         name: common
+      when: common_role_done is not defined
     - import_role:
         name: osdsdb
     - import_role:
@@ -71,6 +72,7 @@
   tasks:
     - import_role:
         name: common
+      when: common_role_done is not defined
     - import_role:
         name: osdsdock
       when:
@@ -89,6 +91,7 @@
   tasks:
     - import_role:
         name: common
+      when: common_role_done is not defined
     - import_role:
         name: gelato-installer
       when:
@@ -107,6 +110,7 @@
   tasks:
     - import_role:
         name: common
+      when: common_role_done is not defined
     - import_role:
         name: sushi-installer
       when:

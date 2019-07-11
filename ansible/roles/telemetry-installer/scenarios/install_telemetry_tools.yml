@@ -303,14 +303,19 @@
     line: "  url: {{ prometheus_url }}"
     backrefs: yes
 
-- name: start grafana
-  shell: docker-compose -f grafana.yml up -d 
-  args:
-    chdir: "./telemetry/grafana"
-    
-- name: wait for grafana to start normally
-  wait_for:
-    host: 127.0.0.1
-    port: 3000
-    delay: 10
-    timeout: 120
+- name: install grafana
+  shell: "{{ item }}"
+  with_items:
+    - curl {{ grafana_gpg_key }} | apt-key add -
+    - add-apt-repository "{{ grafana_repositroy }}"
+    - apt-get update
+    - apt install -y grafana
+    - systemctl start grafana-server
+  become: yes
+
+- name: check status of grafana service
+  shell: "{{ item }}"
+  with_items:
+    - systemctl status grafana-server
+  become: yes
+

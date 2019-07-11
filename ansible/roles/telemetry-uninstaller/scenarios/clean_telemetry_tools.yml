@@ -15,9 +15,13 @@
 ---
 # ---------start to clean grafana---------
 - name: clean grafana
-  shell: docker-compose -f grafana.yml down
-  args:
-    chdir: "./telemetry/grafana"
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop grafana-server
+    - apt purge -y grafana
+    - add-apt-repository -r "{{ grafana_repositroy }}"
+  ignore_errors: yes
+  become: yes
 
 # ---------start to clean alertmanager---------
 - name: clean alertmanager

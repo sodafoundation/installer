@@ -79,7 +79,7 @@ Check if the pool resource is available
 
 Then create a default profile:
 ```
- osdsctl profile create '{"name": "default", "description": "default policy"}'
+ osdsctl profile create '{"name": "default", "description": "default policy", "storageType": "block"}'
 ```
 
 Create a volume:

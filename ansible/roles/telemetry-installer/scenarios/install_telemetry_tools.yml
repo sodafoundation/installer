@@ -13,13 +13,21 @@
 # limitations under the License.
 
 ---
+# ----Stop all services to all ansible re-run in case of failure-----
+- name: stop all services
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop prometheus node_exporter alertmanager pushgateway sysstat lvm_exporter
+  become: yes
+  ignore_errors: yes
+
 # ---------start to install prometheus---------
 - name: add users and give permissions for prometheus
   shell: "{{ item }}"
   with_items:
-    - useradd --no-create-home --shell /bin/false prometheus
-    - mkdir /etc/prometheus
-    - mkdir /var/lib/prometheus
+    - id -u prometheus || useradd --no-create-home --shell /bin/false prometheus
+    - mkdir -p /etc/prometheus
+    - mkdir -p /var/lib/prometheus
     - chown prometheus:prometheus /etc/prometheus
     - chown prometheus:prometheus /var/lib/prometheus
   become: yes
@@ -68,7 +76,7 @@
     - curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
     - tar xvf node_exporter-0.17.0.linux-amd64.tar.gz
     - cp node_exporter-0.17.0.linux-amd64/node_exporter /usr/local/bin/
-    - useradd --no-create-home --shell /bin/false node_exporter
+    - id -u node_exporter || useradd --no-create-home --shell /bin/false node_exporter
     - chown node_exporter:node_exporter /usr/local/bin/node_exporter
     - rm -rf node_exporter-0.17.0.linux-amd64.tar.gz node_exporter-0.17.0.linux-amd64
   become: yes
@@ -117,7 +125,7 @@
     - curl -LO https://github.com/prometheus/pushgateway/releases/download/v0.8.0/pushgateway-0.8.0.linux-amd64.tar.gz
     - tar xvf pushgateway-0.8.0.linux-amd64.tar.gz
     - cp pushgateway-0.8.0.linux-amd64/pushgateway /usr/local/bin/
-    - useradd --no-create-home --shell /bin/false pushgateway
+    - id -u pushgateway || useradd --no-create-home --shell /bin/false pushgateway
     - chown pushgateway:pushgateway /usr/local/bin/pushgateway
     - rm -rf pushgateway-0.8.0.linux-amd64.tar.gz pushgateway-0.8.0.linux-amd64
   become: yes
@@ -231,7 +239,7 @@
     - mkdir -p /etc/alertmanager
     - cp alertmanager-0.16.2.linux-amd64/alertmanager.yml /etc/alertmanager
     - mkdir -p /var/lib/alertmanager
-    - useradd --no-create-home --shell /bin/false alertmanager
+    - id -u alertmanager || useradd --no-create-home --shell /bin/false alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager
     - chown alertmanager:alertmanager /usr/local/bin/alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager/alertmanager.yml
@@ -272,6 +280,29 @@
   become: yes
 
 # ---------start to install grafana---------
+- name: create grafana configuration config/data directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ grafana_conf_home }}"
+    - "{{ grafana_data_home }}"
+
+- name: copy configuration for grafana
+  shell: "{{ item }}"
+  with_items:
+    - "cp -f ./telemetry/grafana/grafana.ini {{ grafana_conf_home }}"
+    - "cp -rf ./../contrib/grafana/dashboards {{ grafana_data_home }}"
+    - "cp -rf ./telemetry/grafana/provisioning {{ grafana_data_home }}"
+
+- name: Setting prometheus url in grafana datasource
+  lineinfile:
+    dest: "{{ grafana_data_home }}/provisioning/datasources/prom_osds.yml"
+    regexp: '^(.*)  url: (.*)$'
+    line: "  url: {{ prometheus_url }}"
+    backrefs: yes
+
 - name: install grafana
   shell: "{{ item }}"
   with_items:
@@ -281,9 +312,10 @@
     - apt install -y grafana
     - systemctl start grafana-server
   become: yes
-  
+
 - name: check status of grafana service
   shell: "{{ item }}"
   with_items:
     - systemctl status grafana-server
   become: yes
+

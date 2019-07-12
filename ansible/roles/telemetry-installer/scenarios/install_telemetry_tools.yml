@@ -293,7 +293,7 @@
   shell: "{{ item }}"
   with_items:
     - "cp -f ./telemetry/grafana/grafana.ini {{ grafana_conf_home }}"
-    - "cp -rf ./telemetry/grafana/dashboards {{ grafana_data_home }}"
+    - "cp -rf ./../contrib/grafana/dashboards {{ grafana_data_home }}"
     - "cp -rf ./telemetry/grafana/provisioning {{ grafana_data_home }}"
 
 - name: Setting prometheus url in grafana datasource

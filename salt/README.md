@@ -28,7 +28,7 @@ Deploy OpenSDS using the steps below. The expected installer duration is 20-55 m
 
 Install Salt on UBUNTU/CENTOS/OpenSUSE_15
 ```
- ./install.sh -i salt
+ ./installer.sh -i salt
 ```
 Reboot if kernel got upgraded. If in doubt, reboot anyway.
 ```
@@ -49,7 +49,7 @@ Review site deployment data to double check ipv4 adddres. Set "auth_strategy: no
 
 Deploy OpenSDS on UBUNTU/CENTOS/OpenSUSE_15
 ```
-./install.sh -i opensds
+./installer.sh -i opensds
 ```
 
 How to test opensds cluster
@@ -108,6 +108,6 @@ Now logout from dashboard (as admin) and login the dashboard again as a non-admi
 How to purge and clean opensds cluster
 ========================================
 ```
- sudo /root/opensds-installer/salt/install.sh -r opensds
- sudo /root/opensds-installer/salt/install.sh -r devstack # optional
+ sudo /root/opensds-installer/salt/installer.sh -r opensds
+ sudo /root/opensds-installer/salt/installer.sh -r devstack # optional
 ```

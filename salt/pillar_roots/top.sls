@@ -2,3 +2,4 @@ base:
   '*':
     - salt
     - opensds
+    - deepsea

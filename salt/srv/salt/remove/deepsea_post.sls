@@ -1,3 +1,0 @@
-base:
-  '*':
-    - ceph.remove

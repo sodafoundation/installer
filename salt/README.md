@@ -1,10 +1,10 @@
 # Deploying OpenSDS with Salt
 
-Deploy OpenSDS (www.opensds.io) using Salt. This is an experimental solution using repeatable patterns of jinja/yaml to deploy cloud-native stack using infrastructure as code. Please use Salt 2018.3.4 or earlier while potential impacts from the <a href="https://docs.saltstack.com/en/develop/topics/releases/2019.2.0.html#non-backward-compatible-change-to-yaml-renderer">NON-BACKWARD-COMPATIBLE-CHANGE-TO-YAML-RENDERER</a> are reviewed by the <a href="https://github.com/saltstack-formulas">saltstack-formulas community</a>.
+Deploy OpenSDS (www.opensds.io) using Salt. This is an experimental solution using repeatable patterns of jinja/yaml to deploy cloud-native stack using infrastructure as code.
 
 Software versions
 =================
-Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15 with Salt version 2018.3.
+Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15 with Salt 2018.3 and 2019.2 releases.
 
 Solution View
 =============
@@ -28,11 +28,17 @@ Deploy OpenSDS using the steps below. The expected installer duration is 20-55 m
 
 Install Salt on UBUNTU/CENTOS/OpenSUSE_15
 ```
- ./install.sh -i salt
+ ./installer.sh -i salt
 ```
 Reboot if kernel got upgraded. If in doubt, reboot anyway.
 ```
 init 6
+```
+
+Change to root-user and navigate to installer directory.
+```
+ sudo -s
+ cd /root/opensds-installer/salt/
 ```
 
 Review site deployment data to double check ipv4 adddres. Set "auth_strategy: noauth" if not using keystone.
@@ -43,8 +49,7 @@ Review site deployment data to double check ipv4 adddres. Set "auth_strategy: no
 
 Deploy OpenSDS on UBUNTU/CENTOS/OpenSUSE_15
 ```
-sudo -s
-cd /root/opensds-installer/salt/; ./install.sh -i opensds
+./installer.sh -i opensds
 ```
 
 How to test opensds cluster
@@ -74,7 +79,7 @@ Check if the pool resource is available
 
 Then create a default profile:
 ```
- osdsctl profile create '{"name": "default", "description": "default policy"}'
+ osdsctl profile create '{"name": "default", "description": "default policy", "storageType": "block"}'
 ```
 
 Create a volume:
@@ -103,6 +108,6 @@ Now logout from dashboard (as admin) and login the dashboard again as a non-admi
 How to purge and clean opensds cluster
 ========================================
 ```
- sudo /root/opensds-installer/salt/install.sh -r opensds
- sudo /root/opensds-installer/salt/install.sh -r devstack # optional
+ sudo /root/opensds-installer/salt/installer.sh -r opensds
+ sudo /root/opensds-installer/salt/installer.sh -r devstack # optional
 ```

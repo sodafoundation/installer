@@ -35,9 +35,9 @@ salt_formulas:
     default:
       baseurl: https://github.com/saltstack-formulas
          {%- if grains['kernel'] in ['FreeBSD', 'OpenBSD', 'NetBSD'] %}
-      basedir: /usr/local/etc/salt/formulas
+      basedir: /usr/local/etc/salt/states/community/saltstack-formulas
          {%- else %}
-      basedir: /srv/formulas
+      basedir: /srv/salt/community/saltstack-formulas
          {%- endif %}
   basedir_opts:
     makedirs: True

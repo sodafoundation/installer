@@ -67,6 +67,8 @@ pkg-query() {
          /usr/bin/rpm -qa | grep ${PACKAGE}
     elif [[ -f "/usr/bin/apt-get" ]]; then
          /usr/bin/dpkg-query --list | grep ${PACKAGE}
+    elif [ -f "/usr/bin/pacman" ]; then
+         /usr/bin/pacman -Qi ${PACKAGE}
     fi
 }
 
@@ -94,7 +96,7 @@ pkg-install() {
              elif [ -f "/usr/bin/emerge" ]; then
                  /usr/bin/emerge --oneshot ${PACKAGES} || exit 1
              elif [ -f "/usr/bin/pacman" ]; then
-                 /usr/bin/pacman-mirrors -g
+                 [ -x '/usr/bin/pacman-mirrors' ] && /usr/bin/pacman-mirrors -g
                  /usr/bin/pacman -Syyu --noconfirm
                  /usr/bin/pacman -S --noconfirm ${PACKAGES} || exit 1
              elif [ -f "/usr/bin/dnf" ]; then
@@ -253,9 +255,6 @@ salt-bootstrap() {
                 echo "Failed to install packages"
                 exit 1
              fi
-             rm -f install_salt.sh 2>/dev/null
-             wget -O install_salt.sh https://bootstrap.saltstack.com || exit 1
-
              wget -O install_salt.sh https://bootstrap.saltstack.com || exit 10
              (sh install_salt.sh -x python3 ${SALT_VERSION} && rm -f install_salt.sh) || exit 10
              rm -f install_salt.sh 2>/dev/null
@@ -270,6 +269,8 @@ EOF
         ### Enforce python3
         rm /usr/bin/python 2>/dev/null; ln -s /usr/bin/python3 /usr/bin/python
     fi
+    ### install salt-api (except arch)
+    [ -f "/etc/arch-release" ] || pkg-install salt-api
 
     ### salt services
     if [[ "`uname`" == "FreeBSD" ]] || [[ "`uname`" == "Darwin" ]]; then
@@ -277,15 +278,14 @@ EOF
     else
         sed -i "s@^\s*#*\s*master\s*: salt\s*\$@master: ${MASTER_HOST}@" ${BASE_ETC}/salt/minion
     fi
-    pkg-install salt-api
     (systemctl enable salt-api && systemctl start salt-api) 2>/dev/null || service start salt-api 2>/dev/null
     (systemctl enable salt-master && systemctl start salt-master) 2>/dev/null || service start salt-master 2>/dev/null
     (systemctl enable salt-minion && systemctl start salt-minion) 2>/dev/null || service start salt-minion 2>/dev/null
     salt-key -A --yes >/dev/null 2>&1     ##accept pending registrations
     echo && KERNEL_VERSION=$( uname -r | awk -F. '{print $1"."$2"."$3"."$4"."$5}' )
     echo "kernel before: ${KERNEL_VERSION}"
-    echo "kernel after: $( pkg-query 'linux-generic' 2>/dev/null | awk '{print $3}' )"
-    echo "Reboot if kernel was major-upgraded!"
+    echo "kernel after: $( pkg-query linux 2>/dev/null )"
+    echo "Reboot if kernel was major-upgraded; if unsure reboot!"
     echo
 }
 
@@ -331,7 +331,7 @@ highstate() {
     was-salt-done || usage
     ACTION=${1} && NAME=${2} && FILE_ROOTS_SOURCE=${3}
     salt-key -A --yes >/dev/null 2>&1
-    salt-key -L
+    [ -n "${DEBUGG_ON}" ] && salt-key -L
 
     if [ -n "${USERNAME}" ]; then    #find/replace username placeholders in pillar data
         case "$OSTYPE" in
@@ -470,7 +470,8 @@ business-logic()
               [[ -d /etc/${PROJECT} ]] && cp ${STATES_DIR_SYMLINK}/../../../conf/policy.json /etc/opensds/
               ;;
 
-    *)        echo "${STATES}" | grep "${INSTALL_TARGET}" >/dev/null 2>&1
+    *)        ## INDIVIDUAL STATES
+              echo "${STATES}" | grep "${INSTALL_TARGET}" >/dev/null 2>&1
               if (( $? == 0 )) || [ -f ${STATES_DIR_SYMLINK}/install/${INSTALL_TARGET}.sls ]; then
                   clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}
                   highstate install ${INSTALL_TARGET} ${STATES_DIR_SYMLINK}
@@ -481,9 +482,9 @@ business-logic()
                      salt-call --local grains.append deepsea default ${MASTER_HOST}
                      cp ${STATES_DIR_SYMLINK}/deepsea_post.sls ${SALTFS}/${STATES}/top.sls
                   fi
-              else
-                  echo "Not implemented" && usage 1
+                  return 0
               fi
+              echo "Not implemented" && usage 1
     esac
 
     # remove option
@@ -491,9 +492,9 @@ business-logic()
         echo "${STATES}" | grep "${REMOVE_TARGET}" >/dev/null 2>&1
         if (( $? == 0 )) && [ -f ${STATES_DIR_SYMLINK}/remove/${INSTALL_TARGET}.sls ]; then
            highstate remove ${INSTALL_TARGET} ${STATES_DIR_SYMLINK}
-        else
-           echo "Not implemented" && usage 1
+           return $?
         fi
+        echo "Not implemented" && usage 1
     fi
 }
 

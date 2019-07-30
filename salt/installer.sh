@@ -449,6 +449,14 @@ business-logic()
               ln -s ${SALTFS}/${STATES_DIR}/${NAME}/installer.sh /usr/local/bin/salter.sh 2>/dev/null
               ;;
 
+    menu)     ## YOUR MENU
+              pip install --pre wrapper barcodenumber npyscreen || exit 1
+              (was-salt-done && ${BASE}/${DIR}/lib/menu.py ${STATES_DIR_SYMLINK}) || exit 2
+              cp ${STATES_DIR_SYMLINK}/${INSTALL_TARGET}.sls  ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null
+              clone-saltstack-formulas
+              highstate install menu ${STATES_DIR_SYMLINK}
+              ;;
+
     opensds)  ## YOUR PROJECT
               clone-project ${PROJECT} ${SUBPROJECT} ${NAME} ${SUBDIR} ${URI}   ## clone our Project (in case)
               clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}
@@ -470,7 +478,7 @@ business-logic()
               [[ -d /etc/${PROJECT} ]] && cp ${STATES_DIR_SYMLINK}/../../../conf/policy.json /etc/opensds/
               ;;
 
-    *)        ## INDIVIDUAL STATES
+    *)        ## YOUR PROFILES
               echo "${STATES}" | grep "${INSTALL_TARGET}" >/dev/null 2>&1
               if (( $? == 0 )) || [ -f ${STATES_DIR_SYMLINK}/install/${INSTALL_TARGET}.sls ]; then
                   clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}

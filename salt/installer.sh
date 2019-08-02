@@ -19,10 +19,10 @@
 #
 #--- Developer settings ---
 #
-# FORK_URI=https://github.com
-# FORK_PROJECT=noelmcloughlin
-# FORK_BRANCH="fixes"
-# FORK_SUBPROJECTS="opensds-installer salt-formula salt-desktop"
+ FORK_URI=https://github.com
+ FORK_PROJECT=noelmcloughlin
+ FORK_BRANCH="fixes"
+ FORK_SUBPROJECTS="opensds-installer salt-formula salt-desktop docker-formula samba-formula packages-formula"
 #
 #-----------------------------------------------------------------------
 trap exit SIGINT SIGTERM
@@ -41,6 +41,7 @@ else
     STATES_DIR=''      #file_roots is /srv/salt
 fi
 SALTFS=${BASE:-/srv}/${DIR:-salt}
+PILLARFS=${BASE:-/srv}/pillar
 WORKDIR=$(pwd)
 
 #-----------------------------------------
@@ -182,7 +183,8 @@ salt-bootstrap() {
         # No major version pegged packages support for suse/freebsd
         SALT_VERSION=''
     fi
-    rm -fr ${BASE}/pillar/* 2>/dev/null
+    rm -fr ${PILLARFS}/* 2>/dev/null
+    export PWD=$( pwd )
 
     case "$OSTYPE" in
     darwin*) OSHOME=/Users
@@ -197,10 +199,10 @@ salt-bootstrap() {
              su - ${USER} -c 'hash -r python'
 
              ### Secure install pip https://pip.pypa.io/en/stable/installing/
-             su - ${USER} -c 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
-             sudo python get-pip.py 2>/dev/null
+             su - ${USER} -c 'curl https://bootstrap.pypa.io/get-pip.py -o ${PWD}/get-pip.py'
+             sudo python ${PWD}/get-pip.py 2>/dev/null
 
-             which brew|su - ${USER} -c '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+             [ -x /usr/local/bin/brew ] | su - ${USER} -c '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
              su - ${USER} -c '/usr/local/bin/pip install --upgrade wrapper barcodenumber npyscreen'
              [[ ! -x /usr/local/bin/brew ]] && echo "Install homebrew (https://docs.brew.sh/Installation.html)" && exit 1
 
@@ -227,11 +229,11 @@ salt-bootstrap() {
              pkg-update 2>/dev/null
              echo "Setup Linux baseline and install saltstack masterless minion ..."
              if [ -f "/usr/bin/dnf" ]; then
-                 ADD="--best --allowerasing git wget redhat-rpm-config"
+                 PACKAGES="--best --allowerasing git wget redhat-rpm-config"
              elif [ -f "/usr/bin/yum" ]; then
-                 ADD="epel-release git wget redhat-rpm-config"
+                 PACKAGES="epel-release git wget redhat-rpm-config"
              elif [ -f "/usr/bin/zypper" ]; then
-                 ADD="git wget"
+                 PACKAGES="git wget"
              elif [ -f "/usr/bin/apt-get" ]; then
                  PACKAGES="git ssh wget curl software-properties-common"
              elif [ -f "/usr/bin/pacman" ]; then
@@ -280,8 +282,8 @@ setup-log() {
     LOGDIR=${1} && LOG=${2}
     mkdir -p ${LOGDIR} 2>/dev/null
     salt-call --versions >>${LOG} 2>&1
-    [ -f "${BASE}/pillar.site.j2" ] && cat ${BASE}/pillar/site.j2 >>${LOG} 2>&1
-    cat ${BASE}/pillar/*.sls >>${LOG} 2>&1
+    [ -f "${PILLARFS}.site.j2" ] && cat ${PILLARFS}/site.j2 >>${LOG} 2>&1
+    cat ${PILLARFS}/*.sls >>${LOG} 2>&1
     echo >> ${LOG}
     salt-call pillar.items --local >> ${LOG} 2>&1
     echo >>${LOG} 2>&1
@@ -308,38 +310,41 @@ clone-project() {
     echo && ln -s ${SALTFS}/${STATES_DIR}/community/${PROJ}/${SUBPROJ}/${CHILD} ${SALTFS}/${STATES_DIR}/${ALIAS} 2>/dev/null
 }
 
-pillar_roots() {
-    PILLAR_ROOTS_SOURCE=${1} && mkdir -p ${BASE}/pillar/ 2>/dev/null
-    cp -Rp ${PILLAR_ROOTS_SOURCE}/* ${BASE}/pillar/ 2>/dev/null
+copy-pillars() {
+    PILLAR_ROOTS_SOURCE=${1} && mkdir -p ${PILLARFS}/ 2>/dev/null
+    cp -Rp ${PILLAR_ROOTS_SOURCE}/* ${PILLARFS}/ 2>/dev/null
 }
-
 
 highstate() {
     was-salt-done || usage
-    ACTION=${1} && NAME=${2} && FILE_ROOTS_SOURCE=${3}
-    salt-key -A --yes >/dev/null 2>&1
-    [ -n "${DEBUGG_ON}" ] && salt-key -L
+    copy-pillars ${PROJECT_HOME}/pillar_roots
+    copy-pillars ${YOUR}/pillar_roots
+    salt-key -A --yes >/dev/null 2>&1 && [ -n "${DEBUGG_ON}" ] && salt-key -L
 
+    ACTION=${1} && NAME=${2} && FILE_ROOTS_SOURCE=${3} && FILE_ROOTS_YOUR_SOURCE=${4} && ALIAS=${4}
     if [ -n "${USERNAME}" ]; then    #find/replace username placeholders in pillar data
         case "$OSTYPE" in
-        darwin*) grep -rl 'domainadm' ${BASE}/pillar | xargs sed -i '' "s/domainadm/undefined_user/g" 2>/dev/null
-                 grep -rl 'undefined_user' ${BASE}/pillar | xargs sed -i '' "s/undefined_user/${USERNAME}/g" 2>/dev/null
+        darwin*) grep -rl 'domainadm' ${PILLARFS}/${PROJECT} | xargs sed -i '' "s/domainadm/undefined_user/g" 2>/dev/null
+                 grep -rl 'undefined_user' ${PILLARFS}/${PROJECT} | xargs sed -i '' "s/undefined_user/${USERNAME}/g" 2>/dev/null
                  ;;
-        linux*)  grep -rl 'domainadm' ${BASE}/pillar | xargs sed -i "s/domainadm/undefined_user/g" 2>/dev/null
-                 grep -rl 'undefined_user' ${BASE}/pillar | xargs sed -i "s/undefined_user/${USERNAME}/g" 2>/dev/null
+        linux*)  grep -rl 'domainadm' ${PILLARFS} | xargs sed -i "s/domainadm/undefined_user/g" 2>/dev/null
+                 grep -rl 'undefined_user' ${PILLARFS} | xargs sed -i "s/undefined_user/${USERNAME}/g" 2>/dev/null
         esac
     fi
-
-    cp ${FILE_ROOTS_SOURCE}/${NAME}.sls ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null
+    ## prepare/run salt highstate
+    set -xv
+    cp ${FILE_ROOTS_SOURCE}/init.sls ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null           #project metastate
+    cp ${FILE_ROOTS_YOUR_SOURCE}/${NAME}.sls ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null   #your metastate (optional)
+    [ -z "${DEBUGG_ON}" ] && set +xv
     LOGDIR=/tmp/${ACTION}-${PROJECT}-${SUBPROJECT}-${NAME}
     LOG=${LOGDIR}/log.$( date '+%Y%m%d%H%M' )
     setup-log ${LOGDIR} ${LOG}
     salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
     [ -f "${LOG}" ] && (tail -6 ${LOG} | head -4) 2>/dev/null && echo "See full log in [ ${LOG} ]"
     echo
-    echo "///////////////////////////////////////////////////////////////////////////"
-    echo "      congrats:  ${NAME} for ${COMMUNITYNAME} is now installed"
-    echo "///////////////////////////////////////////////////////////////////////////"
+    echo "///////////////////////////////////////////////////////////////////////"
+    echo "          ${NAME} for ${COMMUNITYNAME} has completed"
+    echo "//////////////////////////////////////////////////////////////////////"
     echo
 }
 
@@ -422,61 +427,35 @@ was-salt-done() {
 
 business-logic() {
     get-salt-master-hostname
-    STATES_DIR_SYMLINK=${SALTFS}/${STATES_DIR}/${NAME}/file_roots/install
-    cp ${STATES_DIR_SYMLINK}/${INSTALL_TARGET}.sls ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null
 
     ## install option
     case "${INSTALL_TARGET}" in
     salt)       ## SALT
-                salt-bootstrap                                                    ## bootstrap salt software
-                clone-project saltstack-formulas salt-formula salt salt ${URI}    ## clone salt formula
-                clone-project ${PROJECT} ${SUBPROJECT} ${NAME} ${SUBDIR} ${URI}   ## clone our Project
-                pillar_roots ${SALTFS}/${STATES_DIR}/${NAME}/pillar_roots         ## copy pillar data
-                highstate install salt ${STATES_DIR_SYMLINK}                      ## apply salt metastate
+                salt-bootstrap                                                                         ## bootstrap salt software
+                clone-project saltstack-formulas salt-formula salt salt ${URI}                         ## clone salt formula
+                clone-project ${PROJECT} ${SUBPROJECT} ${NAME} ${SUBDIR} ${URI}                        ## clone our Project
+                highstate install salt ${PROJECT_HOME}/file_roots/install ${YOUR}/file_roots/install   ## apply salt metastate
                 rm /usr/local/bin/salter.sh 2>/dev/null
-                ln -s ${SALTFS}/${STATES_DIR}/${NAME}/installer.sh /usr/local/bin/salter.sh 2>/dev/null
+                ln -s ${PROJECT_HOME}/installer.sh /usr/local/bin/salter.sh 2>/dev/null
                 ;;
 
     menu)       ## MENU
                 pip install --pre wrapper barcodenumber npyscreen || exit 1
-                (was-salt-done && ${BASE}/${DIR}/lib/menu.py ${STATES_DIR_SYMLINK}) || exit 2
-                cp ${STATES_DIR_SYMLINK}/${INSTALL_TARGET}.sls  ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null
-                clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}
-                highstate install ${INSTALL_TARGET} ${STATES_DIR_SYMLINK}
+                (was-salt-done && ${BASE}/${DIR}/contrib/menu.py ${PROJECT_HOME}/file_roots/install) || exit 2
+                cp ${PROJECT_HOME}/file_roots/install/${INSTALL_TARGET}.sls  ${SALTFS}/${STATES_DIR}/top.sls 2>/dev/null
+                clone-saltstack-formulas ${PROJECT_HOME}/file_roots/install ${NAME}
+                highstate install ${INSTALL_TARGET} ${PROJECT_HOME}/file_roots/install ${YOUR}/file_roots/install
                 ;;
 
-    ${PROJECT}) ## OpenSDS
-                clone-project ${PROJECT} ${SUBPROJECT} ${NAME} ${SUBDIR} ${URI}   ## clone our Project (in case)
-                clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}
-                losetup -D 2>/dev/null
-                highstate install infra ${STATES_DIR_SYMLINK}
-                highstate install telemetry ${STATES_DIR_SYMLINK}
-                highstate install keystone ${STATES_DIR_SYMLINK}
-                #show-logger /tmp/devstack/stack.sh.log
-                highstate install config ${STATES_DIR_SYMLINK}
-                highstate install database ${STATES_DIR_SYMLINK}
-                highstate install auth ${STATES_DIR_SYMLINK}
-                highstate install hotpot ${STATES_DIR_SYMLINK}
-                highstate install sushi ${STATES_DIR_SYMLINK}
-                highstate install backend ${STATES_DIR_SYMLINK}
-                highstate install dock ${STATES_DIR_SYMLINK}
-                highstate install dashboard ${STATES_DIR_SYMLINK}
-                highstate install gelato ${STATES_DIR_SYMLINK}
-                highstate install freespace ${STATES_DIR_SYMLINK}
-                [[ -d /etc/${PROJECT} ]] && cp ${STATES_DIR_SYMLINK}/../../../conf/policy.json /etc/opensds/
+    ${PROJECT}) optional-project-level-work
                 ;;
 
     *)          ## PROFILES
                 echo "${STATES}" | grep "${INSTALL_TARGET}" >/dev/null 2>&1
-                if (( $? == 0 )) || [ -f ${STATES_DIR_SYMLINK}/install/${INSTALL_TARGET}.sls ]; then
-                    clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}
-                    highstate install ${INSTALL_TARGET} ${STATES_DIR_SYMLINK}
-
-                    ## deepsea post-install step
-                    if (( $? == 0 )) && [[ "${INSTALL_TARGET}" == "deepsea" ]]; then
-                       salt-call --local grains.append deepsea default ${MASTER_HOST}
-                       cp ${STATES_DIR_SYMLINK}/deepsea_post.sls ${SALTFS}/${STATES}/top.sls
-                    fi
+                if (( $? == 0 )) || [ -f ${PROJECT_HOME}/file_roots/install/${INSTALL_TARGET}.sls ]; then
+                    clone-saltstack-formulas ${PROJECT_HOME}/file_roots/install ${NAME}
+                    highstate install ${INSTALL_TARGET} ${PROJECT_HOME}/file_roots/install ${YOUR}/file_roots/install
+                    optional-post-install-work
                     return 0
                 fi
                 echo "Not implemented" && usage 1
@@ -485,8 +464,8 @@ business-logic() {
     ## remove option
     if [ -n "${REMOVE_TARGET}" ]; then
         echo "${STATES}" | grep "${REMOVE_TARGET}" >/dev/null 2>&1
-        if (( $? == 0 )) && [ -f ${STATES_DIR_SYMLINK}/remove/${INSTALL_TARGET}.sls ]; then
-           highstate remove ${INSTALL_TARGET} ${STATES_DIR_SYMLINK}
+        if (( $? == 0 )) && [ -f ${PROJECT_HOME}/file_roots/remove/${INSTALL_TARGET}.sls ]; then
+           highstate remove ${INSTALL_TARGET} ${PROJECT_HOME}/file_roots/remove ${YOUR}/file_roots/remove
            return 0
         fi
         echo "Not implemented" && usage 1
@@ -494,7 +473,6 @@ business-logic() {
 }
 
 ## Main ##
-
 COMMUNITYNAME=OpenSDS
 PROJECT=${PROJECT:-opensds}
 SUBPROJECT=opensds-installer
@@ -502,6 +480,38 @@ SUBDIR=salt
 NAME="$( echo ${SUBPROJECT} | awk -F- '{print $NF}' )"
 URI=https://github.com
 USERNAME=''
+PROJECT_HOME=${SALTFS}/community/${PROJECT}/${SUBPROJECT}/${SUBDIR}
+YOUR=${SALTFS}/${STATES_DIR}/community/your
+
 STATES="opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry|deepsea"
+
+optional-project-level-work() {
+    clone-project ${PROJECT} ${SUBPROJECT} ${NAME} ${SUBDIR} ${URI}   ## clone our Project (in case)
+    clone-saltstack-formulas ${STATES_DIR_SYMLINK} ${NAME}
+    losetup -D 2>/dev/null
+    highstate install infra ${STATES_DIR_SYMLINK}
+    highstate install telemetry ${STATES_DIR_SYMLINK}
+    highstate install keystone ${STATES_DIR_SYMLINK}
+    #show-logger /tmp/devstack/stack.sh.log
+    highstate install config ${STATES_DIR_SYMLINK}
+    highstate install database ${STATES_DIR_SYMLINK}
+    highstate install auth ${STATES_DIR_SYMLINK}
+    highstate install hotpot ${STATES_DIR_SYMLINK}
+    highstate install sushi ${STATES_DIR_SYMLINK}
+    highstate install backend ${STATES_DIR_SYMLINK}
+    highstate install dock ${STATES_DIR_SYMLINK}
+    highstate install dashboard ${STATES_DIR_SYMLINK}
+    highstate install gelato ${STATES_DIR_SYMLINK}
+    highstate install freespace ${STATES_DIR_SYMLINK}
+    [[ -d /etc/${PROJECT} ]] && cp ${STATES_DIR_SYMLINK}/../../../conf/policy.json /etc/opensds/
+}
+
+optional-post-install-work(){
+    ## deepsea post-install step
+    if (( $? == 0 )) && [[ "${INSTALL_TARGET}" == "deepsea" ]]; then
+       salt-call --local grains.append deepsea default ${MASTER_HOST}
+       cp ${PROJECT_HOME}/file_roots/install/deepsea_post.sls ${SALTFS}/${STATES_DIR}/top.sls
+    fi
+}
 
 business-logic

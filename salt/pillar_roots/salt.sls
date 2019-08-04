@@ -1,6 +1,10 @@
 {% from "site.j2" import sitedata as site %}
 
 salt:
+  # Set this to 'py3' to install the Python 3 packages.
+  # If this is not set, the Python 2 packages will be installed by default.
+  py_ver: 'py3'
+
   install_packages: False
   master:
     file_roots:
@@ -35,9 +39,9 @@ salt_formulas:
     default:
       baseurl: https://github.com/saltstack-formulas
          {%- if grains['kernel'] in ['FreeBSD', 'OpenBSD', 'NetBSD'] %}
-      basedir: /usr/local/etc/salt/states/community/saltstack-formulas
+      basedir: /usr/local/etc/salt/states/namespaces/saltstack-formulas
          {%- else %}
-      basedir: /srv/salt/community/saltstack-formulas
+      basedir: /srv/salt/namespaces/saltstack-formulas
          {%- endif %}
   basedir_opts:
     makedirs: True

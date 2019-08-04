@@ -21,7 +21,6 @@
 trap exit SIGINT SIGTERM
 [ `id -u` != 0 ] && echo && echo "Run script with sudo, exiting" && echo && exit 1
 declare -A your solution fork || (echo "bash v4 or later is required" && exit 1)
-(( $# == 0 )) && echo usage
 
 BASE=/srv
 BASE_ETC=/etc
@@ -265,7 +264,7 @@ setup-log() {
     LOG=${1}
     mkdir -p ${solution['logdir']} 2>/dev/null
     salt-call --versions >>${LOG} 2>&1
-    [ -f "${PILLARFS}.site.j2" ] && cat ${PILLARFS}/site.j2 >>${LOG} 2>&1
+    [ -f "${PILLARFS}/site.j2" ] && cat ${PILLARFS}/site.j2 >>${LOG} 2>&1
     [ -n "${DEBUGG_ON}" ] && salt-call pillar.items --local >> ${LOG} 2>&1 && echo >>${LOG} 2>&1
     salt-call state.show_top --local | tee -a ${LOG} 2>&1
     echo >>${LOG} 2>&1
@@ -334,9 +333,9 @@ highstate() {
     salt-call state.highstate --local ${DEBUGG_ON} --retcode-passthrough saltenv=base  >>${LOG} 2>&1
     [ -f "${LOG}" ] && (tail -6 ${LOG} | head -4) 2>/dev/null && echo "See full log in [ ${LOG} ]"
     echo
-    echo "///////////////////////////////////////////////////////////////////////"
-    echo "        $(basename ${PROFILE}) for ${solution[repo]} has completed"
-    echo "//////////////////////////////////////////////////////////////////////"
+    echo "/////////////////////////////////////////////////////////////////"
+    echo "        $(basename ${TARGET}) for ${solution[repo]} has completed"
+    echo "////////////////////////////////////////////////////////////////"
     echo
 }
 
@@ -353,10 +352,12 @@ usage() {
     echo 1>&2
     echo "\tbootstrap\t\tRun salt-bootstrap with additions" 1>&2
     echo 1>&2
-    echo "\tsalt\t\tInstall salt-desktop and salt-formula" 1>&2
+    echo "\tsalter\t\tInstall salter and salt-formula" 1>&2
     echo 1>&2
-    echo "\t${solution[entity]}\tApply all ${solution[repo]} states" 1>&2
-    echo 1>&2
+    if [ "${solution[entity]}" != "salter" ]; then
+       echo "\t${solution[entity]}\tDeploy ${solution[repo]}" 1>&2
+       echo 1>&2
+    fi
     echo " ${solution[targets]}" 1>&2
     echo "\t\t\tApply specific ${solution[repo]} state" 1>&2
     echo 1>&2
@@ -401,28 +402,22 @@ business-logic() {
 
     ## install option
     case "${TARGET}" in
-    bootstrap)  salt-bootstrap
-                ;;
+    bootstrap)  salt-bootstrap ;;
 
-    salt)       ## SALT FORMULA/DESKTOP
-                gitclone 'https://github.com' saltstack-formulas salt-formula salt salt
-                gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${PROFILE} ${solution[subdir]}
+    menu)       pip install --pre wrapper barcodenumber npyscreen || exit 1
+                ([ -x ${SALTFS}/contrib/menu.py ] && ${SALTFS}/contrib/menu.py ${solution[states]}/install) || exit 2
+                highstate install ${solution[states]} ${TARGET} ;;
+
+    salter)     gitclone 'https://github.com' saltstack-formulas salt-formula salt salt
+                gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${solution[alias]} ${solution[subdir]}
                 highstate install ${solution[states]} salt
                 rm /usr/local/bin/salter.sh 2>/dev/null
-                ln -s ${solution[homedir]}/installer.sh /usr/local/bin/salter.sh
-                ;;
+                ln -s ${solution[homedir]}/salter.sh /usr/local/bin/salter.sh ;;
 
-    menu)       ## MENU
-                pip install --pre wrapper barcodenumber npyscreen || exit 1
-                ([ -x ${SALTFS}/contrib/menu.py ] && ${SALTFS}/contrib/menu.py ${solution[states]}/install) || exit 2
-                highstate install ${solution[states]} ${TARGET}
-                ;;
+    ${solution[repo]})
+                solution-tasks ${solution[repo]} ;;
 
-    ${solution[entity]})
-                optional-solution-work
-                ;;
-
-    *)          ## PROFILES
+    *)          ## profiles (STATES/FORMULAS)
                 echo "${solution[targets]}" | grep "${TARGET}" >/dev/null 2>&1
                 if (( $? == 0 )) || [ -f ${solution[states]}/install/${TARGET}.sls ]; then
                     highstate install ${solution[states]} ${TARGET}
@@ -431,8 +426,10 @@ business-logic() {
     esac
 }
 
-mandatory-solution-configuration() {
-    ### solution details ###
+##### everything above is generic; some things below are customized #####
+
+mandatory-solution-repo-description() {
+    ### repo details ###
     solution['saltmaster']=""
     solution['uri']="https://github.com"
     solution['entity']="opensds"
@@ -441,13 +438,13 @@ mandatory-solution-configuration() {
     solution['targets'="opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry|deepsea"
     solution['subdir']="salt"
 
-    ### derived details ###
+    ### giving these values ###
     solution['homedir']="${SALTFS}/community/${solution['entity']}/${solution[repo]}/${solution[subdir]}"
     solution['states']="${solution[homedir]}/file_roots"
     solution['pillars']="${solution[homedir]}/pillar_roots"
     solution['logdir']="/tmp/${solution[entity]}-${solution[repo]}"
 
-    ### your details ###
+    ### YOUR STUFF HERE ###
     your['states']="${SALTFS}/community/your/file_roots"
     your['pillars']="${SALTFS}/community/your/pillar_roots"
 
@@ -458,11 +455,11 @@ optional-developer-settings() {
     fork['uri']="https://github.com"
     fork['entity']="noelmcloughlin"
     fork['branch']="fixes"
-    fork['solutions']="opensds-installer salt-formula salt-desktop docker-formula samba-formula packages-formula"
+    fork['solutions']="opensds-installer salt-formula salter docker-formula samba-formula packages-formula"
 }
 
-optional-solution-work() {
-    gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${PROFILE} ${solution[subdir]}
+solution-tasks() {
+    gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${solution[alias]} ${solution[subdir]}
     losetup -D 2>/dev/null
     highstate install ${solution[states]} infra
     highstate install ${solution[states]} telemetry
@@ -492,5 +489,5 @@ optional-post-install-work(){
 ## MAIN ##
 
 optional-developer-settings
-mandatory-solution-configuration
+mandatory-solution-repo-description
 business-logic

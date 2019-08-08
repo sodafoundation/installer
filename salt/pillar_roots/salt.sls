@@ -1,6 +1,10 @@
 {% from "site.j2" import sitedata as site %}
 
 salt:
+  # Set this to 'py3' to install the Python 3 packages.
+  # If this is not set, the Python 2 packages will be installed by default.
+  py_ver: 'py3'
+
   install_packages: False
   master:
     file_roots:

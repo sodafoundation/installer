@@ -13,6 +13,9 @@
 # limitations under the License.
 
 ---
+- name: install docker-py package with pip when enabling containerized deployment
+  pip:
+    name: docker-py
 - name: run etcd containerized service
   docker_container:
     name: myetcd

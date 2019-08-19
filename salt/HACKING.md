@@ -20,27 +20,27 @@ The following commands are provided (or -r for removal).
 
  vi site.js                        ### Set IP addresses (easy)
 
- ./install.sh -i infra             ### This installs packages, docker, nginx, etc.
+ sudo salter.sh -i infra             ### This installs packages, docker, nginx, etc.
 
- ./install.sh -i keystone          ### Runs devstack-formula
+ sudo salter.sh -i keystone          ### Runs devstack-formula
 
- ./install.sh -i config            ### Creates directories and /etc/opensds/opensds.conf file
+ sudo salter.sh -i config            ### Creates directories and /etc/opensds/opensds.conf file
 
- ./install.sh -i database          ### Installs ETCD
+ sudo salter.sh -i database          ### Installs ETCD
 
- ./install.sh -i hotpot            ### Installs the HotPot
+ sudo salter.sh -i hotpot            ### Installs the HotPot
 
- ./install.sh -i sushi             ### Configures drivers in opensds.conf and /etc/opensds/driver directory
+ sudo salter.sh -i sushi             ### Configures drivers in opensds.conf and /etc/opensds/driver directory
 
- ./install.sh -i backend           ### Installs Backends (lvm, iscsi, cinder, etc)
+ sudo salter.sh -i backend           ### Installs Backends (lvm, iscsi, cinder, etc)
 
- ./install.sh -i dock              ### Installs Dock(s)
+ sudo salter.sh -i dock              ### Installs Dock(s)
 
- ./install.sh -i dashboard         ### Installs the Dashboard
+ sudo salter.sh -i dashboard         ### Installs the Dashboard
 
- ./install.sh -i gelato            ### Installs Multi-Cloud
+ sudo salter.sh -i gelato            ### Installs Multi-Cloud
 
- ./install.sh -i freespace         ### Free some disk space
+ sudo salter.sh -i freespace         ### Free some disk space
 ```
 
 Vagrant Reference for Testing
@@ -92,7 +92,7 @@ Example Installer output
 ```
 ~/opensds-installer/salt # vi site.j2
 
-~/opensds-installer/salt # ./install.sh -i salt; ./install.sh -i opensds
+~/opensds-installer/salt # sudo salter.sh -i salter; sudo salter.sh -i opensds
 
 Loading repository data...
 Reading installed packages...
@@ -326,7 +326,7 @@ Copy opensds-installer/conf/policy.json to /etc/opensds/
 
 #### REMOVAL 
 ```
-./install.sh -r opensds
+salter.sh -r opensds
 ...
 
 Summary for local

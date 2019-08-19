@@ -463,7 +463,7 @@ optional-developer-settings() {
     fork['uri']="https://github.com"
     fork['entity']="noelmcloughlin"
     fork['branch']="fixes"
-    fork['solutions']="opensds-installer salt-formula salter docker-formula samba-formula packages-formula"
+    fork['solutions']="opensds-installer salter packages-formula golang-formula"
 }
 
 solution-tasks() {
@@ -487,7 +487,7 @@ solution-tasks() {
 }
 
 optional-post-install-work(){
-    ## deepsea post-install step
+    ## SUSE/Deepsea
     if (( $? == 0 )) && [[ "${1}" == "deepsea" ]]; then
        salt-call --local grains.append deepsea default ${solution['saltmaster']}
        cp ${solution['homedir']}/file_roots/install/deepsea_post.sls ${SALTFS}/${STATES_DIR}/top.sls

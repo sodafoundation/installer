@@ -23,7 +23,6 @@
 #-----------------------------------------------------------------------
 trap exit SIGINT SIGTERM
 [ `id -u` != 0 ] && echo && echo "Run script with sudo, exiting" && echo && exit 1
-declare -A your solution fork || (echo "bash v4 or later is required" && exit 1)
 
 BASE=/srv
 BASE_ETC=/etc
@@ -37,6 +36,14 @@ elif [ `uname` == 'Darwin' ]; then
 fi
 PILLARFS=${BASE:-/srv}/pillar
 SALTFS=${BASE:-/srv}/salt/${STATEDIR}
+
+# macos needs brew installed
+[ "`uname`" = "Darwin" ] && ([ -x /usr/local/bin/brew ] | su - ${USER} -c '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
+
+# bash version must be modern
+RC=0 && declare -A your solution fork || RC=$?
+(( RC > 0 )) && echo "[info] your bash version is really old - upgrade to a modern version" && exit 1
+(( RC > 0 )) && [ "`uname`" = "Darwin" ] &&  echo "[info] installing newer bash version ..." && su - ${USER} -c 'brew install bash'
 
 #-----------------------------------------
 #   Adaption layer for OS package handling
@@ -190,7 +197,6 @@ salt-bootstrap() {
              su - ${USER} -c 'curl https://bootstrap.pypa.io/get-pip.py -o ${PWD}/get-pip.py'
              sudo python ${PWD}/get-pip.py 2>/dev/null
 
-             [ -x /usr/local/bin/brew ] | su - ${USER} -c '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
              su - ${USER} -c '/usr/local/bin/pip install --upgrade wrapper barcodenumber npyscreen'
              [[ ! -x /usr/local/bin/brew ]] && echo "Install homebrew (https://docs.brew.sh/Installation.html)" && exit 1
 
@@ -463,7 +469,7 @@ optional-developer-settings() {
     fork['uri']="https://github.com"
     fork['entity']="noelmcloughlin"
     fork['branch']="fixes"
-    fork['solutions']="opensds-installer salter packages-formula golang-formula"
+    fork['solutions']="opensds-installer salter packages-formula golang-formula postgres-formula"
 }
 
 solution-tasks() {

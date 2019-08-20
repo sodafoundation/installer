@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Original work at: https://github.com/saltstack-formulas/salter
+# Original work from: https://github.com/saltstack-formulas/salter
 # MODIFIED WORK SECTION has additional copyright under this "License".
 #--------------------------------------------------------------------------
 #
@@ -36,6 +36,7 @@ elif [ `uname` == 'Darwin' ]; then
 fi
 PILLARFS=${BASE:-/srv}/pillar
 SALTFS=${BASE:-/srv}/salt/${STATEDIR}
+SKIP_UNNECESSARY_CLONE=''
 
 # macos needs brew installed
 [ "`uname`" = "Darwin" ] && ([ -x /usr/local/bin/brew ] | su - ${USER} -c '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
@@ -271,7 +272,7 @@ EOF
 
 setup-log() {
     LOG=${1}
-    mkdir -p ${solution['logdir']} 2>/dev/null
+    mkdir -p ${solution[logdir]} 2>/dev/null
     salt-call --versions >>${LOG} 2>&1
     [ -f "${PILLARFS}/site.j2" ] && cat ${PILLARFS}/site.j2 >>${LOG} 2>&1
     [ -n "${DEBUGG_ON}" ] && salt-call pillar.items --local >> ${LOG} 2>&1 && echo >>${LOG} 2>&1
@@ -281,6 +282,8 @@ setup-log() {
 }
 
 gitclone() {
+    [ -n "${SKIP_UNNECESSARY_CLONE}" ] && return 0
+
     URI=${1} && ENTITY=${2} && REPO=${3} && ALIAS=${4} && SUBDIR=${5}
     echo "cloning ${REPO} from ${ENTITY} ..."
     rm -fr ${SALTFS}/namespaces/${ENTITY}/${REPO} 2>/dev/null
@@ -301,13 +304,11 @@ highstate() {
 
     ## prepare states
     ACTION=${1} && STATEDIR=${2} && TARGET=${3}
-    for PROFILE in ${solution[states]}/${ACTION}/${TARGET} ${your[states]}/${ACTION}/${TARGET}
+    for PROFILE in ${solution[saltdir]}/${ACTION}/${TARGET} ${your[saltdir]}/${ACTION}/${TARGET}
     do  
-        set -xv
         [ -f ${PROFILE}.sls ] && cp ${PROFILE}.sls ${SALTFS}/top.sls && break
         [ -f ${PROFILE}/init.sls ] && cp ${PROFILE}/init.sls ${SALTFS}/top.sls && break
     done
-    [ -z "${DEBUGG_ON}" ] && set +xv
     [ ! -f ${SALTFS}/top.sls ] && echo "Failed to find ${TARGET}.sls or ${TARGET}/init.sls" && usage
 
     ## prepare pillars
@@ -333,7 +334,7 @@ highstate() {
          salt)       continue;;                    ##already cloned?
          *)          source=${formula} ;;
          esac
-         gitclone 'https://github.com' saltstack-formulas ${source}-formula ${formula} ${formula}
+         gitclone 'https://github.com' "${solution[provider]}" ${source}-formula ${formula} ${formula}
     done
 
     ## run states
@@ -399,12 +400,12 @@ while getopts ":i:l:r:u:" option; do
 done
 shift $((OPTIND-1))
 
-business-logic() {
+salter-engine() {
     ## remove option
     if [ "${ACTION}" == 'remove' ] && [ -n "${TARGET}" ]; then
         echo "${solution[targets]}" | grep "${TARGET}" >/dev/null 2>&1
-        if (( $? == 0 )) || [ -f ${solution[states]}/${ACTION}/${TARGET}.sls ]; then
-           highstate remove ${solution[states]} ${TARGET}
+        if (( $? == 0 )) || [ -f ${solution[saltdir]}/${ACTION}/${TARGET}.sls ]; then
+           highstate remove "${solution[saltdir]}" ${TARGET}
            return 0
         fi
     fi
@@ -414,94 +415,99 @@ business-logic() {
     bootstrap)  salt-bootstrap ;;
 
     menu)       pip install --pre wrapper barcodenumber npyscreen || exit 1
-                ([ -x ${SALTFS}/contrib/menu.py ] && ${SALTFS}/contrib/menu.py ${solution[states]}/install) || exit 2
-                highstate install ${solution[states]} ${TARGET} ;;
+                ([ -x ${SALTFS}/contrib/menu.py ] && ${SALTFS}/contrib/menu.py ${solution[saltdir]}/install) || exit 2
+                highstate install "${solution[saltdir]}" ${TARGET} ;;
 
-    salter)     gitclone 'https://github.com' saltstack-formulas salt-formula salt salt
+    salter)     gitclone 'https://github.com' "${solution[provider]}" salt-formula salt salt
                 gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${solution[alias]} ${solution[subdir]}
-                highstate install ${solution[states]} salt
+                highstate install "${solution[saltdir]}" salt
                 rm /usr/local/bin/salter.sh 2>/dev/null
                 ln -s ${solution[homedir]}/salter.sh /usr/local/bin/salter.sh ;;
 
     ${solution[alias]})
-                solution-tasks ${solution[alias]} ;;
+                custom-install ${solution[alias]} ;;
 
-    *)          ## profiles (STATES/FORMULAS)
+    *)          ## PROFILES (STATES/FORMULAS)
                 echo "${solution[targets]}" | grep "${TARGET}" >/dev/null 2>&1
-                if (( $? == 0 )) || [ -f ${solution[states]}/install/${TARGET}.sls ]; then
-                    highstate install ${solution[states]} ${TARGET}
-                    optional-post-install-work ${TARGET}
+                if (( $? == 0 )) || [ -f ${solution[saltdir]}/install/${TARGET}.sls ]; then
+                    highstate install ${solution[saltdir]} ${TARGET}
+                    custom-postinstall ${TARGET}
                 fi
     esac
 }
 
 #########################################################################
-#
-# MODIFIED WORK SECTION
-# Copyright 2019 The OpenSDS Authors 
-#
+# SOLUTION: Copyright 2019 The OpenSDS Authors
 #########################################################################
 
-mandatory-solution-repo-description() {
-    ### repo details ###
+developer-definitions() {
+    fork['uri']="https://github.com"
+    fork['entity']="noelmcloughlin"
+    fork['branch']="fixes"
+    fork['solutions']="salter packages-formula golang-formula postgres-formula"
+}
+
+solution-definitions() {
+    ### solution polyrepo or monorepo ###
     solution['saltmaster']=""
     solution['uri']="https://github.com"
     solution['entity']="opensds"
     solution['repo']="opensds-installer"
     solution['alias']="opensds"
-    solution['targets']="opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry|deepsea"
     solution['subdir']="salt"
+    solution['provider']="saltstack-formulas"
+    solution['profiles']="opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry|deepsea"
 
-    ### giving these values ###
-    solution['homedir']="${SALTFS}/namespaces/${solution['entity']}/${solution[repo]}/${solution[subdir]}"
-    solution['states']="${solution[homedir]}/file_roots"
+    ### derivatives
+    solution['homedir']="${SALTFS}/namespaces/${solution[entity]}/${solution[repo]}/${solution[subdir]}"
+    solution['saltdir']="${solution[homedir]}/file_roots"
     solution['pillars']="${solution[homedir]}/pillar_roots"
     solution['logdir']="/tmp/${solution[entity]}-${solution[repo]}"
 
-    ### YOUR STUFF HERE ###
-    your['states']="${SALTFS}/namespaces/your/file_roots"
+    your['saltdir']="${SALTFS}/namespaces/your/file_roots"
     your['pillars']="${SALTFS}/namespaces/your/pillar_roots"
-
-    mkdir -p ${solution[states]} ${solution[pillars]} ${your[states]} ${your[pillars]} ${solution[logdir]} ${PILLARFS} ${BASE_ETC}/salt 2>/dev/null
+    mkdir -p ${solution[saltdir]} ${solution[pillars]} ${your[saltdir]} ${your[pillars]} ${solution[logdir]} ${PILLARFS} ${BASE_ETC}/salt 2>/dev/null
 }
 
-optional-developer-settings() {
-    fork['uri']="https://github.com"
-    fork['entity']="noelmcloughlin"
-    fork['branch']="fixes"
-    fork['solutions']="opensds-installer salter packages-formula golang-formula postgres-formula"
-}
-
-solution-tasks() {
+custom-install() {
+    ### required - salter-engine is insufficient ###
     gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${solution[alias]} ${solution[subdir]}
+    SKIP_UNNECESSARY_CLONE='true'
     losetup -D 2>/dev/null
-    highstate install ${solution[states]} infra
-    highstate install ${solution[states]} telemetry
-    highstate install ${solution[states]} keystone
+    highstate install ${solution[saltdir]} infra
+    highstate install ${solution[saltdir]} telemetry
+    highstate install ${solution[saltdir]} keystone
     #show-logger /tmp/devstack/stack.sh.log
-    highstate install ${solution[states]} config
-    highstate install ${solution[states]} database
-    highstate install ${solution[states]} auth
-    highstate install ${solution[states]} hotpot
-    highstate install ${solution[states]} sushi
-    highstate install ${solution[states]} backend
-    highstate install ${solution[states]} dock
-    highstate install ${solution[states]} dashboard
-    highstate install ${solution[states]} gelato
-    highstate install ${solution[states]} freespace
+    highstate install ${solution[saltdir]} config
+    highstate install ${solution[saltdir]} database
+    highstate install ${solution[saltdir]} auth
+    highstate install ${solution[saltdir]} hotpot
+    highstate install ${solution[saltdir]} sushi
+    highstate install ${solution[saltdir]} backend
+    highstate install ${solution[saltdir]} dock
+    highstate install ${solution[saltdir]} dashboard
+    highstate install ${solution[saltdir]} gelato
+    highstate install ${solution[saltdir]} freespace
     cp ${SALTFS}/namespaces/${solution['entity']}/${solution[repo]}/conf/*.json /etc/opensds/ 2>/dev/null
 }
 
-optional-post-install-work(){
-    ## SUSE/Deepsea
+custom-postinstall() {
+    LXD=${SALTFS}/namespaces/saltstack-formulas/lxd-formula
+    # see https://github.com/saltstack-formulas/lxd-formula#clone-and-symlink
+    [ -d "${LXD}/_modules" ] && ln -s ${LXD}/_modules ${SALTFS}/_modules 2>/dev/null
+    [ -d "${LXD}/_states" ] && ln -s ${LXD}/_states ${SALTFS}/_states 2>/dev/null
+
+    # SUSE/Deepsea/Ceph
     if (( $? == 0 )) && [[ "${1}" == "deepsea" ]]; then
        salt-call --local grains.append deepsea default ${solution['saltmaster']}
        cp ${solution['homedir']}/file_roots/install/deepsea_post.sls ${SALTFS}/${STATES_DIR}/top.sls
     fi
 }
 
-## MAIN ##
+### MAIN
 
-optional-developer-settings
-mandatory-solution-repo-description
-business-logic
+developer-definitions
+solution-definitions
+salter-engine
+exit $?
+

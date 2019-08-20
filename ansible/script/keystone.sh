@@ -96,6 +96,38 @@ gelato_conf() {
     sed -i "s,OS_PASSWORD=.*$,OS_PASSWORD=$STACK_PASSWORD," $compose_file
 }
 
+keystone_credentials () {
+    export OS_AUTH_URL="http://${HOST_IP}/identity"
+    export OS_USERNAME=admin
+    export OS_PASSWORD="${STACK_PASSWORD}"
+    export OS_PROJECT_NAME=admin
+    export OS_PROJECT_DOMAIN_NAME=Default
+    export OS_USER_DOMAIN_NAME=Default
+    export OS_IDENTITY_API_VERSION=3
+}
+
+wait_for_keystone () {
+    local count=0
+    local interval=${1:-10}
+    local times=${2:-12}
+
+    while true
+    do
+        # get a token to check if keystone is working correctly or not.
+        # keystone credentials such as OS_USERNAME must be set before.
+        python ${TOP_DIR}/ministone.py token_issue
+        if [ "$?" == "0" ]; then
+            return
+        fi
+        count=`expr ${count} \+ 1`
+        if [ ${count} -ge ${times} ]; then
+            echo "ERROR: keystone didn't come up. Aborting..."
+            exit 1
+        fi
+        sleep ${interval}
+    done
+}
+
 create_user_and_endpoint_for_hotpot(){
     . "$DEV_STACK_DIR/openrc" admin admin
     if openstack user show $OPENSDS_SERVER_NAME &>/dev/null; then
@@ -153,6 +185,9 @@ install(){
         docker pull opensdsio/opensds-authchecker:latest
         docker run -d --privileged=true --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
         docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
+        keystone_credentials
+        wait_for_keystone
+        python ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
     else
         create_user
         download_code
@@ -189,6 +224,9 @@ config_hotpot() {
     hotpot_conf
     if [ "docker" != "$1" ] ;then
         create_user_and_endpoint_for_hotpot
+    else
+        keystone_credentials
+        python ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
     fi
 }
 
@@ -196,6 +234,9 @@ config_gelato() {
     gelato_conf
     if [ "docker" != "$1" ] ;then
         create_user_and_endpoint_for_gelato
+    else
+        keystone_credentials
+        python ${TOP_DIR}/ministone.py endpoint_bulk_update "multicloud$MULTICLOUD_VERSION" "http://${HOST_IP}:8089/v1beta/%(tenant_id)s"
     fi
 }
 

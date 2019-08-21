@@ -24,6 +24,7 @@
 trap exit SIGINT SIGTERM
 [ `id -u` != 0 ] && echo && echo "Run script with sudo, exiting" && echo && exit 1
 
+RC=0
 BASE=/srv
 BASE_ETC=/etc
 STATEDIR=''
@@ -31,20 +32,30 @@ if [ `uname` == 'FreeBSD' ]; then
     BASE=/usr/local/etc
     BASE_ETC=/usr/local/etc
     STATEDIR=states
-elif [ `uname` == 'Darwin' ]; then
-    USER=$( stat -f "%Su" /dev/console )
 fi
 PILLARFS=${BASE:-/srv}/pillar
 SALTFS=${BASE:-/srv}/salt/${STATEDIR}
 SKIP_UNNECESSARY_CLONE=''
-
-# macos needs brew installed
-[ "`uname`" = "Darwin" ] && ([ -x /usr/local/bin/brew ] | su - ${USER} -c '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
+HOMEBREW=/usr/local/bin/brew
 
 # bash version must be modern
-RC=0 && declare -A your solution fork || RC=$?
-(( RC > 0 )) && echo "[info] your bash version is really old - upgrade to a modern version" && exit 1
-(( RC > 0 )) && [ "`uname`" = "Darwin" ] &&  echo "[info] installing newer bash version ..." && su - ${USER} -c 'brew install bash'
+declare -A your solution fork 2>/dev/null || RC=$?
+if (( RC > 0 )) && [ "$( uname )" = "Darwin" ]; then
+    echo "[warning] your bash version is too old ..."
+    # macos needs homebrew (unattended https://github.com/Homebrew/legacy-homebrew/issues/46779#issuecomment-162819088)
+    export PY_VER=3
+    export USER=$( stat -f "%Su" /dev/console )
+    export HOMEBREW=/usr/local/bin/brew
+    ${HOMEBREW} >/dev/null 2>&1
+    (( $? == 127 )) && su - ${USER} -c 'echo | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+    # macos needs modern bash
+    (( RC > 0 )) && (su - ${USER} -c "${HOMEBREW} install bash" || exit 12) && RC=0
+fi
+if (( RC > 0 )); then
+    # linux needs modern bash
+    echo "[error] your bash version is too old ..."
+    exit ${RC}
+fi
 
 #-----------------------------------------
 #   Adaption layer for OS package handling
@@ -66,16 +77,17 @@ pkg-install() {
     PACKAGES=${@}
     case ${OSTYPE} in
     darwin*) for p in ${PACKAGES}; do
-                 su ${USER} -c "brew install ${p}"
-                 su ${USER} -c "brew unlink ${p} 2>/dev/null && brew link ${p} 2>/dev/null"
+                 su - ${USER} -c "${HOMEBREW} install ${p}"
+                 su - ${USER} -c "${HOMEBREW} unlink ${p} 2>/dev/null"
+                 su - ${USER} -c "${HOMEBREW} link ${p} 2>/dev/null"
              done
              awk >/dev/null 2>&1
              if (( $? == 134 )); then
                  ## https://github.com/atomantic/dotfiles/issues/23#issuecomment-298784915 ###
-                 brew uninstall gawk
-                 brew uninstall readline
-                 brew install readline
-                 brew install gawk
+                 su - ${USER} -c "${HOMEBREW} uninstall gawk"
+                 su - ${USER} -c "${HOMEBREW} uninstall readline"
+                 su - ${USER} -c "${HOMEBREW} install readline"
+                 su - ${USER} -c "${HOMEBREW} install gawk"
              fi
              ;;
 
@@ -107,7 +119,7 @@ pkg-update() {
     PACKAGES=${@}
     case ${OSTYPE} in
     darwin*) for p in ${PACKAGES}; do
-                 su ${USER} -c "brew upgrade ${p}"
+                 su - ${USER} -c "${HOMEBREW} upgrade ${p}"
              done
              ;;
     linux*)  if [ -f "/usr/bin/zypper" ]; then
@@ -130,7 +142,7 @@ pkg-remove() {
     PACKAGES=${@}
     case ${OSTYPE} in
     darwin*) for p in ${PACKAGES}; do
-                 su ${USER} -c "brew uninstall ${p} --force"
+                 su - ${USER} -c "${HOMEBREW} uninstall ${p} --force"
              done
              ;;
     linux*)  if [ -f "/usr/bin/zypper" ]; then
@@ -194,21 +206,19 @@ salt-bootstrap() {
              ### https://stackoverflow.com/questions/34386527/symbol-not-found-pycodecinfo-getincrementaldecoder
              su - ${USER} -c 'hash -r python'
 
-             ### Secure install pip https://pip.pypa.io/en/stable/installing/
+             ### Secure install https://pip.pypa.io/en/stable/installing/
              su - ${USER} -c 'curl https://bootstrap.pypa.io/get-pip.py -o ${PWD}/get-pip.py'
              sudo python ${PWD}/get-pip.py 2>/dev/null
 
-             su - ${USER} -c '/usr/local/bin/pip install --upgrade wrapper barcodenumber npyscreen'
-             [[ ! -x /usr/local/bin/brew ]] && echo "Install homebrew (https://docs.brew.sh/Installation.html)" && exit 1
-
              /usr/local/bin/salt --version >/dev/null 2>&1
              if (( $? > 0 )); then
-                 su ${USER} -c 'brew install saltstack'
+                 su - ${USER} -c "${HOMEBREW} install saltstack"
              else
-                 su ${USER} -c 'brew upgrade saltstack'
+                 su - ${USER} -c "${HOMEBREW} upgrade saltstack"
              fi
-             su ${USER} -c 'brew unlink saltstack && brew link saltstack'
-             su ${USER} -c 'brew tap homebrew/services'
+             su - ${USER} -c "${HOMEBREW} unlink saltstack"
+             su - ${USER} -c "${HOMEBREW} link saltstack"
+             su - ${USER} -c "${HOMEBREW} tap homebrew/services"
              echo $( hostname ) >/etc/salt/minion_id
              cp /usr/local/etc/saltstack/minion /etc/salt/minion 2>/dev/null
              sed -i"bak" "s/#file_client: remote/file_client: local/" /etc/salt/minion 2>/dev/null
@@ -250,8 +260,8 @@ EOF
         ### Enforce python3
         rm /usr/bin/python 2>/dev/null; ln -s /usr/bin/python3 /usr/bin/python
     fi
-    ### install salt-api (except arch)
-    [ -f "/etc/arch-release" ] || pkg-install salt-api
+    ### install salt-api (except arch/macos)
+    [ ! -f "/etc/arch-release" ] && [ "$(uname)" != "Darwin" ] && pkg-install salt-api
 
     ### salt services
     if [[ "`uname`" == "FreeBSD" ]] || [[ "`uname`" == "Darwin" ]]; then
@@ -405,7 +415,7 @@ salter-engine() {
     if [ "${ACTION}" == 'remove' ] && [ -n "${TARGET}" ]; then
         echo "${solution[targets]}" | grep "${TARGET}" >/dev/null 2>&1
         if (( $? == 0 )) || [ -f ${solution[saltdir]}/${ACTION}/${TARGET}.sls ]; then
-           highstate remove "${solution[saltdir]}" ${TARGET}
+           highstate remove ${solution[saltdir]} ${TARGET}
            return 0
         fi
     fi
@@ -414,7 +424,7 @@ salter-engine() {
     case "${TARGET}" in
     bootstrap)  salt-bootstrap ;;
 
-    menu)       pip install --pre wrapper barcodenumber npyscreen || exit 1
+    menu)       pip${PY_VER} install --pre wrapper barcodenumber npyscreen || exit 1
                 ([ -x ${SALTFS}/contrib/menu.py ] && ${SALTFS}/contrib/menu.py ${solution[saltdir]}/install) || exit 2
                 highstate install "${solution[saltdir]}" ${TARGET} ;;
 

@@ -67,7 +67,7 @@
     - group_vars/hotpot.yml
     - group_vars/osdsdb.yml
     - group_vars/osdsdock.yml
-  gather_facts: false
+  gather_facts: true
   become: True
   tasks:
     - import_role:

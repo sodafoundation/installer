@@ -168,17 +168,8 @@
     - cephres["results"][0]["stdout"] != "HEALTH_OK"
     - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
 
-- name: check if ceph osd is running
-  shell: ps aux | grep ceph-osd | grep -v grep
-  ignore_errors: true
-  changed_when: false
-  register: service_ceph_osd_status
-
-- name: check if ceph mon is running
-  shell: ps aux | grep ceph-mon | grep -v grep
-  ignore_errors: true
-  changed_when: false
-  register: service_ceph_mon_status
+- name: wait until ceph stabilizes
+  include_tasks: roles/osdsdock/scenarios/ceph_stabilize.yml
 
 - name: configure profile and disable some features in ceph for kernel compatible.
   shell: "{{ item }}"
@@ -188,13 +179,9 @@
     - ceph osd crush tunables hammer
     - sleep 5 
     - grep -q "^rbd default features" /etc/ceph/ceph.conf || sed -i '/\[global\]/arbd default features = 1' /etc/ceph/ceph.conf
-  when:
-    - cephres["results"][0]["stdout"] != "HEALTH_OK"
-    - service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0
 
 - name: create specified pools and initialize them with default pool size.
   shell: ceph osd pool create {{ item }} 100 && ceph osd pool set {{ item }} size 1
   ignore_errors: yes
   changed_when: false
   with_items: "{{ ceph_pools }}"
-  when: service_ceph_mon_status.rc == 0 and service_ceph_osd_status.rc == 0

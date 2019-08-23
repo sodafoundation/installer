@@ -1,0 +1,54 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# ceph_check_interval/ceph_check_count are defined in group_vars/osdsdock.yml
+- name: ceph cluster sanity check
+  shell: |
+    INTERVAL={{ ceph_check_interval|quote }}
+    MAX_CHECK={{ ceph_check_count|quote }}
+    declare -a ceph_stat_array=()
+    i=0
+    while true
+    do
+        ceph_stat_array=(`sudo ceph -s | awk '/health:/{print $2;}/osd:/{print $2, $4, $6;}'`)
+        # check health status. 3 conditions below
+        # 1) HEALTH_OK means healty mon cluster.
+        # 2) check joined osd num. At least 1 osd.
+        # 3) check joined osds are all up
+        if [ "${ceph_stat_array[0]}" == "HEALTH_OK" ] && \
+           [ "${ceph_stat_array[1]}" -ge 1 ] && \
+           [ "${ceph_stat_array[1]}" -eq "${ceph_stat_array[2]}" ]; then
+            exit 0
+        fi
+        i=`expr ${i} \+ 1`
+        if [ "${i}" -ge "${MAX_CHECK}" ]; then
+            exit 1
+        fi
+        sleep ${INTERVAL}
+    done
+  args:
+    executable: /bin/bash
+  register: result
+
+- name: ceph cluster sanity check, success case
+  debug:
+    msg: "ceph mon/osd status check passed. Ready to create a pool."
+  when: result['rc'] == 0
+
+- name: ceph cluster sanity check, failure case (skip expected)
+  fail:
+    msg: "ceph mon/osd status check failed. Aborting, check ceph -s result."
+  when: result['rc'] != 0
+

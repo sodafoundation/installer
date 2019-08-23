@@ -65,6 +65,9 @@ ceph_description: This is a ceph backend service
 ceph_driver_name: ceph
 ceph_config_path: "{{ opensds_driver_config_dir }}/ceph.yaml"
 
+# constants used in wait logic for ceph stabilization
+ceph_check_interval: 30
+ceph_check_count: 12
 
 ###########
 # CINDER  #

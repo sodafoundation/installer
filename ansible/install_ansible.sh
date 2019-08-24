@@ -14,17 +14,62 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This step is needed to upgrade ansible to version 2.4.2 which is required for
-# the ceph backend.
-sudo apt-get remove -y ansible
-sudo apt-get purge -y ansible
+# This step is needed to upgrade ansible to version 2.4.x which is required for
+# the ceph backend installation using ceph-ansible.
 
-sudo add-apt-repository ppa:ansible/ansible-2.4
+REQUIRED_ANAIBLE_VER=${REQUIRED_ANAIBLE_VER:-}
 
+SCRIPT_PATH=$(cd $(dirname $0); pwd)
+
+OSDSDOCK_CONFIG=${SCRIPT_PATH}/group_vars/osdsdock.yml
+if ! [ -e ${OSDSDOCK_CONFIG} ]; then
+    echo ceph-ansible config file: ${OSDSDOCK_CONFIG} does not exist. Aborting.
+    exit 1
+fi
+
+# ceph-ansible has ansible version dependencies according to the stable
+# branches we use. See the below page for details.
+# https://docs.ceph.com/ceph-ansible/master/
+
+echo Reading...: ${OSDSDOCK_CONFIG}
+CEPH_ANSIBLE_BRANCH=`grep ceph_ansible_branch: ${OSDSDOCK_CONFIG} | awk '{print $2;}'`
+case ${CEPH_ANSIBLE_BRANCH} in
+"stable-3.0"|"stable-3.1")
+    REQUIRED_ANSIBLE_VER=2.4
+    ;;
+"stable-3.2")
+    REQUIRED_ANSIBLE_VER=2.6
+    ;;
+"stable-4.0")
+    REQUIRED_ANSIBLE_VER=2.8
+    ;;
+*)
+    echo "Unknown ceph-ansible branch: ${CEPH_ANSIBLE_BRANCH}"
+    exit 1
+    ;;
+esac
+
+if [ "`which ansible`" != ""  ]; then
+# ansible installed
+    CURRENT_VER=`ansible --version | egrep ^ansible | awk '{print $2;}' | cut -b -3`
+    if [ "${CURRENT_VER}" != "${REQUIRED_ANSIBLE_VER}" ]; then
+        echo ansible version error
+        echo removing ansible
+        sudo apt-get remove -y ansible
+        sudo apt-get purge -y ansible
+    else
+        # correct version installed. bailout
+        ansible --version
+        exit 0
+    fi
+fi
+
+# incorrect version removed, or no ansible found.
+echo Installing ansible ${REQUIRED_ANSIBLE_VER} required for ceph-ansible ${CEPH_ANSIBLE_BRANCH} branch.
+sudo add-apt-repository -y ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 sudo apt-get update
 sudo apt-get install -y ansible
 sleep 3
+sudo add-apt-repository -y -r ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 
-sudo add-apt-repository -r ppa:ansible/ansible-2.4
-
-ansible --version # Ansible version 2.4.2 is required for ceph; 2.0.2 or higher is needed for other backends.
+ansible --version

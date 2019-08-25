@@ -28,7 +28,7 @@ ceph_repository: community
 ceph_stable_release: luminous
 public_network: "{{ ansible_default_ipv4.address }}/24"
 cluster_network: "{{ public_network }}"
-monitor_interface: eth1
+monitor_interface: "{{ ansible_default_ipv4.interface }}"
 devices:
   #- '/dev/sda'
   #- '/dev/sdb'

@@ -65,6 +65,8 @@ ceph_description: This is a ceph backend service
 ceph_driver_name: ceph
 ceph_config_path: "{{ opensds_driver_config_dir }}/ceph.yaml"
 
+ceph_ansible_branch: stable-3.0
+
 ceph_check_interval: 30
 ceph_check_count: 12
 

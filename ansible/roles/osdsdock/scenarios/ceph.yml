@@ -185,3 +185,6 @@
   ignore_errors: yes
   changed_when: false
   with_items: "{{ ceph_pools }}"
+
+- name: wait until defined ceph pooll are visible
+  include_tasks: roles/osdsdock/scenarios/ceph_pool_check.yml

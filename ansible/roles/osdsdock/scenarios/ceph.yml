@@ -129,7 +129,7 @@
   git:
     repo: https://github.com/ceph/ceph-ansible.git
     dest: /opt/ceph-ansible
-    version: stable-3.0
+    version: "{{ ceph_ansible_branch }}"
   when:
     - cephres["results"][0]["stdout"] != "HEALTH_OK"
     - cephansibleexisted.stat.exists is undefined or cephansibleexisted.stat.exists == false

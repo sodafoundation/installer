@@ -13,79 +13,161 @@
 # limitations under the License.
 
 ---
-- name: check ceph exists
-  shell: "{{ item }}"
-  with_items: 
-    - bash ./script/check_ceph_exist.sh
-  ignore_errors: true
-  register: cephres
+- name: ceph pre-flight check
+  include_tasks: roles/osdsdock/scenarios/ceph_preflight_check.yml
 
-- name: check if ceph.conf folder exist when ceph backend enable
-  shell: ls /etc/ceph
+- name: check ceph exists
+  shell: which ceph
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  register: ceph_existence
+#
+# check installed ceph major version and set it to 'installed_ceph_version'.
+#
+- name: check the installed ceph version
+  shell: ceph --version  | egrep ^ceph | awk '{print $3;}' | cut -d "." -f 1,1
+  args:
+    executable: /bin/bash
   ignore_errors: true
   register: result
+  when: ceph_existence["rc"] == 0
 
-- name: create ceph.conf folder if not exist when ceph backend enable
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0755
-  with_items:
-    - "{{ ceph_backend_conf }}"
-  when: cephres["results"][0]["stdout"] == "HEALTH_OK" and result["rc"] != 0
-
-- name:  configure ceph section when ceph backend exist
+- name: set_fact installed_ceph_version
+  set_fact:
+    installed_ceph_version: "{{ result['stdout']  }}"
+  when:
+    - ceph_existence["rc"] == 0
+#
+# check 'ceph health' and set the result into 'ceph_health'.
+#
+- name: check if the installed ceph is healthy or not
   shell: |
-   cat > ceph_exist.conf
-   cat >> ceph_exist.conf <<EOF    
-    [global]
-    rbd default features = {{ default_feature }}
-    
-    fsid= {{ fsid }}
-    mon initial members= {{ mon_members }}
-    mon host= {{ mon_host }}
-    public network = {{ public_network }}
-    cluster network = {{ cluster_network }}
-    [osd]
-    osd mkfs type = {{ mkfs_type }}
-    osd mkfs options xfs = {{ mkfs_options }}
-    osd mount options xfs = {{ mount_options }}
-    osd journal size = {{ journal_size }}
-       
+    ceph health
   args:
-    chdir: "{{ ceph_backend_conf }}"
-  ignore_errors: yes
-  when: cephres["results"][0]["stdout"] == "HEALTH_OK" and cephres["results"][0]["rc"] == 0
-
-- name: copy ceph config to /etc/ceph
-  copy:
-    backup: yes
-    src: "{{ ceph_backend_conf }}/ceph_exist.conf"
-    dest: "{{ ceph_backend_conf }}/ceph.conf"
-    force: yes
-  when: cephres["results"][0]["stdout"] == "HEALTH_OK" and result["rc"] == 0
-
-- name: check ceph version
-  script: ./script/check_ceph_version.sh 
-  become: yes
+    executable: /bin/bash
+  register: result
   ignore_errors: true
-  register: res
+  when: ceph_existence["rc"] == 0
 
-- name: install ceph-common external package when ceph backend enabled
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - ceph-common
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
+- name: set_fact ceph_health
+  set_fact:
+    # workaround
+    ceph_health: "{{ result['stdout'] }}{{ result['stderr'] }}"
+  when: ceph_existence["rc"] == 0
+#
+# check if /etc/ceph/ceph.conf exists or not
+#
+- name: stat /etc/ceph/ceph.conf
+  stat:
+    path: /etc/ceph/ceph.conf
+  register: ceph_conf_stat
 
+- name: paranoia check for "/etc/ceph/ceph.conf" and its consistency
+  fail:
+    msg: "/etc/ceph/ceph.conf exists, but ceph cluster status is not HEALTH_OK. Check your environment."
+  when:
+    - ceph_existence["rc"] == 0
+    - ceph_health != "HEALTH_OK"
+    - ceph_conf_stat.stat.exists
+#
+# check ceph cluster member status. (if all the osds are up.)
+#
+- name: check ceph cluster member status
+  shell: |
+    declare -a ceph_stat_array=()
+    ceph_stat_array=(`sudo ceph -s | awk '/health:/{print $2;}/osd:/{print $2, $4, $6;}'`)
+    # Check the ceph mon cluster status (again).
+    if [ ${ceph_stat_array[0]} -ne "HEALTH_OK" ]; then
+      exit 1
+    fi
+    # Check if at least 1 osd is defined.
+    if [ ${ceph_stat_array[1]} -lt 1]; then
+      exit 1
+    fi
+    # Check if all the defined osds are up.
+    if [ ${ceph_stat_array[1]} -ne ${ceph_stat_array[2]} ]; then
+      exit 1
+    fi
+    exit 0
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  register: result
+  when:
+    - ceph_existence["rc"] == 0
+    - ceph_health == "HEALTH_OK"
+
+- name: set_fact ceph_cluster_health_status
+  set_fact:
+    ceph_cluster_health_status: "{{ result['rc'] }}"
+  when:
+    - ceph_existence["rc"] == 0
+    - ceph_health == "HEALTH_OK"
+#
+# check installed ceph version
+#   rc: 0 : required version
+#   rc: 1 : older version, upgrade installation requried.
+#   rc: 2 : newer version
+#   rc: 127 : Unkown release (maybe a typo)
+- name: check if the existing ceph is the required version or not
+  shell: |
+    REQUIRED_CEPH_RELEASE={{ ceph_stable_release }}
+    INSTALLED_CEPH_VERSION={{ installed_ceph_version }}
+    REQUIRED_CEPH_VERSION=
+    case ${REQUIRED_CEPH_RELEASE} in
+    luminous) REQUIRED_CEPH_VERSION="12" ;;
+    mimic) REQUIRED_CEPH_VERSION="13" ;;
+    nautilus) REQUIRED_CEPH_VERSION="14" ;;
+    *)
+      echo "Unknown ceph release requested. ${REQUIRED_CEPH_RELEASE}"
+      exit 127
+      ;;
+    esac
+
+    if [ "${INSTALLED_CEPH_VERSION}" -ne "${REQUIRED_CEPH_VERSION}" ]; then
+      if [ "${INSTALLED_CEPH_VERSION}" -lt "${REQUIRED_CEPH_VERSION}" ]; then
+        # upgrade required
+        exit 1
+      else
+        # downgrade required
+        exit 2
+      fi
+    else
+       # required (major) version
+       exit 0
+    fi
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  register: result
+  failed_when: result["rc"] == 127
+  when:
+    - ceph_existence["rc"] == 0
+
+- name: set_fact ceph_version_check
+  set_fact:
+    ceph_version_check: "{{ result['rc'] }}"
+  when:
+    - ceph_existence["rc"] == 0
+
+- name: Fail if downgrade of the existing ceph required.
+  fail:
+    msg: "Ceph version downgrade is not supported. Aborting.. "
+  when:
+    - ceph_existence["rc"] == 0
+    - ceph_version_check == "2"
+#
+# install notario
+#
 - name: install notario package with pip when ceph backend enabled
   pip:
     name: "{{ item }}"
   with_items:
     - notario
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK"
-
+#
+# configure opensds.conf ceph section
+#
 - name: configure ceph section in opensds global info if specify ceph backend
   shell: |
     cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
@@ -104,87 +186,75 @@
     src: ../../../group_vars/ceph/ceph.yaml
     dest: "{{ ceph_config_path }}"
 
-- name: check if ceph osd is running
-  shell: ps aux | grep ceph-osd | grep -v grep
-  ignore_errors: true
-  changed_when: false
-  register: service_ceph_osd_status
-  when: res["rc"] == 0
+#
+# criteria of ceph installation
+#
+# 1. ceph not installed
+# 1-a. 'which ceph' returns 1 #  (most typical case)
+#  -> do install
+#
+# 2. ceph installed, but not configured
+# 2-a HEALTH_OK, and cluster member status is NOT healthy
+#  -> abort
+#  (The pair case is 3-a.)
+# 2-b. not HEALTH_OK
+#  -> do version check,
+#     2-b-1 if ceph ver. is required, do install (and configure).
+#     2-b-2 if ceph ver. is older than required, re-install.
+#     2-b-3 if ceph ver. is new than required, re-install.
 
-- name: check if ceph mon is running
-  shell: ps aux | grep ceph-mon | grep -v grep
-  ignore_errors: true
-  changed_when: false
-  register: service_ceph_mon_status
-  when: res["rc"] == 0
+# 3. ceph installed, and configured properly
+# 3-a. HEALTH_OK, and cluster member status is healthy
+#  -> do version check,
+#     3-a-1 if version OK, just configure opensds ceph backend
+#     3-a-2 if version NG, abort
 
-- name: check for ceph-ansible source code existed
-  stat:
-    path: /opt/ceph-ansible
-  ignore_errors: yes
-  register: cephansibleexisted
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK"
+# case: 3-a-2
+- name: incorrect - older/newer - version ceph is running properly
+  fail:
+    msg: "older version ceph is configure and running properly. Aborting..."
+  when: ((ceph_existence["rc"] == 0) and (ceph_health == "HEALTH_OK") and (ceph_version_check != "0"))
 
-- name: download ceph-ansible source code
-  git:
-    repo: https://github.com/ceph/ceph-ansible.git
-    dest: /opt/ceph-ansible
-    version: "{{ ceph_ansible_branch }}"
-  when:
-    - cephres["results"][0]["stdout"] != "HEALTH_OK"
-    - cephansibleexisted.stat.exists is undefined or cephansibleexisted.stat.exists == false
-    - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
+# case: 2-a
+- name: ceph cluster member health check, especially osds are up or not
+  fail:
+    msg: "ceph is HEALTH_OK, but cluster status is no good. Aborting..."
+  when: ((ceph_existence["rc"] == 0) and (ceph_health == "HEALTH_OK") and (ceph_cluster_health_status is defined and ceph_cluster_health_status != "0"))
 
-- name: copy ceph inventory host into ceph-ansible directory
-  copy:
-    src: ../../../group_vars/ceph/ceph.hosts
-    dest: /opt/ceph-ansible/ceph.hosts
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
+# case: 2-b-2, 2-b-3
+#
+# Uninstall older/newer version ceph components before calling ceph-ansible.
+#
+- name: uninstall ceph on upgrade/downgrade installation
+  include_tasks: roles/osdsdock/scenarios/ceph_uninstall.yml
+  when: ((ceph_existence["rc"] == 0) and (ceph_health != "HEALTH_OK") and (ceph_version_check == "1" or ceph_version_check == "2"))
 
-- name: copy ceph all.yml file into ceph-ansible group_vars directory
-  copy:
-    src: ../../../group_vars/ceph/all.yml
-    dest: /opt/ceph-ansible/group_vars/all.yml
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
+# case: 1-a, 2-b-1
+#
+# Call ceph-ansible playbook.
+#
+- name: install ceph
+  include_tasks: roles/osdsdock/scenarios/ceph_install.yml
+  when: ((ceph_existence["rc"] == 0) and (ceph_health != "HEALTH_OK") and (ceph_version_check == "0" or ceph_version_check == "1")) or (ceph_existence["rc"] != 0)
 
-
-- name: copy site.yml in ceph-ansible
-  copy:
-    src: /opt/ceph-ansible/site.yml.sample
-    dest: /opt/ceph-ansible/site.yml
-    remote_src: yes
-  when: cephres["results"][0]["stdout"] != "HEALTH_OK" and res["rc"] == 1
-
-
-- name: ping all hosts and run ceph-ansible playbook
-  shell: "{{ item }}"
-  become: true
-  with_items:
-    - ansible all -m ping -i ceph.hosts
-    - ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
-  args:
-    chdir: /opt/ceph-ansible
-  when:
-    - cephres["results"][0]["stdout"] != "HEALTH_OK"
-    - res["rc"] == 1 or service_ceph_mon_status.rc == 1 or service_ceph_osd_status.rc == 1
-
+#
+# Wait until ceph -s returns HEALTH_OK and all the OSDs get up.
+#
 - name: wait until ceph stabilizes
   include_tasks: roles/osdsdock/scenarios/ceph_stabilize.yml
 
-- name: configure profile and disable some features in ceph for kernel compatible.
-  shell: "{{ item }}"
-  become: true
-  ignore_errors: yes
-  with_items:
-    - ceph osd crush tunables hammer
-    - sleep 5 
-    - grep -q "^rbd default features" /etc/ceph/ceph.conf || sed -i '/\[global\]/arbd default features = 1' /etc/ceph/ceph.conf
-
+#
+# Create specified ceph pools.
+# In case integration with an existing ceph cluster, pool parameters might
+# need to be modified. e.g. pg_num So, 'ignore_erros:' is false (default).
 - name: create specified pools and initialize them with default pool size.
   shell: ceph osd pool create {{ item }} 100 && ceph osd pool set {{ item }} size 1
-  ignore_errors: yes
+#  ignore_errors: yes
   changed_when: false
   with_items: "{{ ceph_pools }}"
-
+#
+# In case of a fresh installation, ceph is a bit eventual until pools become
+# visible. So, wait.
+#
 - name: wait until defined ceph pooll are visible
   include_tasks: roles/osdsdock/scenarios/ceph_pool_check.yml

@@ -1,0 +1,52 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: check for ceph-ansible source code existed
+  stat:
+    path: /opt/ceph-ansible
+  ignore_errors: yes
+  register: cephansibleexisted
+
+- name: download ceph-ansible source code
+  git:
+    repo: https://github.com/ceph/ceph-ansible.git
+    dest: /opt/ceph-ansible
+    version: "{{ ceph_ansible_branch }}"
+  when:
+    - cephansibleexisted.stat.exists is undefined or cephansibleexisted.stat.exists == false
+
+- name: copy ceph inventory host into ceph-ansible directory
+  copy:
+    src: ../../../group_vars/ceph/ceph.hosts
+    dest: /opt/ceph-ansible/ceph.hosts
+
+- name: copy ceph all.yml file into ceph-ansible group_vars directory
+  copy:
+    src: ../../../group_vars/ceph/all.yml
+    dest: /opt/ceph-ansible/group_vars/all.yml
+
+- name: copy site.yml in ceph-ansible
+  copy:
+    src: /opt/ceph-ansible/site.yml.sample
+    dest: /opt/ceph-ansible/site.yml
+    remote_src: yes
+
+- name: ping all hosts and run ceph-ansible playbook
+  shell: "{{ item }}"
+  with_items:
+    - ansible all -m ping -i ceph.hosts
+    - ansible-playbook site.yml -i ceph.hosts | tee /var/log/ceph_ansible.log
+  args:
+    chdir: /opt/ceph-ansible

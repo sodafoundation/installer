@@ -1,0 +1,40 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: get the repository information of the installed ceph-common
+  shell: |
+    REPOS=`apt-cache  policy ceph-common  | grep http | grep -v ubuntu\\.com`
+    if [ "${REPOS}" == "" ]; then
+      exit 0
+    else
+      exit 1
+    fi
+
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  register: result
+
+- name: check
+  fail:
+    msg: "FATAL. Please clean up external repository apt line for ceph-common"
+  when: result["rc"] == 1
+
+- name: uninstall current ceph-common
+  apt:
+    name: ceph-common
+    state: absent
+    purge: yes
+    autoremove: yes
+    update_cache: yes

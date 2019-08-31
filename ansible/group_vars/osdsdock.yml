@@ -55,7 +55,7 @@ opensds_volume_group_nvme_size: 10G
 ###########
 
 ceph_pools: # Specify pool name randomly
-  - rbd
+  - osdsrbd
   #- ssd
   #- sas
 

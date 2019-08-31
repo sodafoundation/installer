@@ -14,7 +14,7 @@
 
 configFile: /etc/ceph/ceph.conf
 pool:
-  rbd: # change pool name same to ceph pool, but don't change it if you choose lvm backend
+  osdsrbd: # change pool name same to ceph pool, but don't change it if you choose lvm backend
     storageType: block
     availabilityZone: default
     extras:

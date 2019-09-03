@@ -25,37 +25,40 @@ trap exit SIGINT SIGTERM
 [ `id -u` != 0 ] && echo && echo "Run script with sudo, exiting" && echo && exit 1
 
 RC=0
+ACTION=
 BASE=/srv
 BASE_ETC=/etc
+PY_VER=3
 STATEDIR=''
+USER=
 if [ `uname` == "FreeBSD" ]; then
     BASE=/usr/local/etc
     BASE_ETC=/usr/local/etc
-    STATEDIR=states
-    SUBDIR=salt
+    STATEDIR=/states
+    SUBDIR=/salt
+elif [ "$( uname )" = "Darwin" ]; then
+    # macos needs homebrew (unattended https://github.com/Homebrew/legacy-homebrew/issues/46779#issuecomment-162819088)
+    USER=$( stat -f "%Su" /dev/console )
+    HOMEBREW=/usr/local/bin/brew
+    ${HOMEBREW} >/dev/null 2>&1
+    (( $? == 127 )) && su - ${USER} -c 'echo | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 fi
-PILLARFS=${BASE:-/srv}/${SUBDIR}/pillar
-SALTFS=${BASE:-/srv}/salt/${STATEDIR}
+PILLARFS=${BASE:-/srv}${SUBDIR}/pillar
+SALTFS=${BASE:-/srv}/salt${STATEDIR}
 SKIP_UNNECESSARY_CLONE=''
-HOMEBREW=/usr/local/bin/brew
+TERM_PS1=${PS1} && unset PS1
+PROFILE=
+DEBUGG=
 
 # bash version must be modern
 declare -A your solution fork 2>/dev/null || RC=$?
-if (( RC > 0 )) && [ "$( uname )" = "Darwin" ]; then
-    echo "[warning] your bash version is too old ..."
-    # macos needs homebrew (unattended https://github.com/Homebrew/legacy-homebrew/issues/46779#issuecomment-162819088)
-    export PY_VER=3
-    export USER=$( stat -f "%Su" /dev/console )
-    export HOMEBREW=/usr/local/bin/brew
-    ${HOMEBREW} >/dev/null 2>&1
-    (( $? == 127 )) && su - ${USER} -c 'echo | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-    # macos needs modern bash
-    (( RC > 0 )) && (su - ${USER} -c "${HOMEBREW} install bash" || exit 12) && RC=0
-fi
 if (( RC > 0 )); then
-    # linux needs modern bash
-    echo "[error] your bash version is too old ..."
-    exit ${RC}
+    echo "[warning] your bash version is too old ..."
+    if [ "$( uname )" = "Darwin" ]; then
+        (( RC > 0 )) && (su - ${USER} -c "${HOMEBREW} install bash" || exit 12) && RC=0
+    else
+        exit ${RC}
+    fi
 fi
 
 #-----------------------------------------

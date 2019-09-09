@@ -55,7 +55,7 @@ opensds_volume_group_nvme_size: 10G
 ###########
 
 ceph_pools: # Specify pool name randomly
-  - rbd
+  - osdsrbd
   #- ssd
   #- sas
 
@@ -65,6 +65,14 @@ ceph_description: This is a ceph backend service
 ceph_driver_name: ceph
 ceph_config_path: "{{ opensds_driver_config_dir }}/ceph.yaml"
 
+# ceph-ansible playbook branch to be checked out from:
+# https://github.com/ceph/ceph-ansible
+# stable-3.1 requires ansible 2.4 and supports luminous/mimic.
+ceph_ansible_branch: stable-3.1
+
+# constants used in wait logic for ceph stabilization
+ceph_check_interval: 30
+ceph_check_count: 12
 
 ###########
 # CINDER  #

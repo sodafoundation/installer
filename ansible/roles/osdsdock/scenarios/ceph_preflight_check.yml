@@ -1,0 +1,42 @@
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# FIXME(thatsdone): Currently, this task list supports only all-in-one
+# configuration. Essentially, these checks should be done
+# at ceph-ansible playbook side.
+
+- name: load group_vars/ceph/all.yml for pre-flight checking
+  include_vars:
+    file: group_vars/ceph/all.yml
+  vars:
+    # ugly hack.
+    public_network: 'dummy'
+
+- name: check if 'devices:' is empty or not
+  fail:
+    msg: "devices: is empty. Specify at least one device for osd."
+  when: devices is not defined or devices == None
+
+- name: check if device in 'devices:' exists or not
+  fail:
+    msg: "device: {{ item }} does not exist."
+  when: item.split("/")[2] not in ansible_devices.keys()
+  with_items: "{{ devices }}"
+
+- name: check if 'monitor_interface:' exists or not
+  fail:
+    msg: "monitor_interface: {{ monitor_interface  }} does not exist."
+  when: monitor_interface not in ansible_interfaces
+

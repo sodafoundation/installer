@@ -19,11 +19,13 @@
     state: stopped
   when: dashboard_installation_type == "container"
   ignore_errors: true
+  tags: dashboard
 
 - name: kill osdslet and osdsdock and osdsapiserver daemon service
   shell: killall osdslet osdsdock osdsapiserver
   when: install_from != "container"
   ignore_errors: true
+  tags: hotpot
 
 - name: kill osdslet containerized service
   docker_container:
@@ -31,6 +33,7 @@
     image: "{{ controller_docker_image }}"
     state: stopped
   when: install_from == "container"
+  tags: hotpot
 
 - name: kill osdsapiserver containerized service
   docker_container:
@@ -38,6 +41,7 @@
     image: "{{ apiserver_docker_image }}"
     state: stopped
   when: install_from == "container"
+  tags: hotpot
 
 - name: kill osdsdock containerized service
   docker_container:
@@ -45,6 +49,7 @@
     image: "{{ dock_docker_image }}"
     state: stopped
   when: install_from == "container"
+  tags: hotpot
 
 - name: clean etcd db resource
   file:
@@ -52,6 +57,7 @@
     state: absent
     force: yes
   ignore_errors: yes
+  tags: hotpot
 
 - name: stop all gelato services
   shell: docker-compose down
@@ -59,6 +65,7 @@
     chdir: "{{ gelato_work_dir }}"
   when: deploy_project != "hotpot"
   ignore_errors: yes
+  tags: gelato
 
 - name: clean opensds flexvolume plugins binary file if flexvolume specified
   file:
@@ -67,6 +74,7 @@
     force: yes
   ignore_errors: yes
   when: sushi_plugin_type == "flexvolume"
+  tags: sushi
 
 - name: clean opensds external provisioner plugin if flexvolume specified
   shell: |
@@ -76,6 +84,7 @@
     chdir: "{{ sushi_work_dir }}/provisioner"
   ignore_errors: yes
   when: sushi_plugin_type == "flexvolume"
+  tags: sushi
 
 - name: clean opensds csi plugin if csi plugin specified
   shell: |
@@ -85,6 +94,7 @@
     chdir: "{{ sushi_work_dir }}/csi"
   ignore_errors: yes
   when: sushi_plugin_type == "csi"
+  tags: sushi
 
 - name: clean all configuration and log files in created work directories
   file:
@@ -100,10 +110,12 @@
     - "{{ gelato_work_dir }}"
     - "{{ opensds_certs_dir }}"
   ignore_errors: yes
+  tags: clean
 
 - name: include scenarios/auth-keystone.yml when keystone specified
   include_tasks: scenarios/auth-keystone.yml
   when: opensds_auth_strategy == "keystone"
+  tags: keystone
 
 - name: include scenarios/repository.yml if installed from repository
   include_tasks: scenarios/repository.yml
@@ -115,8 +127,9 @@
 
 - name: include scenarios/backend.yml for cleaning up storage backend service
   include_tasks: scenarios/backend.yml
+  tags: dock
 
 - name: include scenarios/orchestration.yml for cleaning up orchestration service
   include_tasks: scenarios/orchestration.yml
   when: enable_orchestration == true
-  tags: orchestration_tag
+  tags: orchestration

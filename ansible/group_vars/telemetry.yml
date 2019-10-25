@@ -50,3 +50,4 @@ kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 
 opensds_conf_file: /etc/opensds/opensds.conf
+telemetry_work_dir: /opt/opensds-telemetry-linux-amd64

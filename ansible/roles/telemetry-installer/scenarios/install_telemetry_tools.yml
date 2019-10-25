@@ -21,22 +21,87 @@
   become: yes
   ignore_errors: yes
 
-# ---------start to install prometheus---------
-- name: add users and give permissions for prometheus
-  shell: "{{ item }}"
+- name: add users (prometheus, node_exporter, pushgateway & alertmanager)
+  user:
+    name: "{{ item }}"
+    shell: /bin/false
+    createhome: no
   with_items:
-    - id -u prometheus || useradd --no-create-home --shell /bin/false prometheus
-    - mkdir -p /etc/prometheus
-    - mkdir -p /var/lib/prometheus
-    - chown prometheus:prometheus /etc/prometheus
-    - chown prometheus:prometheus /var/lib/prometheus
+      - prometheus
+      - node_exporter
+      - pushgateway
+      - alertmanager
+      - grafana
   become: yes
 
-- name: download and install prometheus
+- name: create telemetry directories
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: '0755'
+    state: directory
+  with_items:
+      - { path: '/etc/prometheus', owner: 'prometheus', group: 'prometheus' }
+      - { path: '/var/lib/prometheus', owner: 'prometheus', group: 'prometheus' }
+      - { path: '/etc/alertmanager', owner: 'alertmanager', group: 'alertmanager' }
+      - { path: '/var/lib/alertmanager', owner: 'alertmanager', group: 'alertmanager' }
+      - { path: '/etc/grafana', owner: 'grafana', group: 'grafana' }
+      - { path: '/var/lib/grafana', owner: 'grafana', group: 'grafana' }
+  become: yes
+
+# ---------start to install prometheus---------
+- name: check for telemetry packages existed
+  stat:
+    path: "{{ telemetry_work_dir }}"
+  register: telemetryfilesexisted
+
+- name: create telemetry work directory if it doesn't exist
+  file:
+    path: "{{ telemetry_work_dir }}"
+    state: directory
+  when:
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == false
+
+- name: download and extract the telemetry, prometheus
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v2.9.2/prometheus-2.9.2.linux-amd64.tar.gz
+    dest: "{{ telemetry_work_dir }}/"
+    remote_src: yes
+  become: yes
+  when:
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+
+- name: download and extract the telemetry, node_exporter
+  unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+    dest: "{{ telemetry_work_dir }}/"
+    remote_src: yes
+  become: yes
+  when:
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+
+- name: download and extract the telemetry, pushgateway
+  unarchive:
+    src: https://github.com/prometheus/pushgateway/releases/download/v0.8.0/pushgateway-0.8.0.linux-amd64.tar.gz
+    dest: "{{ telemetry_work_dir }}/"
+    remote_src: yes
+  become: yes
+  when:
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+
+- name: download and extract the telemetry, alertmanager
+  unarchive:
+    src: https://github.com/prometheus/alertmanager/releases/download/v0.16.2/alertmanager-0.16.2.linux-amd64.tar.gz
+    dest: "{{ telemetry_work_dir }}/"
+    remote_src: yes
+  become: yes
+  when:
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+
+- name: install prometheus
   shell: "{{ item }}"
   with_items:
-    - curl -LO https://github.com/prometheus/prometheus/releases/download/v2.9.2/prometheus-2.9.2.linux-amd64.tar.gz
-    - tar xvf prometheus-2.9.2.linux-amd64.tar.gz
     - cp prometheus-2.9.2.linux-amd64/prometheus /usr/local/bin/prometheus
     - cp prometheus-2.9.2.linux-amd64/promtool /usr/local/bin/promtool
     - chown -R prometheus:prometheus /usr/local/bin/prometheus
@@ -45,8 +110,9 @@
     - cp -r prometheus-2.9.2.linux-amd64/console_libraries /etc/prometheus
     - chown -R prometheus:prometheus /etc/prometheus/consoles
     - chown -R prometheus:prometheus /etc/prometheus/console_libraries
-    - rm -rf prometheus-2.9.2.linux-amd64.tar.gz prometheus-2.9.2.linux-amd64
   become: yes
+  args:
+    chdir: "{{ telemetry_work_dir }}"
 
 - name: configuring prometheus
   shell: "{{ item }}"
@@ -70,16 +136,14 @@
   become: yes
 
 # ---------start to install node_exporter---------
-- name: download node_exporter
+- name: install node_exporter
   shell: "{{ item }}"
   with_items:
-    - curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
-    - tar xvf node_exporter-0.17.0.linux-amd64.tar.gz
     - cp node_exporter-0.17.0.linux-amd64/node_exporter /usr/local/bin/
-    - id -u node_exporter || useradd --no-create-home --shell /bin/false node_exporter
     - chown node_exporter:node_exporter /usr/local/bin/node_exporter
-    - rm -rf node_exporter-0.17.0.linux-amd64.tar.gz node_exporter-0.17.0.linux-amd64
   become: yes
+  args:
+    chdir: "{{ telemetry_work_dir }}"
 
 - name: edit node_exporter.service
   shell: "{{ item }}"
@@ -119,16 +183,14 @@
   become: yes
 
 # ---------start to install pushgateway---------
-- name: download pushgateway
+- name: install pushgateway
   shell: "{{ item }}"
   with_items:
-    - curl -LO https://github.com/prometheus/pushgateway/releases/download/v0.8.0/pushgateway-0.8.0.linux-amd64.tar.gz
-    - tar xvf pushgateway-0.8.0.linux-amd64.tar.gz
     - cp pushgateway-0.8.0.linux-amd64/pushgateway /usr/local/bin/
-    - id -u pushgateway || useradd --no-create-home --shell /bin/false pushgateway
     - chown pushgateway:pushgateway /usr/local/bin/pushgateway
-    - rm -rf pushgateway-0.8.0.linux-amd64.tar.gz pushgateway-0.8.0.linux-amd64
   become: yes
+  args:
+    chdir: "{{ telemetry_work_dir }}"
 
 - name: edit pushgateway.service
   shell: "{{ item }}"
@@ -157,17 +219,16 @@
     - systemctl status prometheus
   become: yes
 # ---------start to install sysstat---------
-- name: install sysstat
-  shell: "{{ item }}"
-  with_items:
-    - apt-get install -y sysstat
-    - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
-    - systemctl restart sysstat
+- name: install "sysstat" package
+  apt:
+    name: sysstat
   become: yes
 
-- name: check status of sysstat service
+- name: start sysstat  service and check
   shell: "{{ item }}"
   with_items:
+    - sed -i 's/^ENABLED=.*/ENABLED="true"/g' /etc/default/sysstat
+    - systemctl restart sysstat
     - systemctl status sysstat
   become: yes
 
@@ -230,22 +291,16 @@
     - systemctl status prometheus
   become: yes
 # ---------start to install alertmanager---------
-- name: download alertmanager
+- name: install alertmanager
   shell: "{{ item }}"
   with_items:
-    - curl -LO https://github.com/prometheus/alertmanager/releases/download/v0.16.2/alertmanager-0.16.2.linux-amd64.tar.gz
-    - tar xvf alertmanager-0.16.2.linux-amd64.tar.gz
     - cp alertmanager-0.16.2.linux-amd64/alertmanager /usr/local/bin/
-    - mkdir -p /etc/alertmanager
     - cp alertmanager-0.16.2.linux-amd64/alertmanager.yml /etc/alertmanager
-    - mkdir -p /var/lib/alertmanager
-    - id -u alertmanager || useradd --no-create-home --shell /bin/false alertmanager
-    - chown alertmanager:alertmanager /etc/alertmanager
     - chown alertmanager:alertmanager /usr/local/bin/alertmanager
     - chown alertmanager:alertmanager /etc/alertmanager/alertmanager.yml
-    - chown alertmanager:alertmanager /var/lib/alertmanager
-    - rm -rf alertmanager-0.16.2.linux-amd64.tar.gz alertmanager-0.16.2.linux-amd64
   become: yes
+  args:
+    chdir: "{{ telemetry_work_dir }}"
 
 - name: edit alertmanager.service
   shell: "{{ item }}"
@@ -280,15 +335,6 @@
   become: yes
 
 # ---------start to install grafana---------
-- name: create grafana configuration config/data directory if it doesn't exist
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0755
-  with_items:
-    - "{{ grafana_conf_home }}"
-    - "{{ grafana_data_home }}"
-
 - name: copy configuration for grafana
   shell: "{{ item }}"
   with_items:
@@ -303,19 +349,26 @@
     line: "  url: {{ prometheus_url }}"
     backrefs: yes
 
-- name: install grafana
-  shell: "{{ item }}"
-  with_items:
-    - curl {{ grafana_gpg_key }} | apt-key add -
-    - add-apt-repository "{{ grafana_repositroy }}"
-    - apt-get update
-    - apt install -y grafana
-    - systemctl start grafana-server
+- name: install grafana repository key
+  apt_key:
+    url: "{{ grafana_gpg_key }}"
+    state: present
   become: yes
 
-- name: check status of grafana service
+- name: add grafana repository
+  apt_repository:
+    repo: "{{ grafana_repositroy }}"
+    state: present
+  become: yes
+
+- name: install "grafana" package
+  apt:
+    name: grafana
+  become: yes
+
+- name: start grafana
   shell: "{{ item }}"
   with_items:
+    - systemctl start grafana-server
     - systemctl status grafana-server
   become: yes
-

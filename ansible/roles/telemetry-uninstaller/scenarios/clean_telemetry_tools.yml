@@ -13,21 +13,29 @@
 # limitations under the License.
 
 ---
+# ---------stop all telemetry services ---------
+- name: stop all services
+  shell: "{{ item }}"
+  with_items:
+    - systemctl stop prometheus node_exporter alertmanager pushgateway sysstat lvm_exporter
+  become: yes
+  ignore_errors: yes
+
 # ---------start to clean grafana---------
 - name: clean grafana
   shell: "{{ item }}"
   with_items:
-    - systemctl stop grafana-server
     - apt purge -y grafana
     - add-apt-repository -r "{{ grafana_repositroy }}"
   ignore_errors: yes
   become: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean
 
 # ---------start to clean alertmanager---------
 - name: clean alertmanager
   shell: "{{ item }}"
   with_items:
-    - systemctl stop alertmanager
     - rm -rf /etc/systemd/system/alertmanager.service
     - rm -rf /usr/local/bin/alertmanager
     - rm -rf /etc/alertmanager
@@ -39,7 +47,6 @@
 - name: clean pushgateway
   shell: "{{ item }}"
   with_items:
-    - systemctl stop pushgateway
     - rm -rf /etc/systemd/system/pushgateway.service
     - rm -rf /usr/local/bin/pushgateway
     - userdel -r pushgateway
@@ -50,7 +57,6 @@
 - name: clean node_exporter
   shell: "{{ item }}"
   with_items:
-    - systemctl stop node_exporter
     - rm -rf /etc/systemd/system/node_exporter.service
     - rm -rf /usr/local/bin/node_exporter
     - userdel -r node_exporter
@@ -61,7 +67,6 @@
 - name: clean prometheus
   shell: "{{ item }}"
   with_items:
-    - systemctl stop prometheus
     - rm -rf /etc/systemd/system/prometheus.service
     - rm -rf /etc/prometheus/prometheus.yml
     - rm -rf /etc/prometheus
@@ -76,10 +81,11 @@
 - name: clean sysstat
   shell: "{{ item }}"
   with_items:
-    - systemctl stop sysstat
     - apt purge -y sysstat    
   ignore_errors: yes
   become: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean
 
 # ---------start to clean lvm_exporter---------
 - name: clean lvm_exporter
@@ -87,8 +93,17 @@
   tags:
     - lvm_exporter_clean
   with_items:
-    - systemctl stop lvm_exporter
     - rm -rf /etc/systemd/system/lvm_exporter.service
     - rm -rf /usr/local/bin/lvm_exporter
   ignore_errors: yes
   become: yes
+
+- name: clean all created work directories
+  file:
+    path: "{{ telemetry_work_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  become: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean

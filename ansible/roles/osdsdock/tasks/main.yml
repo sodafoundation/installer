@@ -38,23 +38,40 @@
   when:
     - use_cinder_standalone == true and "cinder" in enabled_backends
 
-- name: configure opensds global info
-  shell: |
-    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+# ---------update opensds config file with opensds global info---------
+- name: remove old opensds global config for dock
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: "{{ item.section }}"
+    state: absent
+  with_items:
+        - { section: osdsdock }
+        - { section: database }
+  become: yes
 
-    [osdsdock]
-    api_endpoint = {{ dock_endpoint }}:{{ dock_port }}
-    log_file = {{ dock_log_file }}
-    # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
-    dock_type = {{ dock_type }}
-    # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
-    enabled_backends = {{ enabled_backends }}
+- name: configure opensds global info osdsdock
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: osdsdock
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: api_endpoint, value: "{{ dock_endpoint }}:{{ dock_port }}" }
+        - { option: log_file, value: "{{ dock_log_file }}" }
+        - { option: dock_type, value: "{{ dock_type }}" }
+        - { option: enabled_backends, value: "{{ enabled_backends }}" }
+  become: yes
 
-    [database]
-    endpoint = {{ db_endpoint }}
-    driver = {{ db_driver }}
-  args:
-    chdir: "{{ opensds_config_dir }}"
+- name: configure opensds global info database
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: database
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: endpoint, value: "{{ db_endpoint }}" }
+        - { option: driver, value: "{{ db_driver }}" }
   become: yes
 
 - name: run osdsdock daemon service

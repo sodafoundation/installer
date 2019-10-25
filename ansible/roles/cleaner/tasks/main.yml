@@ -57,6 +57,7 @@
     state: absent
     force: yes
   ignore_errors: yes
+  when: database_purge is undefined or database_purge == true
   tags: hotpot
 
 - name: stop all gelato services
@@ -110,6 +111,7 @@
     - "{{ gelato_work_dir }}"
     - "{{ opensds_certs_dir }}"
   ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
   tags: clean
 
 - name: include scenarios/auth-keystone.yml when keystone specified

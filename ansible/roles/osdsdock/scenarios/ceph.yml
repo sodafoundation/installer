@@ -168,17 +168,18 @@
 #
 # configure opensds.conf ceph section
 #
-- name: configure ceph section in opensds global info if specify ceph backend
-  shell: |
-    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
-
-    [ceph]
-    name = {{ ceph_name }}
-    description = {{ ceph_description }}
-    driver_name = {{ ceph_driver_name }}
-    config_path = {{ ceph_config_path }}
-  args:
-    chdir: "{{ opensds_config_dir }}"
+- name: configure opensds global info osdsdock ceph
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: ceph
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: name, value: "{{ ceph_name }}" }
+        - { option: description, value: "{{ ceph_description }}" }
+        - { option: driver_name, value: "{{ ceph_driver_name }}" }
+        - { option: config_path, value: "{{ ceph_config_path }}" }
+  become: yes
   ignore_errors: yes
 
 - name: copy opensds ceph backend file to ceph config file if specify ceph backend

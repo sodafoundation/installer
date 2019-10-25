@@ -15,7 +15,7 @@
 ---
 - name: check for hotpot release files existed
   stat:
-    path: "{{ hotpot_tarball_dir }}"
+    path: "{{ hotpot_work_dir }}/bin"
   register: hotpotreleasesexisted
 
 - name: download and extract the hotpot release tarball if not exists
@@ -31,9 +31,13 @@
     path: "{{ hotpot_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
+  when:
+    - hotpotreleasesexisted.stat.exists is undefined or hotpotreleasesexisted.stat.exists == false
 
 - name: copy hotpot tarball into hotpot work directory
   copy:
     src: "{{ hotpot_tarball_dir }}/"
     dest: "{{ hotpot_work_dir }}"
     mode: 0755
+  when:
+    - hotpotreleasesexisted.stat.exists is undefined or hotpotreleasesexisted.stat.exists == false

@@ -49,4 +49,3 @@ lvm_exporter_port: '9601'
 kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 
-opensds_conf_file: /etc/opensds/opensds.conf

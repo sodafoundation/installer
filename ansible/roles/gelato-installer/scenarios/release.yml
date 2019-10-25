@@ -15,7 +15,7 @@
 ---
 - name: check for gelato release files existed
   stat:
-    path: "{{ gelato_tarball_dir }}/docker-compose.yml"
+    path: "{{ gelato_work_dir }}/docker-compose.yml"
   register: gelatoreleasesexisted
 
 - name: download and extract the gelato release tarball if not exists
@@ -31,3 +31,5 @@
   copy:
     src: "{{ gelato_tarball_dir }}/docker-compose.yml"
     dest: "{{ gelato_work_dir }}"
+  when:
+    - gelatoreleasesexisted.stat.exists is undefined or gelatoreleasesexisted.stat.exists == false

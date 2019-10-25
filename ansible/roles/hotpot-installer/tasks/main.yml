@@ -33,32 +33,46 @@
   when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
   become: yes
 
-- name: configure opensds global info
-  shell:
-    cmd: |
-      cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
-
-      [osdslet]
-      api_endpoint = {{ controller_endpoint }}
-      log_file = {{ controller_log_file }}
-
-      [osdsapiserver]
-      api_endpoint = {{ apiserver_endpoint }}
-      log_file = {{ apiserver_log_file }}
-      auth_strategy = {{ opensds_auth_strategy }}
-      # If https is enabled, the default value of cert file
-      # is /opt/opensds-security/opensds/opensds-cert.pem,
-      # and key file is /opt/opensds-security/opensds/opensds-key.pem
-      https_enabled = False
-      beego_https_cert_file =
-      beego_https_key_file =
-
-      [database]
-      endpoint = {{ db_endpoint }}
-      driver = {{ db_driver }}
-  args:
-    chdir: "{{ opensds_config_dir }}"
+# ---------update opensds config file with opensds global info---------
+- name: configure opensds global info osdslet
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: osdslet
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: api_endpoint, value: "{{ controller_endpoint }}" }
+        - { option: log_file, value: "{{ controller_log_file }}" }
   become: yes
+
+- name: configure opensds global info osdsapiserver
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: osdsapiserver
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: api_endpoint, value: "{{ apiserver_endpoint }}" }
+        - { option: log_file, value: "{{ apiserver_log_file }}" }
+        - { option: auth_strategy, value: "{{ opensds_auth_strategy }}" }
+        - { option: https_enabled, value: False }
+        - { option: beego_https_cert_file, value: "" }
+        - { option: beego_https_key_file, value: "" }
+  become: yes
+
+- name: configure opensds global info database
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: database
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: endpoint, value: "{{ db_endpoint }}" }
+        - { option: driver, value: "{{ db_driver }}" }
+  become: yes
+
 # ---------update opensds config file with telemtetry configs---------
 - name: Set opensds.conf with telemetry options in osdsapiserver
   ini_file:

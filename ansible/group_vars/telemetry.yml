@@ -49,3 +49,4 @@ lvm_exporter_port: '9601'
 kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 
+telemetry_work_dir: /opt/opensds-telemetry-linux-amd64

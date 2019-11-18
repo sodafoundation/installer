@@ -105,7 +105,7 @@ pkg-install() {
                  /usr/bin/dnf install -y --best --allowerasing ${PACKAGES} || exit 1
              elif [ -f "/usr/bin/yum" ]; then
                  /usr/bin/yum update -y || exit 1 
-                 /usr/bin/yum install -y ${PACKAGES} || exit 1 
+                 /usr/bin/yum install -y ${PACKAGES} --skip-broken || exit 1 
              elif [[ -f "/usr/bin/apt-get" ]]; then
                  /usr/bin/apt-get update --fix-missing -y || exit 1
                  /usr/bin/apt-add-repository universe

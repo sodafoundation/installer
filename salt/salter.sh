@@ -507,6 +507,35 @@ salter-engine() {
     esac
 }
 
+cli-options() {
+    (( $# == 0 )) && usage
+    case ${1} in
+    add|remove|edit|show)   ACTION=${1} && shift ;;
+    bootstrap)              ACTION=add ;;
+    install)                echo "install is deprecated - use 'add' instead" && ACTION=add && shift ;;
+    menu)                   ACTION=add && shift ;;   ## not maintained
+    *)                      usage ;;
+    esac
+    PROFILE="$( echo ${1%%.*} )"
+    shift   #check for options
+
+    while getopts ":i:l:u:" option; do
+        case "${option}" in
+        i)  PS1=TERM_PS1 ;;
+        l)  case ${OPTARG} in
+            'all'|'garbage'|'trace'|'debug'|'warning'|'error') DEBUGG="-l${OPTARG}" && set -xv
+               ;;
+            'quiet'|'info') DEBUGG="-l${OPTARG}"
+               ;;
+            *) DEBUGG="-lwarning"
+            esac ;;
+        u)  USER=${OPTARG}
+            ([ "${USER}" == "username" ] || [ -z "${USER}" ]) && usage
+        esac
+    done
+    shift $((OPTIND-1))
+}
+
 #########################################################################
 # SOLUTION: Copyright 2019 The OpenSDS Authors
 #########################################################################
@@ -579,5 +608,6 @@ custom-postinstall() {
 
 developer-definitions
 solution-definitions
+cli-options $*
 salter-engine
 exit $?

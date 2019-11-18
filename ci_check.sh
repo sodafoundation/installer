@@ -39,3 +39,17 @@ sed -i 's/^enable_orchestration: .*/enable_orchestration: '"false"'/g' ansible/g
 sed -i 's/^install_from: .*/install_from: '"container"'/g' ansible/group_vars/common.yml
 sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
 sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts
+
+# Check installer optimization with both Telemetry and Orchestration enabled using release type
+sed -i 's/^enable_telemetry_tools: .*/enable_telemetry_tools: '"true"'/g' ansible/group_vars/telemetry.yml
+sed -i 's/^enable_orchestration: .*/enable_orchestration: '"true"'/g' ansible/group_vars/orchestration.yml
+sed -i 's/^source_purge: .*/source_purge: '"false"'/g' ansible/group_vars/common.yml
+sed -i 's/^database_purge: .*/database_purge: '"false"'/g' ansible/group_vars/common.yml
+sed -i 's/^install_from: .*/install_from: '"release"'/g' ansible/group_vars/common.yml
+# Validate the installation Install -> Partial Clean -> Install -> Full clean
+sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts
+sed -i 's/^source_purge: .*/source_purge: '"true"'/g' ansible/group_vars/common.yml
+sed -i 's/^database_purge: .*/database_purge: '"true"'/g' ansible/group_vars/common.yml
+sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts

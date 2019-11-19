@@ -23,17 +23,17 @@
     - thin-provisioning-tools
     - nfs-kernel-server
 
-- name: configure nfs section in opensds global info if specify nfs backend
-  shell: |
-    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
-
-    [nfs]
-    name = {{ nfs_name }}
-    description = {{ nfs_description }}
-    driver_name = {{ nfs_driver_name }}
-    config_path = {{ nfs_config_path }}
-  args:
-    chdir: "{{ opensds_config_dir }}"
+- name: configure opensds global info osdsdock nfs
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: nfs
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: name, value: "{{ nfs_name }}" }
+        - { option: description, value: "{{ nfs_description }}" }
+        - { option: driver_name, value: "{{ nfs_driver_name }}" }
+        - { option: config_path, value: "{{ nfs_config_path }}" }
   become: yes
 
 - name: copy opensds nfs backend file to nfs config path if specify nfs backend

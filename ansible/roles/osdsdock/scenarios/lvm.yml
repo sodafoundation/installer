@@ -23,17 +23,17 @@
     - thin-provisioning-tools
     - ibverbs-utils
 
-- name: configure lvm section in opensds global info if specify lvm backend
-  shell: |
-    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
-
-    [lvm]
-    name = {{ lvm_name }}
-    description = {{ lvm_description }}
-    driver_name = {{ lvm_driver_name }}
-    config_path = {{ lvm_config_path }}
-  args:
-    chdir: "{{ opensds_config_dir }}"
+- name: configure opensds global info osdsdock lvm
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: lvm
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: name, value: "{{ lvm_name }}" }
+        - { option: description, value: "{{ lvm_description }}" }
+        - { option: driver_name, value: "{{ lvm_driver_name }}" }
+        - { option: config_path, value: "{{ lvm_config_path }}" }
   become: yes
 
 - name: copy opensds lvm backend file to lvm config path if specify lvm backend

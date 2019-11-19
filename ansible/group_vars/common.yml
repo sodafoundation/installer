@@ -40,3 +40,6 @@ image_tag: v0.6.1
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
 ansible_os_family: Debian
+
+# OpenSDS configuration file
+opensds_conf_file: /etc/opensds/opensds.conf

@@ -13,6 +13,15 @@
 # limitations under the License.
 
 ---
+- name: check port usage
+  wait_for:
+    port: "{{ item }}"
+    timeout: 5
+    state: stopped
+    msg: "Port {{ item }} is not free"
+  with_items:
+    - 80
+  become: yes
 
 - name: install keystone with the script
   shell: "{{ item }}"

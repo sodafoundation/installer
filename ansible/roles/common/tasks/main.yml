@@ -40,6 +40,10 @@
     - python-pip
     - open-iscsi
 
+- name: install requests package with pip
+  pip:
+    name: requests
+
 - name: install Ubuntu system packages
   package:
     name: "{{ item }}"

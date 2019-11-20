@@ -4,10 +4,9 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: csi-configmap-opensdsplugin
+  name: csi-configmap-opensdsplugin-block
 data:
   opensdsendpoint: {{ .Values.data.opensdsEndpoint }}
-  opensdsstoragetype: {{ .Values.data.opensdsStorageType }}
   opensdsauthstrategy: {{ .Values.data.opensdsAuthStrategy }}
   osauthurl: {{ .Values.data.osAuthURL }}
   osusername: {{ .Values.data.osUsername }}

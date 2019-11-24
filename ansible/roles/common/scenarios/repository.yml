@@ -15,7 +15,7 @@
 ---
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
-  
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:
@@ -42,10 +42,13 @@
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds"
 
-- name: copy hotpot binary files into hotpot work directory
+- name: copy hotpot binary and openapi files into hotpot work directory
   copy:
-    src: "{{ go_path }}/src/github.com/opensds/opensds/build/out/"
-    dest: "{{ hotpot_work_dir }}"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ go_path }}/src/github.com/opensds/opensds/build/out/", dest: "{{ hotpot_work_dir }}" }
+    - { src: "{{ go_path }}/src/github.com/opensds/opensds/openapi-spec/", dest: "{{ hotpot_work_dir }}" }
 
 - name: change the permissions of hotpot executable files
   file:

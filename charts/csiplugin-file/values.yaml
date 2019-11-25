@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-image: opensdsio/csiplugin:v0.6.1
+image: opensdsio/csiplugin-file:v0.6.1
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
 # ImageRestartPolicy: valid values are "Never", and "Always"
@@ -11,7 +11,6 @@ imageRestartPolicy: Never
 data:
   opensdsEndpoint: http://127.0.0.1:50040
   opensdsAuthStrategy: keystone
-  opensdsStorageType: block
   osAuthURL: http://127.0.0.1/identity
   osUsername: admin
   osPassword: opensds@123
@@ -23,17 +22,17 @@ data:
 
 # csipluginProvisioner spec
 csipluginProvisioner:
-  name: csi-provisioner-opensdsplugin
+  name: csi-provisioner-opensdsplugin-file
   replicaCount: 1
 # csipluginAttacher spec
 csipluginAttacher:
-  name: csi-attacher-opensdsplugin
+  name: csi-attacher-opensdsplugin-file
   replicaCount: 1
 # csipluginNodeplugin spec
 csipluginNodeplugin:
-  name: csi-nodeplugin-opensdsplugin
+  name: csi-nodeplugin-opensdsplugin-file
   replicaCount: 1
 # csipluginSnapshotter spec
 csipluginSnapshotter:
-  name: csi-snapshotter-opensdsplugin
+  name: csi-snapshotter-opensdsplugin-file
   replicaCount: 1

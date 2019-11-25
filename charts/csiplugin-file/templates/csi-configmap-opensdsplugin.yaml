@@ -1,0 +1,18 @@
+# This YAML file contains configmap objects,
+# which are necessary to run csi opensds plugin.
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: csi-configmap-opensdsplugin-file
+data:
+  opensdsendpoint: {{ .Values.data.opensdsEndpoint }}
+  opensdsauthstrategy: {{ .Values.data.opensdsAuthStrategy }}
+  osauthurl: {{ .Values.data.osAuthURL }}
+  osusername: {{ .Values.data.osUsername }}
+  ospassword: {{ .Values.data.osPassword }}
+  ostenantname: {{ .Values.data.osTenantName }}
+  osprojectname: {{ .Values.data.osProjectName }}
+  osuserdomainid: {{ .Values.data.osUserDomainId }}
+  passwordencrypter: {{ .Values.data.passwordEncrypter }}
+  enableEncrypted: {{ .Values.data.enableEncrypted }}

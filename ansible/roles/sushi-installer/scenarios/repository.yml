@@ -59,8 +59,8 @@
     dest: "{{ sushi_work_dir }}/csi/"
     directory_mode: yes
   with_items:
-    - "{{ go_path }}/src/github.com/opensds/nbp/csi/server/deploy"
-    - "{{ go_path }}/src/github.com/opensds/nbp/csi/server/examples"
+    - "{{ go_path }}/src/github.com/opensds/nbp/csi/deploy"
+    - "{{ go_path }}/src/github.com/opensds/nbp/csi/examples"
 
 - name: copy sushi flexvolume binary file into sushi work directory
   copy:

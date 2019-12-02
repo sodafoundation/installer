@@ -48,3 +48,21 @@
   copy:
     src: "{{ go_path }}/src/github.com/opensds/multi-cloud/docker-compose.yml"
     dest: "{{ gelato_work_dir }}"
+
+- name: copy gelato s3 into gelato work directory
+  copy:
+    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/s3"
+    dest: "{{ gelato_work_dir }}"
+  ignore_errors: yes
+
+- name: copy gelato examples into gelato work directory
+  copy:
+    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/examples"
+    dest: "{{ gelato_work_dir }}"
+  ignore_errors: yes
+
+- name: copy gelato tidb_data into gelato work directory
+  file:
+    path: "{{ gelato_work_dir }}/tidb_data"
+    state: directory
+  ignore_errors: yes

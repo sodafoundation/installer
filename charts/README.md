@@ -10,10 +10,16 @@ command:
 helm install opensds/ --name={ service_name } --namespace={ kubernetes_namespace }
 ```
 
-## csiplugin
-`csiplugin` charts is designed for deploying opensds csiplugin module in one command:
+## csiplugin-block
+`csiplugin-block` charts is designed for deploying opensds csi block plugin module in one command:
 ```shell
-helm install csiplugin/ --name={ service_name } --namespace={ kubernetes_namespace }
+helm install csiplugin-block/ --name={ service_name } --namespace={ kubernetes_namespace }
+```
+
+## csiplugin-file
+`csiplugin-file` charts is designed for deploying opensds csi file plugin module in one command:
+```shell
+helm install csiplugin-file/ --name={ service_name } --namespace={ kubernetes_namespace }
 ```
 
 ## servicebroker

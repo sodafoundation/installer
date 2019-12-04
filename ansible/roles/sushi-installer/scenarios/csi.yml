@@ -13,32 +13,62 @@
 # limitations under the License.
 
 ---
-- name: Configure opensds endpoint IP in opensds csi plugin
+- name: Configure opensds endpoint IP in opensds csi block plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-opensdsplugin.yaml"
     regexp: '^  opensdsendpoint'
     line: '  opensdsendpoint: {{ hotpot_endpoint }}'
     backup: yes
 
-- name: Configure opensds auth strategy in opensds csi plugin
+- name: Configure opensds auth strategy in opensds csi block plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-opensdsplugin.yaml"
     regexp: '^  opensdsauthstrategy'
     line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
     backup: yes
 
-- name: Configure keystone os auth url in opensds csi plugin
+- name: Configure keystone os auth url in opensds csi block plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/csi-configmap-opensdsplugin.yaml"
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-opensdsplugin.yaml"
     regexp: '^  osauthurl'
     line: '  osauthurl: {{ keystone_os_auth_url }}'
     backup: yes
   when: opensds_auth_strategy == "keystone"
 
-- name: Prepare and deploy opensds csi plugin
+- name: Prepare and deploy opensds csi block plugin
   shell: |
     . /etc/profile
-    kubectl create -f deploy/kubernetes
+    kubectl create -f deploy/kubernetes/block
+  args:
+    chdir: "{{ sushi_work_dir }}/csi"
+  ignore_errors: yes
+
+- name: Configure opensds endpoint IP in opensds csi file plugin
+  lineinfile:
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-opensdsplugin.yaml"
+    regexp: '^  opensdsendpoint'
+    line: '  opensdsendpoint: {{ hotpot_endpoint }}'
+    backup: yes
+
+- name: Configure opensds auth strategy in opensds csi file plugin
+  lineinfile:
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-opensdsplugin.yaml"
+    regexp: '^  opensdsauthstrategy'
+    line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
+    backup: yes
+
+- name: Configure keystone os auth url in opensds csi file plugin
+  lineinfile:
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-opensdsplugin.yaml"
+    regexp: '^  osauthurl'
+    line: '  osauthurl: {{ keystone_os_auth_url }}'
+    backup: yes
+  when: opensds_auth_strategy == "keystone"
+
+- name: Prepare and deploy opensds csi file plugin
+  shell: |
+    . /etc/profile
+    kubectl create -f deploy/kubernetes/file
   args:
     chdir: "{{ sushi_work_dir }}/csi"
   ignore_errors: yes

@@ -62,6 +62,12 @@
     - "{{ go_path }}/src/github.com/opensds/nbp/csi/deploy"
     - "{{ go_path }}/src/github.com/opensds/nbp/csi/examples"
 
+# flex volume support not available going forward
+#- name: copy sushi flexvolume binary file into sushi work directory
+#  copy:
+#    src: "{{ go_path }}/src/github.com/opensds/nbp/build/out/flexvolume.server.opensds"
+#    dest: "{{ sushi_work_dir }}/flexvolume/opensds"
+#    mode: 0755
 
 - name: copy sushi provisioner deploy scripts into sushi work directory
   copy:

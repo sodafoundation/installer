@@ -17,6 +17,14 @@
   pip:
     name: docker-py
 
+- name: install Ubuntu system packages for multi-cloud
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libradosstriper-dev
+  when: ansible_os_family == "Debian"
+
 - name: create gelato work directory if it doesn't exist
   file:
     path: "{{ item }}"

@@ -260,13 +260,23 @@ opensds-service-opensds-db-6cfcd45598-jxx2f            1/1     Running   0      
 opensds-service-opensds-dock-76b95bf9dd-78smj          1/1     Running   0          1h40m
 ```
 
-Now you are ready to run csiplugin helm chart:
+Now you are ready to run csiplugin helm chart
 
+For using csi block plugin:
+    
+```$xslt
+# Please update csiplugin-block/values.yaml before running csiplugin helm chart
+vim csiplugin-block/values.yaml # Change the opensds endpoint to { opensds_cluster_ip }
+helm install csiplugin-block/ --name={ csiplugin_service_name }
+````
+
+For using csi file plugin:
+    
 ```
-# Please update csiplugin/values.yaml before running csiplugin helm chart
-vim csiplugin/values.yaml # Change the opensds endpoint to { opensds_cluster_ip }
-helm install csiplugin/ --name={ csiplugin_service_name }
-```
+# Please update csiplugin-file/values.yaml before running csiplugin helm chart
+vim csiplugin-file/values.yaml # Change the opensds endpoint to { opensds_cluster_ip }
+helm install csiplugin-file/ --name={ csiplugin_service_name }
+````    
 
 ## Testing steps
 ### OpenSDS CLI tool
@@ -321,11 +331,18 @@ tar zxvf opensds-sushi-v0.6.1-linux-amd64.tar.gz
 cd /opensds-sushi-linux-amd64
 ```
 
-* Create example nginx application
+* To create example nginx application using csi block plugin, use below command
 
 ```
-kubectl create -f csi/examples/kubernetes/nginx.yaml
+kubectl create -f csi/examples/kubernetes/block/nginx.yaml
 ```
+
+* To create example nginx application using csi file plugin, use below command
+
+```
+kubectl create -f csi/examples/kubernetes/file/nginx.yaml
+```
+
 
 This example will mount a opensds volume into `/var/lib/www/html`.
 
@@ -333,7 +350,8 @@ This example will mount a opensds volume into `/var/lib/www/html`.
 
 Clean up example nginx application and opensds CSI pods by the following commands:
 ```bash
-kubectl delete -f csi/examples/kubernetes/nginx.yaml
+kubectl delete -f csi/examples/kubernetes/block/nginx.yaml
+kubectl delete -f csi/examples/kubernetes/file/nginx.yaml
 ```
 
 If you want to remove the existing cluster, please run the command below:
@@ -341,3 +359,5 @@ If you want to remove the existing cluster, please run the command below:
 helm delete { csiplugin_service_name } --purge 
 helm delete { opensds_service_name } --purge
 ```
+
+

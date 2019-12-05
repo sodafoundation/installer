@@ -31,3 +31,21 @@
   copy:
     src: "{{ gelato_tarball_dir }}/docker-compose.yml"
     dest: "{{ gelato_work_dir }}"
+
+- name: copy gelato s3 into gelato work directory
+  copy:
+    src: "{{ gelato_tarball_dir }}/s3"
+    dest: "{{ gelato_work_dir }}"
+  ignore_errors: yes
+
+- name: copy gelato examples into gelato work directory
+  copy:
+    src: "{{ gelato_tarball_dir }}/examples"
+    dest: "{{ gelato_work_dir }}"
+  ignore_errors: yes
+
+- name: copy gelato tidb_data into gelato work directory
+  file:
+    path: "{{ gelato_tarball_dir }}/tidb_data"
+    state: directory
+  ignore_errors: yes

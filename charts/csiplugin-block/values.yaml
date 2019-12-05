@@ -1,0 +1,38 @@
+# Default values for opensds csi plugin.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image: opensdsio/csiplugin-block:v0.6.1
+# ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+imagePullPolicy: IfNotPresent
+# ImageRestartPolicy: valid values are "Never", and "Always"
+imageRestartPolicy: Never
+# Please modify data fields in real environment
+data:
+  opensdsEndpoint: http://127.0.0.1:50040
+  opensdsAuthStrategy: keystone
+  osAuthURL: http://127.0.0.1/identity
+  osUsername: admin
+  osPassword: opensds@123
+  osTenantName: admin
+  osProjectName: admin
+  osUserDomainId: default
+  passwordEncrypter: aes
+  enableEncrypted: F
+
+# csipluginProvisioner spec
+csipluginProvisioner:
+  name: csi-provisioner-opensdsplugin-block
+  replicaCount: 1
+# csipluginAttacher spec
+csipluginAttacher:
+  name: csi-attacher-opensdsplugin-block
+  replicaCount: 1
+# csipluginNodeplugin spec
+csipluginNodeplugin:
+  name: csi-nodeplugin-opensdsplugin-block
+  replicaCount: 1
+# csipluginSnapshotter spec
+csipluginSnapshotter:
+  name: csi-snapshotter-opensdsplugin-block
+  replicaCount: 1

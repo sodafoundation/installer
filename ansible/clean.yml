@@ -44,6 +44,6 @@
   tasks:
     - import_role:
         name: telemetry-uninstaller
-      tags: telemetry_tag
       when:
         - enable_telemetry_tools == true
+  tags: telemetry

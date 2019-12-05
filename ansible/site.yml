@@ -34,8 +34,10 @@
   tasks:
     - import_role:
         name: common
+      tags: common
     - import_role:
         name: auth-installer
+  tags: keystone
 
 - name: Deploy OpenSDS Hotpot-installer
   hosts: controllers
@@ -58,6 +60,7 @@
         name: hotpot-installer
       when:
         - deploy_project != "gelato"
+  tags: hotpot
 
 - name: Deploy Dock
   hosts: docks
@@ -77,6 +80,7 @@
         name: osdsdock
       when:
         - deploy_project != "gelato"
+  tags: dock
 
 - name: Install Gelato
   hosts: controllers
@@ -96,6 +100,7 @@
         name: gelato-installer
       when:
         - deploy_project != "hotpot"
+  tags: gelato
 
 - name: Install Sushi
   hosts: controllers
@@ -115,6 +120,7 @@
         name: sushi-installer
       when:
         - sushi_plugin_type != "hotpot_only"
+  tags: sushi
 
 - name: deploy dashboard
   hosts: controllers
@@ -127,6 +133,7 @@
   tasks:
     - import_role:
         name: dashboard-installer
+  tags: dashboard
 
 - name: deploy tools for telemetry
   hosts: controllers
@@ -139,9 +146,9 @@
   tasks:
     - import_role:
         name: telemetry-installer
-      tags: telemetry_tag
       when:
         - enable_telemetry_tools == true
+  tags: telemetry
 
 - name: Install Orchestration Manager
   hosts: controllers
@@ -154,6 +161,6 @@
   tasks:
     - import_role:
         name: orchestration-installer
-      tags: orchestration_tag
       when:
         - enable_orchestration == true
+  tags: orchestration

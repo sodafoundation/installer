@@ -28,15 +28,18 @@
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/opensds"
   when: deploy_project != "gelato"
+  tags: hotpot
 
 - name: clean opensds multi-cloud engine data
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
   when: deploy_project != "hotpot"
+  tags: gelato
 
 - name: clean opensds northbound plugin data
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/opensds/nbp"
   when: sushi_plugin_type != "hotpot_only"
+  tags: sushi

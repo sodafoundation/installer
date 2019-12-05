@@ -24,3 +24,4 @@
     - "{{ orchestration_tarball_dir }}"
     - "{{ gelato_tarball_dir }}"
   ignore_errors: yes
+  tags: clean

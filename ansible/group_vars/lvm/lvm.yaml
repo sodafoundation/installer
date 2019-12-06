@@ -26,7 +26,10 @@ pool:
       ioConnectivity:
         accessProtocol: iscsi
         maxIOPS: 7000000
+        minIOPS: 1000000
         maxBWS: 600
+        minBWS: 100
+        latency: 100
       advanced:
         diskType: SSD
         latency: 5ms

@@ -195,7 +195,8 @@ pool:
     extras:
       dataStorage:
         provisioningPolicy: Thin
-        isSpaceEfficient: false
+        compression: false
+        deduplication: false
       ioConnectivity:
         accessProtocol: iscsi
         maxIOPS: 7000000
@@ -217,7 +218,8 @@ pool:
     extras:
       dataStorage:
         provisioningPolicy: Thin
-        isSpaceEfficient: true
+        compression: true
+        deduplication: true
       ioConnectivity:
         accessProtocol: rbd
         maxIOPS: 6000000

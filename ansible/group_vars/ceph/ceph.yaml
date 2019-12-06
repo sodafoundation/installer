@@ -20,7 +20,8 @@ pool:
     extras:
       dataStorage:
         provisioningPolicy: Thin
-        isSpaceEfficient: true
+        compression: true
+        deduplication: true
       ioConnectivity:
         accessProtocol: rbd
         maxIOPS: 6000000

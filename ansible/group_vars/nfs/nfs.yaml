@@ -21,7 +21,8 @@ pool:
     extras:
       dataStorage:
         provisioningPolicy: Thin
-        isSpaceEfficient: false
+        compression: false
+        deduplication: false
         storageAccessCapability:
           - Read
           - Write

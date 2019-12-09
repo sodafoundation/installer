@@ -15,7 +15,7 @@
 ---
 - name: check for sushi release files existed
   stat:
-    path: "{{ sushi_tarball_dir }}"
+    path: "{{ sushi_work_dir }}/bin"
   register: sushireleasesexisted
 
 - name: download and extract the sushi release tarball if not exists
@@ -31,9 +31,13 @@
     path: "{{ sushi_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
+  when:
+    - sushireleasesexisted.stat.exists is undefined or sushireleasesexisted.stat.exists == false
 
 - name: copy sushi tarball into sushi work directory
   copy:
     src: "{{ sushi_tarball_dir }}/"
     dest: "{{ sushi_work_dir }}"
     mode: 0755
+  when:
+    - sushireleasesexisted.stat.exists is undefined or sushireleasesexisted.stat.exists == false

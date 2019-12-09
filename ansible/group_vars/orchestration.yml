@@ -34,8 +34,8 @@ orchestration_ip: "{{ host_ip }}"
 orchestration_port: "5000"
 workflow_ip: "{{ host_ip }}"
 
-# Orchestration installation types are: 'container', 'source_code'
-orchestration_installation_type: source_code
+# Orchestration installation types are: 'repository', 'release' and 'container''
+orchestration_installation_type: "{{ install_from }}"
 
 # These fields are NOT suggested to be modifie
 orchestration_work_dir: /opt/orchestration-linux-amd64

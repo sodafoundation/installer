@@ -18,8 +18,6 @@
   stat:
     path: "{{ orchestration_work_dir }}"
   register: orchestrationexisted
-  when:
-    - install_from == "repository"
 
 - name: Download opensds-orchestration source code if not exists
   git:
@@ -27,24 +25,16 @@
     dest: "{{ orchestration_work_dir }}"
     version: "{{ orchestration_repo_branch }}"
   when:
-    - install_from == "repository"
+    - orchestration_installation_type == "repository"
     - orchestrationexisted.stat.exists is undefined or orchestrationexisted.stat.exists == false
-
-# Install and start OpenSDS Workflow Manager from release
-- name: check for orchestration release files existed
-  stat:
-    path: "{{ orchestration_tarball_dir }}"
-  register: orchestrationreleasesexisted
-  when:
-    - install_from == "release"
 
 - name: ensure orchestration directory exists
   file:
     path: "{{ orchestration_tarball_dir }}"
     state: directory
   when:
-    - install_from == "release"
-    - orchestrationreleasesexisted.stat.exists is undefined or orchestrationreleasesexisted.stat.exists == false
+    - orchestration_installation_type == "release"
+    - orchestrationexisted.stat.exists is undefined or orchestrationexisted.stat.exists == false
 
 - name: download and extract the orchestration release tarball if not exists
   unarchive:
@@ -53,8 +43,8 @@
     remote_src: yes
     extra_opts: [--strip-components=1]
   when:
-    - install_from == "release"
-    - orchestrationreleasesexisted.stat.exists is undefined or orchestrationreleasesexisted.stat.exists == false
+    - orchestration_installation_type == "release"
+    - orchestrationexisted.stat.exists is undefined or orchestrationexisted.stat.exists == false
 
 - name: copy orchestration tarball into orchestration work directory
   copy:
@@ -63,4 +53,5 @@
     mode: 0755
   become: yes
   when:
-    - install_from == "release"
+    - orchestration_installation_type == "release"
+    - orchestrationexisted.stat.exists is undefined or orchestrationexisted.stat.exists == false

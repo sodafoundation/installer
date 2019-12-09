@@ -56,6 +56,7 @@
       when: common_role_done is not defined
     - import_role:
         name: osdsdb
+      tags: etcd
     - import_role:
         name: hotpot-installer
       when:

@@ -57,6 +57,7 @@
     state: absent
     force: yes
   ignore_errors: yes
+  when: database_purge is undefined or database_purge == true
   tags: hotpot
 
 - name: stop all gelato services
@@ -97,7 +98,18 @@
   when: sushi_plugin_type == "csi"
   tags: sushi
 
-- name: clean all configuration and log files in created work directories
+- name: clean all configuration and log files
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_log_dir }}"
+    - "{{ opensds_certs_dir }}"
+  ignore_errors: yes
+
+- name: clean all created work directories
   file:
     path: "{{ item }}"
     state: absent
@@ -105,12 +117,10 @@
   with_items:
     - "{{ hotpot_work_dir }}"
     - "{{ sushi_work_dir }}"
-    - "{{ opensds_config_dir }}"
-    - "{{ opensds_log_dir }}"
     - "{{ dashboard_work_dir }}"
     - "{{ gelato_work_dir }}"
-    - "{{ opensds_certs_dir }}"
   ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
   tags: clean
 
 - name: include scenarios/auth-keystone.yml when keystone specified

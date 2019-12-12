@@ -15,11 +15,11 @@
 ---
 - name: Get orchestration manager source code
   include_tasks: scenarios/source-code.yml
-  when: orchestration_installation_type == "source_code"
+  when: orchestration_installation_type != "container"
 
 - name: Install stackstorm workflow engine
   include_tasks: scenarios/stackstorm.yml
 
 - name: Start orchestration manager
   include_tasks: scenarios/start-orchestration.yml
-  when: orchestration_installation_type == "source_code"
+  when: orchestration_installation_type != "container"

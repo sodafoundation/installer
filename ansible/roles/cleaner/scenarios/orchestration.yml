@@ -17,11 +17,9 @@
   shell: "{{ item }}"
   with_items:
     - kill -9 `lsof -i :5000 |  grep 5000 | awk '{print $2}'`
-  args:
-    chdir: "{{ st2_installer_work_dir }}"
-    warn: false
   ignore_errors: yes
   become: yes
+  tags: orchestration
 
 - name: bring down stackstorm docker instances
   shell: "{{ item }}"
@@ -32,6 +30,7 @@
     warn: false
   ignore_errors: yes
   become: yes
+  tags: orchestration
   
 - name: clean up all Orchestration directories
   file:
@@ -41,4 +40,10 @@
   with_items:
     - "{{ st2_installer_work_dir }}"
     - "{{ orchestration_work_dir }}"
+    - "{{ orchestration_tarball_dir }}"
   ignore_errors: yes
+  tags:
+    - orchestration
+    - clean
+  when:
+    - source_purge is undefined or source_purge != false

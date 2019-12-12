@@ -13,17 +13,24 @@
 # limitations under the License.
 
 ---
+- name: Check if etcd is running
+  shell: ps aux | grep etcd | grep -v grep
+  ignore_errors: true
+  register: service_etcd_status
+
 - name: check for etcd existed
   stat:
     path: "{{ etcd_dir }}/etcd"
   ignore_errors: yes
   register: etcdexisted
+  when: service_etcd_status.rc != 0
 
 - name: download etcd
   get_url:
     url={{ etcd_download_url }}
     dest=/opt/{{ etcd_tarball }}
   when:
+    - service_etcd_status.rc != 0
     - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
 
 - name: extract the etcd tarball
@@ -31,12 +38,8 @@
     src=/opt/{{ etcd_tarball }}
     dest=/opt/
   when:
+    - service_etcd_status.rc != 0
     - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
-
-- name: Check if etcd is running
-  shell: ps aux | grep etcd | grep -v grep
-  ignore_errors: true
-  register: service_etcd_status
 
 - name: run etcd daemon service
   shell: nohup ./etcd --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }}  --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }} &>>etcd.log &

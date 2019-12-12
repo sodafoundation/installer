@@ -21,6 +21,7 @@
     - install_keystone_with_docker != true
   ignore_errors: yes
   become: yes
+  tags: keystone
   
 - name: uninstall opensds keystone with the docker
   shell: "{{ item }}"
@@ -30,6 +31,7 @@
     - install_keystone_with_docker == true
   ignore_errors: yes
   become: yes
+  tags: keystone
   
 - name: cleanup opensds keystone
   shell: "{{ item }}"
@@ -39,3 +41,4 @@
     - keystone_uninstall_purge == true
   ignore_errors: yes
   become: yes
+  tags: keystone

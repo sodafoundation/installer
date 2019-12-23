@@ -22,7 +22,7 @@ dummy:
 # GENERAL #
 ###########
 
-# Change it according to your backend, currently support 'lvm', 'ceph', 'cinder', 'nfs'
+# Change it according to your backend, currently support 'lvm', 'ceph', 'cinder', 'nfs', 'ontap'
 # DISABLE OR COMMENT "enabled_backends: lvm" IF YOU WANT TO INSTALL DIFFERENT BACKENDS ON MULTI-NODES AND mention it in "local.hosts" file
 # Comment this part if you want to use different backends on different nodes
 enabled_backends: lvm,nfs #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder,nfs
@@ -113,3 +113,14 @@ nfs_description: This is a nfs backend service
 nfs_driver_name: nfs
 nfs_config_path: "{{ opensds_driver_config_dir }}/nfs.yaml"
 opensds_nfs_group: opensds-nfs
+
+####################
+#   NetApp ONTAP   #
+####################
+
+
+# These fields are NOT suggested to be modified
+ontap_name: netapp ontap backend
+ontap_description: This is a netapp ontap backend service
+ontap_driver_name: ontap
+ontap_config_path: "{{ opensds_driver_config_dir }}/ontap.yaml"

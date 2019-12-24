@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-image: opensdsio/csiplugin-block:v0.6.1
+image: opensdsio/csiplugin-block:v0.8.0
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
 # ImageRestartPolicy: valid values are "Never", and "Always"

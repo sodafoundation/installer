@@ -17,7 +17,7 @@
 - name: configure opensds global info osdsdock ontap
   ini_file:
     path: "{{ opensds_conf_file }}"
-    section: ontap
+    section: netapp_ontap_san
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items:

@@ -13,7 +13,7 @@ deployments:
 osdsapiserver:
   name: apiserver
   replicaCount: 1
-  image: opensdsio/opensds-apiserver:v0.7.0
+  image: opensdsio/opensds-apiserver:v0.8.0
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
   # Attributes of the apiserver's service resource
@@ -40,7 +40,7 @@ osdsapiserver:
 osdslet:
   name: controller
   replicaCount: 1
-  image: opensdsio/opensds-controller:v0.7.0
+  image: opensdsio/opensds-controller:v0.8.0
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
   # Attributes of the controller's service resource
@@ -67,7 +67,7 @@ osdslet:
 osdsdock:
   name: dock
   replicaCount: 1
-  image: opensdsio/opensds-dock:v0.7.0
+  image: opensdsio/opensds-dock:v0.8.0
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
   # Attributes of the dock's service resource
@@ -94,7 +94,7 @@ osdsdock:
 osdsdashboard:
   name: dashboard
   replicaCount: 1
-  image: opensdsio/dashboard:v0.7.0
+  image: opensdsio/dashboard:v0.8.0
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
   # Attributes of the dashboard's service resource

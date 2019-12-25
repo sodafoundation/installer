@@ -33,6 +33,11 @@
   when:
     - "'nfs' in enabled_backends"
 
+- name: include scenarios/ontap.yml
+  include: scenarios/ontap.yml
+  when:
+    - "'netapp_ontap_san' in enabled_backends"
+
 - name: include scenarios/cinder_standalone.yml
   include: scenarios/cinder_standalone.yml
   when:

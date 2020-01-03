@@ -47,7 +47,7 @@ gelato_remote_url: https://github.com/opensds/multi-cloud.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-gelato_release: "{{ release_version }}"
+gelato_release: v0.8.0
 
 # These fields are NOT suggested to be modified
 gelato_download_url: https://github.com/opensds/multi-cloud/archive/{{ gelato_release }}.tar.gz

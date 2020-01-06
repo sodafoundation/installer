@@ -41,6 +41,33 @@
   shell: docker ps | grep -i "stackstorm/stackstorm:latest" | awk '{print $1}'
   register : container_id
 
+- name: Check if any known st2 services are not running
+  shell: docker exec -i {{ container_id.stdout }} st2ctl status | grep "is not running" | grep -v st2chatops
+  become: yes
+  ignore_errors: yes
+  register : st2_status
+
+- name: Restart postgress to fix mistral issue
+  shell:
+    _raw_params: |
+      docker exec -i {{ container_id.stdout }} st2ctl stop
+      docker-compose stop postgres
+      docker system prune --volumes --force
+      docker-compose up -d postgres
+      docker exec -i {{ container_id.stdout }} st2ctl start
+  args:
+    chdir: "{{ st2_installer_work_dir }}"
+    executable: /bin/bash
+  become: true
+  when: st2_status.rc == 0
+
+- name: Check if restarting of mistral services is success
+  shell: docker exec -i {{ container_id.stdout }} st2ctl status | grep "is not running" | grep "mistral"
+  become: yes
+  when: st2_status.rc == 0
+  register: mistral_status
+  failed_when: mistral_status.rc == 0
+
 - name: Copy and register opensds packs to stackstorm container
   shell: "{{ item }}"
   with_items:

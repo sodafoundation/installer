@@ -34,8 +34,8 @@ deploy_project: all
 install_from: release
 # These fields below will specify the tag based on install_from type
 repo_branch: master
-release_version: v0.6.1
-image_tag: v0.6.1
+release_version: v0.9.0
+image_tag: v0.9.0
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
@@ -50,4 +50,3 @@ database_purge: true
 
 # OpenSDS configuration file
 opensds_conf_file: /etc/opensds/opensds.conf
-

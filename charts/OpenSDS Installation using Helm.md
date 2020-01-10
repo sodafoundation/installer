@@ -290,9 +290,9 @@ helm install csiplugin-file/ --name={ csiplugin_service_name }
 ### OpenSDS CLI tool
 #### Download cli tool
 ```
-wget https://github.com/opensds/opensds/releases/download/v0.9.0/opensds-hotpot-v0.9.0-linux-amd64.tar.gz
-tar zxvf opensds-hotpot-v0.9.0-linux-amd64.tar.gz
-cp opensds-hotpot-v0.9.0-linux-amd64/bin/* /usr/local/bin
+wget https://github.com/opensds/opensds/releases/download/v0.10.0/opensds-hotpot-v0.10.0-linux-amd64.tar.gz
+tar zxvf opensds-hotpot-v0.10.0-linux-amd64.tar.gz
+cp opensds-hotpot-v0.10.0-linux-amd64/bin/* /usr/local/bin
 chmod 755 /usr/local/bin/osdsctl
 
 export OPENSDS_ENDPOINT=http://{{ apiserver_cluster_ip }}:50040
@@ -334,8 +334,8 @@ Logout of the dashboard as admin and login the dashboard again as a non-admin us
 
 #### For CSI Plugin
 ```
-wget https://github.com/opensds/nbp/releases/download/v0.9.0/opensds-sushi-v0.9.0-linux-amd64.tar.gz
-tar zxvf opensds-sushi-v0.9.0-linux-amd64.tar.gz
+wget https://github.com/opensds/nbp/releases/download/v0.10.0/opensds-sushi-v0.10.0-linux-amd64.tar.gz
+tar zxvf opensds-sushi-v0.10.0-linux-amd64.tar.gz
 cd /opensds-sushi-linux-amd64
 ```
 

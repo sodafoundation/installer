@@ -14,7 +14,7 @@
 
 ---
 - name: Check if etcd is running
-  shell: ps aux | grep etcd | grep -v grep
+  shell: ps aux | grep etcd | grep {{ etcd_host }}:{{ etcd_port }} | grep -v grep
   ignore_errors: true
   register: service_etcd_status
 

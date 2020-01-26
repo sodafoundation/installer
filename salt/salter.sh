@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #-------------------------------------------------------------------------
-# Copyright 2019 Saltstack Formulas
+# Copyright 2020 Saltstack Formulas
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 trap exit SIGINT SIGTERM
 [ `id -u` != 0 ] && echo -e "\nRun script with sudo, exiting\n" && exit 1
 
-SALT_VERSION='stable 2019.2.0'    ##stick with stable previous release
+SALT_VERSION='stable 2019.2.3'    ##go with latest stable release
 RC=0
 ACTION=
 BASE=/srv
@@ -263,7 +263,12 @@ salt-bootstrap() {
              elif [ -f "/usr/sbin/pkg" ]; then
                  PACKAGES="git wget psutils"
              fi
-             pkg-add ${PACKAGES} 2>/dev/null
+             if [ -f "/usr/bin/yum" ]; then
+                 # centos/rhel have many old package versions so we allow newer upstream packages
+                 pkg-add ${PACKAGES} --skip-broken 2>/dev/null
+             else
+                 pkg-add ${PACKAGES} 2>/dev/null
+             fi
              if (( $? > 0 )); then
                 echo "Failed to add packages"
                 exit 1
@@ -537,14 +542,14 @@ cli-options() {
 }
 
 #########################################################################
-# SOLUTION: Copyright 2019 The OpenSDS Authors
+# SOLUTION: Copyright 2020 The OpenSDS Authors
 #########################################################################
 
 developer-definitions() {
     fork['uri']="https://github.com"
     fork['entity']="noelmcloughlin"
     fork['branch']="fixes"
-    fork['solutions']="salter packages-formula golang-formula postgres-formula"
+    fork['solutions']="salt-formula golang-formula"
 }
 
 solution-definitions() {
@@ -568,7 +573,7 @@ solution-definitions() {
     mkdir -p ${solution[saltdir]} ${solution[pillars]} ${your[saltdir]} ${your[pillars]} ${solution[logdir]} ${PILLARFS} ${BASE_ETC}/salt 2>/dev/null
 }
 
-custom-install() {
+custom-add() {
     echo
     ### required - salter-engine is insufficient ###
     gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${solution[alias]} ${solution[subdir]}
@@ -591,7 +596,7 @@ custom-install() {
     cp ${SALTFS}/namespaces/${solution['entity']}/${solution[repo]}/conf/*.json /etc/opensds/ 2>/dev/null
 }
 
-custom-postinstall() {
+custom-postadd() {
     LXD=${SALTFS}/namespaces/saltstack-formulas/lxd-formula
     # see https://github.com/saltstack-formulas/lxd-formula#clone-and-symlink
     [ -d "${LXD}/_modules" ] && ln -s ${LXD}/_modules ${SALTFS}/_modules 2>/dev/null

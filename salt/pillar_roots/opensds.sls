@@ -662,6 +662,7 @@ packages:
     wanted:
       - tox
       - click
+      - requests
   pkgs:
     wanted: []  ## populated by opensds-formula in map.jinja
     unwanted:

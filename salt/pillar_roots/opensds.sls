@@ -50,6 +50,16 @@ opensds:
           password: {{ site.devstack_password }}
           tenantName: {{ site.hotpot_service }}
 
+      nfs:
+        tgtBindIp: {{ site.tgtBindIp }}
+
+      netapp_ontap_san:
+        version: 1
+        username: {{ site.hotpot_service }}
+        password: {{ site.devstack_password }}
+        managementLIF: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        dataLIF: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+
       lvm:
         tgtBindIp: {{ site.tgtBindIp }}
         pool:
@@ -671,7 +681,7 @@ packages:
       - mariadb-server
       - mariadb-backup
       - mariadb-errmsg
-     {%- elif grains.os == "Ubuntu" %}
+     {%- elif grains.os == "Ubuntu" %}  {# what about debian os? #}
       - libmysqlclient-dev
       - libmysqlclient20
       - mysql-client-5.7
@@ -680,6 +690,9 @@ packages:
       - mysql-server
       - mysql-server-5.7
       - mysql-server-core-5.7
+     {%- endif %}
+     {%- if grains.os_family == "Debian" %}
+      - libradosstriper-dev
      {%- endif %}
   archives:
     wanted:
@@ -727,3 +740,4 @@ packages:
       - {{ site.sushi_path }}
       - {{ site.hotpot_path }}
       # /var/lib/mysql/
+

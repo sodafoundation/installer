@@ -664,7 +664,7 @@ packages:
       - click
       - requests
   pkgs:
-    wanted: []  ## populated by opensds-formula in map.jinja
+    #wanted: populated by map.jinja
     unwanted:
       - unattended-upgrades
      {%- if grains.os_family in ('RedHat',) %}
@@ -697,13 +697,6 @@ packages:
      {%- endif %}
   archives:
     wanted:
-      kubectl:
-        dest: /usr/local/bin
-        dl:
-          format: bin
-          source: {{ site.kubectl_url }}
-          hashsum: {{ site.kubectl_hashsum }}
-
       {{ site.gelato_service }}:
         dest: {{ site.gelato_path }}/{{ site.gelato_service }}
         options: '--strip-components=1'
@@ -742,3 +735,20 @@ packages:
       - {{ site.hotpot_path }}
       # /var/lib/mysql/
 
+kubernetes:
+  dir:
+    binary: /usr/local/bin
+  kubectl:
+    version: '1.15.0'
+    linux:
+      altpriority: 1000
+    pkg:
+      binary:
+        source_hash: ecec7fe4ffa03018ff00f14e228442af5c2284e57771e4916b977c20ba4e5b39  #linux amd64 binary
+  minikube:
+    version: '1.2.0'
+    linux:
+      altpriority: 1000
+    pkg:
+      binary:
+        source_hash: eabd027438953d29a4b0f7b810c801919cc13bef3ebe7aff08c9534ac2b091ab  #linux amd64 binary

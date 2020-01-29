@@ -28,6 +28,9 @@ help:
 	@echo Refer to the README file in each subdirectory for specific
 	@echo details for that installer type.
 
+test:
+	$(BASE_DIR)/tests/main.sh -a
+
 version:
 	@echo ${VERSION}
 

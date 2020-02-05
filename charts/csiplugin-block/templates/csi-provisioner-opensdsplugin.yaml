@@ -4,15 +4,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.csipluginProvisioner.name }}
+  name: {{ .Values.csiProvisioner.name }}
   labels:
-    app: {{ template "csipluginProvisioner.fullname" . }}
+    app: {{ template "csiProvisioner.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "csipluginProvisioner.fullname" . }}
+    app: {{ template "csiProvisioner.fullname" . }}
     release: {{ .Release.Name }}
   ports:
     - name: dummy
@@ -22,30 +22,31 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csipluginProvisioner.fullname" . }}
+  name: {{ template "csiProvisioner.fullname" . }}
   labels:
-    app: {{ template "csipluginProvisioner.fullname" . }}
+    app: {{ template "csiProvisioner.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: {{ .Values.csipluginProvisioner.name }}
-  replicas: {{ .Values.csipluginProvisioner.replicaCount }}
+  serviceName: {{ .Values.csiProvisioner.name }}
+  replicas: {{ .Values.csiProvisioner.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "csipluginProvisioner.fullname" . }}
+      app: {{ template "csiProvisioner.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csipluginProvisioner.fullname" . }}
+      name: {{ template "csiProvisioner.fullname" . }}
       labels:
-        app: {{ template "csipluginProvisioner.fullname" . }}
+        app: {{ template "csiProvisioner.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccount: csi-provisioner-block
       containers:
         - name: csi-provisioner
-          image: quay.io/k8scsi/csi-provisioner:v1.1.0
+          image: "{{ .Values.csiProvisioner.image.repository }}:{{ .Values.csiProvisioner.image.tag }}"
+          imagePullPolicy: {{ .Values.csiProvisioner.image.pullPolicy }}
           args:
             - "--provisioner=csi-opensdsplugin"
             - "--csi-address=$(ADDRESS)"
@@ -54,12 +55,12 @@ spec:
           env:
             - name: ADDRESS
               value: /csi/csi.sock
-          imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: {{ template "csipluginProvisioner.fullname" . }}
-          image: {{ .Values.image }}
+        - name: {{ template "csiProvisioner.fullname" . }}
+          image: "{{ .Values.opensdsCsiBlockPlugin.image.repository }}:{{ .Values.opensdsCsiBlockPlugin.image.tag }}"
+          imagePullPolicy: {{ .Values.opensdsCsiBlockPlugin.image.pullPolicy }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
@@ -123,7 +124,6 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin-block
                   key: osuserdomainid
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - name: socket-dir
               mountPath: /csi

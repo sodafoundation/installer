@@ -4,22 +4,22 @@
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csipluginNodeplugin.fullname" . }}
+  name: {{ template "csiNodeplugin.fullname" . }}
   labels:
-    app: {{ template "csipluginNodeplugin.fullname" . }}
+    app: {{ template "csiNodeplugin.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "csipluginNodeplugin.fullname" . }}
+      app: {{ template "csiNodeplugin.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csipluginNodeplugin.fullname" . }}
+      name: {{ template "csiNodeplugin.fullname" . }}
       labels:
-        app: {{ template "csipluginNodeplugin.fullname" . }}
+        app: {{ template "csiNodeplugin.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       tolerations:
@@ -29,7 +29,8 @@ spec:
       hostNetwork: true
       containers:
         - name: node-driver-registrar
-          image: quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
+          image: "{{ .Values.csiNodeplugin.image.repository }}:{{ .Values.csiNodeplugin.image.tag }}"
+          imagePullPolicy: {{ .Values.csiNodeplugin.image.pullPolicy }}
           args:
             - "--v=5"
             - "--csi-address=/csi/csi.sock"
@@ -41,19 +42,19 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-          imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
-        - name: {{ template "csipluginNodeplugin.fullname" . }}
+        - name: {{ template "csiNodeplugin.fullname" . }}
           securityContext:
             privileged: true
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: {{ .Values.image }}
+          image: "{{ .Values.opensdsCsiBlockPlugin.image.repository }}:{{ .Values.opensdsCsiBlockPlugin.image.tag }}"
+          imagePullPolicy: {{ .Values.opensdsCsiBlockPlugin.image.pullPolicy }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
@@ -122,7 +123,6 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin-block
                   key: osuserdomainid
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/kubelet/plugins/csi-opensdsplugin-block

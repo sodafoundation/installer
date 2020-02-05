@@ -1,12 +1,22 @@
 # Default values for opensds csi plugin.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
 
-image: opensdsio/csiplugin-block:v0.6.1
-# ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
-imagePullPolicy: IfNotPresent
-# ImageRestartPolicy: valid values are "Never", and "Always"
-imageRestartPolicy: Never
+serviceAccounts:
+  # Specifies whether serviceaccount resources should be created
+  create: true
+
+#opensdsCsiBlockPlugin spec
+opensdsCsiBlockPlugin:
+  image:
+    repository: opensdsio/csiplugin-block
+    tag: v0.9.0
+    # pullPolicy: valid values are "IfNotPresent", "Never", and "Always"
+    pullPolicy: IfNotPresent
+
 # Please modify data fields in real environment
 data:
   opensdsEndpoint: http://127.0.0.1:50040
@@ -20,19 +30,58 @@ data:
   passwordEncrypter: aes
   enableEncrypted: F
 
-# csipluginProvisioner spec
-csipluginProvisioner:
-  name: csi-provisioner-opensdsplugin-block
+# csiProvisioner spec
+csiProvisioner:
+  name: csi-provisioner
+  image:
+    repository: quay.io/k8scsi/csi-provisioner
+    tag: v1.4.0
+    pullPolicy: IfNotPresent
   replicaCount: 1
-# csipluginAttacher spec
-csipluginAttacher:
-  name: csi-attacher-opensdsplugin-block
+
+# csiAttacher spec
+csiAttacher:
+  name: csi-attacher
+  image:
+    repository: quay.io/k8scsi/csi-attacher
+    tag: v2.1.0
+    pullPolicy: IfNotPresent
   replicaCount: 1
-# csipluginNodeplugin spec
-csipluginNodeplugin:
-  name: csi-nodeplugin-opensdsplugin-block
+
+# csiNodeplugin spec
+csiNodeplugin:
+  name: csi-nodeplugin
+  image:
+    repository: quay.io/k8scsi/csi-node-driver-registrar
+    tag: v1.1.0
+    pullPolicy: IfNotPresent
   replicaCount: 1
-# csipluginSnapshotter spec
-csipluginSnapshotter:
-  name: csi-snapshotter-opensdsplugin-block
+
+# csiClusterDriverRegistrar spec
+csiClusterDriverRegistrar:
+  name: csi-clusterdriverregistrar
+  image:
+    repository: quay.io/k8scsi/csi-cluster-driver-registrar
+    tag: v1.0.1
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+# csiSnapshotter spec
+csiSnapshotter:
+  name: csi-snapshotter
+  enabled: true
+  image:
+    repository: quay.io/k8scsi/csi-snapshotter
+    tag: v1.2.2
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+# csiResizer spec
+csiResizer:
+  name: csi-resizer
+  enabled: false
+  image:
+    repository: quay.io/k8scsi/csi-resizer
+    tag: v0.4.0
+    pullPolicy: IfNotPresent
   replicaCount: 1

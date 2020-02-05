@@ -1,11 +1,5 @@
 # This YAML defines all API objects to create RBAC roles for csi node plugin.
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: csi-nodeplugin-block
-
----
+{{- if .Values.rbac.create }}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -42,3 +36,4 @@ roleRef:
   kind: ClusterRole
   name: csi-nodeplugin-block
   apiGroup: rbac.authorization.k8s.io
+{{- end }}

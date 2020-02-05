@@ -4,15 +4,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.csipluginAttacher.name }}
+  name: {{ .Values.csiAttacher.name }}
   labels:
-    app: {{ template "csipluginAttacher.fullname" . }}
+    app: {{ template "csiAttacher.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "csipluginAttacher.fullname" . }}
+    app: {{ template "csiAttacher.fullname" . }}
     release: {{ .Release.Name }}
   ports:
     - name: dummy
@@ -22,44 +22,45 @@ spec:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: {{ template "csipluginAttacher.fullname" . }}
+  name: {{ template "csiAttacher.fullname" . }}
   labels:
-    app: {{ template "csipluginAttacher.fullname" . }}
+    app: {{ template "csiAttacher.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: {{ .Values.csipluginAttacher.name }}
-  replicas: {{ .Values.csipluginAttacher.replicaCount }}
+  serviceName: {{ .Values.csiAttacher.name }}
+  replicas: {{ .Values.csiAttacher.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "csipluginAttacher.fullname" . }}
+      app: {{ template "csiAttacher.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "csipluginAttacher.fullname" . }}
+      name: {{ template "csiAttacher.fullname" . }}
       labels:
-        app: {{ template "csipluginAttacher.fullname" . }}
+        app: {{ template "csiAttacher.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccount: csi-attacher-block
       containers:
         - name: csi-attacher
-          image: quay.io/k8scsi/csi-attacher:v1.1.1
+          image: "{{ .Values.csiAttacher.image.repository }}:{{ .Values.csiAttacher.image.tag }}"
+          imagePullPolicy: {{ .Values.csiAttacher.image.pullPolicy }}
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
-          imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
             - name: iscsi-dir
               mountPath: /etc/iscsi/
         - name: cluster-driver-registrar
-          image: quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
+          image: "{{ .Values.csiClusterDriverRegistrar.image.repository }}:{{ .Values.csiClusterDriverRegistrar.image.tag }}"
+          imagePullPolicy: {{ .Values.csiClusterDriverRegistrar.image.pullPolicy }}
           args:
             - "--v=5"
             - "--pod-info-mount-version=\"v1\""
@@ -70,8 +71,9 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: {{ template "csipluginAttacher.fullname" . }}
-          image: {{ .Values.image }}
+        - name: {{ template "csiAttacher.fullname" . }}
+          image: "{{ .Values.opensdsCsiBlockPlugin.image.repository }}:{{ .Values.opensdsCsiBlockPlugin.image.tag }}"
+          imagePullPolicy: {{ .Values.opensdsCsiBlockPlugin.image.pullPolicy }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
@@ -140,7 +142,6 @@ spec:
                 configMapKeyRef:
                   name: csi-configmap-opensdsplugin-block
                   key: osuserdomainid
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - name: socket-dir
               mountPath: /csi

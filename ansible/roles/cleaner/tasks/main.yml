@@ -16,7 +16,7 @@
   docker_container:
     name: dashboard
     image: "{{ dashboard_docker_image }}"
-    state: stopped
+    state: absent
   when: dashboard_installation_type == "container"
   ignore_errors: true
   tags: dashboard
@@ -31,7 +31,7 @@
   docker_container:
     name: osdslet
     image: "{{ controller_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -39,7 +39,7 @@
   docker_container:
     name: apiserver
     image: "{{ apiserver_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -47,7 +47,7 @@
   docker_container:
     name: osdsdock
     image: "{{ dock_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 

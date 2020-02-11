@@ -44,7 +44,7 @@ cleanup_verify () {
 }
 
 purge_verify () {
-    host_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl host list | grep test_host | cut -f2 -d " "`
+    host_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl host list | grep test-host | cut -f2 -d " "`
     vol_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl volume list | grep test-001 | grep -v error | cut -f2 -d " "`
 
     if [ -n "$host_id" ] && [ -n "$vol_id" ]; then
@@ -129,11 +129,11 @@ verify_host () {
     block_profile_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl profile list | grep default_block | cut -f2 -d " "`
 
     # Create, List and Delete Host
-    ./osdsctl host create test_host --ip=$HOST_IP
+    ./osdsctl host create test-host --ip=$HOST_IP
     ./osdsctl host list
-    host_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl host list | grep test_host | cut -f2 -d " "`
+    host_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl host list | grep test-host | cut -f2 -d " "`
     check_empty_error host $host_id
-    ./osdsctl host update $host_id --hostName='test_host_updated'
+    ./osdsctl host update $host_id --hostName='test-host-updated'
     ./osdsctl host show $host_id
     ./osdsctl host  delete $host_id    
 
@@ -145,8 +145,8 @@ verify_attachment () {
     ./osdsctl profile create '{"name": "default_block", "description": "default policy", "storageType": "block"}'
     block_profile_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl profile list | grep default_block | cut -f2 -d " "`
 
-    ./osdsctl host create test_host_attach --ip=$HOST_IP
-    host_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl host list | grep test_host_attach | cut -f2 -d " "`
+    ./osdsctl host create test-host-attach --ip=$HOST_IP
+    host_id=`/opt/opensds-hotpot-linux-amd64/bin/osdsctl host list | grep test-host-attach | cut -f2 -d " "`
     check_empty_error host $host_id
     initiator=`cat /etc/iscsi/initiatorname.iscsi  | grep "InitiatorName=" | cut -f2 -d "="`
     

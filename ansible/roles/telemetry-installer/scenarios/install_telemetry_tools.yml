@@ -13,6 +13,36 @@
 # limitations under the License.
 
 ---
+- name: run osdslet daemon service
+  shell:
+    cmd: |
+      i=0
+      while
+        i="$((i+1))"
+        [ "$i" -lt 4 ]
+      do
+        nohup bin/osdslet > osdslet.out 2> osdslet.err < /dev/null &
+        sleep 5
+        ps aux | grep osdslet | grep -v grep && break
+      done
+  args:
+    chdir: "{{ telemetry_work_dir }}"
+
+- name: run osdsapiserver daemon service
+  shell:
+    cmd: |
+      i=0
+      while
+        i="$((i+1))"
+        [ "$i" -lt 4 ]
+      do
+        nohup bin/osdsapiserver > osdsapiserver.out 2> osdsapiserver.err < /dev/null &
+        sleep 5
+        ps aux | grep osdsapiserver | grep -v grep && break
+      done
+  args:
+    chdir: "{{ telemetry_work_dir }}"
+
 # ----Stop all services to all ansible re-run in case of failure-----
 - name: stop all services
   shell: "{{ item }}"

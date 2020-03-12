@@ -16,7 +16,7 @@
   docker_container:
     name: dashboard
     image: "{{ dashboard_docker_image }}"
-    state: stopped
+    state: absent
   when: dashboard_installation_type == "container"
   ignore_errors: true
   tags: dashboard
@@ -31,7 +31,7 @@
   docker_container:
     name: osdslet
     image: "{{ controller_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -39,7 +39,7 @@
   docker_container:
     name: apiserver
     image: "{{ apiserver_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -47,7 +47,7 @@
   docker_container:
     name: osdsdock
     image: "{{ dock_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -98,6 +98,28 @@
   when: sushi_plugin_type == "csi"
   tags: sushi
 
+- name: include scenarios/auth-keystone.yml when keystone specified
+  include_tasks: scenarios/auth-keystone.yml
+  when: opensds_auth_strategy == "keystone"
+  tags: keystone
+
+- name: include scenarios/repository.yml if installed from repository
+  include_tasks: scenarios/repository.yml
+  when: install_from == "repository"
+
+- name: include scenarios/release.yml if installed from release
+  include_tasks: scenarios/release.yml
+  when: install_from == "release"
+
+- name: include scenarios/backend.yml for cleaning up storage backend service
+  include_tasks: scenarios/backend.yml
+  tags: dock
+
+- name: include scenarios/orchestration.yml for cleaning up orchestration service
+  include_tasks: scenarios/orchestration.yml
+  when: enable_orchestration == true
+  tags: orchestration
+
 - name: clean all configuration and log files
   file:
     path: "{{ item }}"
@@ -122,25 +144,3 @@
   ignore_errors: yes
   when: source_purge is undefined or source_purge != false
   tags: clean
-
-- name: include scenarios/auth-keystone.yml when keystone specified
-  include_tasks: scenarios/auth-keystone.yml
-  when: opensds_auth_strategy == "keystone"
-  tags: keystone
-
-- name: include scenarios/repository.yml if installed from repository
-  include_tasks: scenarios/repository.yml
-  when: install_from == "repository"
-
-- name: include scenarios/release.yml if installed from release
-  include_tasks: scenarios/release.yml
-  when: install_from == "release"
-
-- name: include scenarios/backend.yml for cleaning up storage backend service
-  include_tasks: scenarios/backend.yml
-  tags: dock
-
-- name: include scenarios/orchestration.yml for cleaning up orchestration service
-  include_tasks: scenarios/orchestration.yml
-  when: enable_orchestration == true
-  tags: orchestration

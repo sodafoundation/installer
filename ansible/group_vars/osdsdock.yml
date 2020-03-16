@@ -25,13 +25,13 @@ dummy:
 # Change it according to your backend, currently support 'lvm', 'ceph', 'cinder', 'nfs', 'netapp_ontap_san'
 # DISABLE OR COMMENT "enabled_backends: lvm" IF YOU WANT TO INSTALL DIFFERENT BACKENDS ON MULTI-NODES AND mention it in "local.hosts" file
 # Comment this part if you want to use different backends on different nodes
-enabled_backends: lvm,nfs #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder,nfs
+enabled_backends: lvm #For Multi-backend add backends here, for eg. enabled_backends: lvm,ceph,cinder,nfs
 
 # Change it according to your node type (host or target), currently support
 # 'provisioner', 'attacher'
 #COMMENT THIS "dock_endpoint" if you want to install on MULTI-NODE and mention it in "local.hosts" file
 dock_endpoint: localhost # **For multinodes dock-point should be mentioned in local.hosts file and THIS SHOULD BE COMMENTED
-dock_port: 50050
+dock_port: 50062
 dock_type: provisioner
 
 ###########

@@ -88,6 +88,31 @@ OPENSDS_GLOBAL_CONFIG_DOC
 cp "$TOP_DIR/../../conf/policy.json" "$OPENSDS_CONFIG_DIR"
 }
 
+telemetry_conf() {
+mkdir -p $OPENSDS_CONFIG_DIR
+cat > "$OPENSDS_CONFIG_DIR/opensds.conf" << OPENSDS_GLOBAL_CONFIG_DOC
+[keystone_authtoken]
+memcached_servers = $HOST_IP:11211
+signing_dir = /var/cache/telemetry
+cafile = /opt/stack/data/ca-bundle.pem
+auth_uri = http://$HOST_IP/identity
+project_domain_name = Default
+project_name = service
+user_domain_name = Default
+password = $STACK_PASSWORD
+# Whether to encrypt the password. If enabled, the value of the password must be ciphertext.
+enable_encrypted = False
+# Encryption and decryption tool. Default value is aes. The decryption tool can only decrypt the corresponding ciphertext.
+pwd_encrypter = aes
+username = $TELEMETRY_SERVER_NAME
+auth_url = http://$HOST_IP/identity
+auth_type = password
+
+OPENSDS_GLOBAL_CONFIG_DOC
+
+cp "$TOP_DIR/../../conf/policy.json" "$OPENSDS_CONFIG_DIR"
+}
+
 gelato_conf() {
     local compose_file=/opt/opensds-gelato-linux-amd64/docker-compose.yml
     sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY=keystone," $compose_file
@@ -144,6 +169,24 @@ create_user_and_endpoint_for_hotpot(){
     openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" public "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
     openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" internal "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
     openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" admin "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
+}
+
+create_user_and_endpoint_for_telemetry(){
+    . "$DEV_STACK_DIR/openrc" admin admin
+    if openstack user show $TELEMETRY_SERVER_NAME &>/dev/null; then
+        return
+    fi
+
+    openstack user create --domain default --password "$STACK_PASSWORD" "$TELEMETRY_SERVER_NAME"
+    openstack role add --project service --user "$TELEMETRY_SERVER_NAME" admin
+    openstack group create service
+    openstack group add user service "$$TELEMETRY_SERVER_NAME"
+    openstack role add service --project service --group service
+    openstack group add user admins admin
+    openstack service create --name "telemetry$TELEMETRY_VERSION" --description "Telemetry Block Storage" "telemetry$TELEMETRY_VERSION"
+    openstack endpoint create --region RegionOne "telemetry$TELEMETRY_VERSION" public "http://$HOST_IP:50060/$TELEMETRY_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "telemetry$TELEMETRY_VERSION" internal "http://$HOST_IP:50060/$TELEMETRY_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "telemetry$TELEMETRY_VERSION" admin "http://$HOST_IP:50060/$TELEMETRY_VERSION/%(tenant_id)s"
 }
 
 create_user_and_endpoint_for_gelato(){
@@ -230,6 +273,16 @@ config_hotpot() {
     fi
 }
 
+config_telemetry() {
+    telemetry_conf
+    if [ "docker" != "$1" ] ;then
+        create_user_and_endpoint_for_telemetry
+    else
+        keystone_credentials
+        python ${TOP_DIR}/ministone.py endpoint_bulk_update "telemetry$TELEMETRY_VERSION" "http://${HOST_IP}:50060/$TELEMETRY_VERSION/%(tenant_id)s"
+    fi
+}
+
 config_gelato() {
     gelato_conf
     if [ "docker" != "$1" ] ;then
@@ -263,7 +316,7 @@ case "$# $1" in
     uninstall $2
     ;;
     "3 config")
-    [[ X$2 != Xhotpot && X$2 != Xgelato ]] && echo "config type must be hotpot or gelato" && exit 1
+    [[ X$2 != Xhotpot && X$2 != Xgelato && X$2 != Xtelemetry ]] && echo "config type must be hotpot or gelato or telemetry" && exit 1
     echo "Starting config $2 ..."
     config_$2 $3
     ;;

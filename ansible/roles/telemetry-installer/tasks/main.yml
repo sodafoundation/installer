@@ -13,7 +13,205 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/install_telemetry_tools.yml
-  tags:
-    - telemetry
+- name: set script dir permissions
+  file:
+    path: ./script
+    mode: 0755
+    recurse: yes
+  become: yes
+
+- name: check ansible version
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/check_ansible_version.sh
+  become: yes
+
+- name: run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: install system packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - make
+    - gcc
+    - python-pip
+    - open-iscsi
+
+- name: install requests package with pip
+  pip:
+    name: requests
+
+- name: install Ubuntu system packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - librados-dev
+    - librbd-dev
+  when: ansible_os_family == "Debian" and deploy_project == "telemetry"
+
+- name: create telemetry work directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ telemetry_work_dir }}"
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_driver_config_dir }}"
+    - "{{ opensds_log_dir }}"
+  when: deploy_project == "telemetry"
+
+- name: include scenarios/repository.yml when installing from repository
   include: scenarios/install_telemetry_tools.yml
+  when: install_from == "repository" and deploy_project == "telemetry"
+
+- name: copy config templates into opensds global config folder
+  copy:
+    src: ../../../../conf/
+    dest: "{{ opensds_config_dir }}"
+  when: deploy_project == "telemetry"
+
+- name: generate certificates
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/create_cert.sh /opt/opensds-security/
+  become: yes
+
+- name: hotpot keystone configuration when keystone is installed by script
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config hotpot script
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  become: yes
+
+- name: hotpot keystone configuration when keystone is installed by docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config hotpot docker
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
+  become: yes
+
+- name: configure openapi specification
+  copy:
+    src: "/opt/opensds-hotpot-linux-amd64/swagger.yaml"
+    dest: "{{ opensds_config_dir }}"
+  become: yes
+  ignore_errors: true
+
+# ---------update opensds config file with opensds global info---------
+- name: configure opensds global info telemetryctl
+  ini_file:
+    path: "{{ opensds_conf_file }}"
+    section: telemetryctl
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: api_endpoint, value: "{{ controller_endpoint }}" }
+    - { option: log_file, value: "{{ controller_log_file }}" }
+  become: yes
+
+- name: configure opensds global info telemetryapi
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: telemetryapi
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: api_endpoint, value: "{{ apiserver_endpoint }}" }
+    - { option: log_file, value: "{{ apiserver_log_file }}" }
+    - { option: auth_strategy, value: "{{ opensds_auth_strategy }}" }
+    - { option: https_enabled, value: False }
+    - { option: beego_https_cert_file, value: "" }
+    - { option: beego_https_key_file, value: "" }
+  become: yes
+
+- name: configure opensds global info database
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: database
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: endpoint, value: "{{ db_endpoint }}" }
+    - { option: driver, value: "{{ db_driver }}" }
+  become: yes
+
+# ---------update opensds config file with telemtetry configs---------
+- name: Set opensds.conf with telemetry options in telemetryapi
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: telemetryapi
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: prometheus_conf_home, value: "{{ prometheus_conf_home }}" }
+    - { option: prometheus_url, value: "{{ prometheus_url }}" }
+    - { option: prometheus_conf_file, value: "{{ prometheus_conf_file }}" }
+    - { option: alertmgr_conf_home, value: "{{ alertmgr_conf_home }}" }
+    - { option: alertmgr_url, value: "{{ alertmgr_url }}" }
+    - { option: alertmgr_conf_file, value: "{{ alertmgr_conf_file }}" }
+    - { option: grafana_conf_home, value: "{{ grafana_conf_home }}" }
+    - { option: grafana_restart_cmd, value: "{{ grafana_restart_cmd }}" }
+    - { option: grafana_conf_file, value: "{{ grafana_conf_file }}" }
+    - { option: grafana_url, value: "{{ grafana_url }}" }
+    - { option: conf_reload_url, value: "{{ conf_reload_url }}" }
+  become: yes
+  tags: telemetry_conf
+
+- name: Set opensds.conf with telemetry options in telemetryctl
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: telemetryctl
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: prometheus_push_mechanism, value: "{{ prometheus_push_mechanism }}" }
+    - { option: kafka_endpoint, value: "{{ kafka_endpoint }}" }
+    - { option: kafka_topic, value: "{{ kafka_topic }}" }
+    - { option: alertmgr_url, value: "{{ alertmgr_url }}" }
+    - { option: grafana_url, value: "{{ grafana_url }}" }
+  become: yes
+  tags: telemetry_conf
+
+- name: Set push mechanism when NodeExporter is selected
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: telemetryctl
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: node_exporter_watch_folder, value: "{{ node_exporter_watch_folder }}" }
+  become: yes
+  when: prometheus_push_mechanism == 'NodeExporter'
+  tags: telemetry_conf
+
+- name: Set push mechanism when PushGateway is selected
+  ini_file:
+    create: no
+    path: "{{ opensds_conf_file }}"
+    section: telemetryctl
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: prometheus_push_gateway_url, value: "{{ prometheus_push_gateway_url }}" }
+  become: yes
+  when: prometheus_push_mechanism == 'PushGateway'
+  tags: telemetry_conf
+
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/install_telemetry_tools.yml
+  when: install_from == "repository" and deploy_project == "telemetry"
+
+- name: include scenarios/source-code.yml when not installing from container
+  include: scenarios/source-code.yml
+  when: install_from != "container"
+

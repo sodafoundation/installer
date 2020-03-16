@@ -14,6 +14,50 @@
 
 ---
 # ----Stop all services to all ansible re-run in case of failure-----
+- set_fact:
+    go_path: "/root/gopath"
+
+- name: check go_path
+  shell: "{{ item }}"
+  with_items:
+    - echo "The environment variable GOPATH must be set and cannot be an empty string!"
+    - /bin/false
+  when: go_path == ""
+
+- name: check for telemetry source code existed
+  stat:
+    path: "{{ go_path }}/src/github.com/sodafoundation/telemetry"
+  register: telemetryexisted
+
+- name: download telemetry source code if not exists
+  git:
+    repo: "{{ telemetry_remote_url }}"
+    dest: "{{ go_path }}/src/github.com/sodafoundation/telemetry"
+    version: "{{ telemetry_repo_branch }}"
+  when: telemetryexisted.stat.exists is undefined or telemetryexisted.stat.exists == false
+
+- name: build telemetry binary file
+  shell: make
+  environment:
+    GOPATH: "{{ go_path }}"
+  args:
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/telemetry"
+
+- name: copy telemetry binary and openapi files into telemetry work directory
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ go_path }}/src/github.com/sodafoundation/telemetry/build/out/", dest: "{{ telemetry_work_dir }}" }
+    - { src: "{{ go_path }}/src/github.com/opensds/opensds/openapi-spec/", dest: "{{ telemetry_work_dir }}" }
+
+- name: change the permissions of telemetry executable files
+  file:
+    path: "{{ telemetry_work_dir }}/bin"
+    state: directory
+    mode: 0755
+    recurse: yes
+
 - name: stop all services
   shell: "{{ item }}"
   with_items:
@@ -61,7 +105,7 @@
     path: "{{ telemetry_work_dir }}"
     state: directory
   when:
-    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == false
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == true
 
 - name: download and extract the telemetry, prometheus
   unarchive:
@@ -70,7 +114,7 @@
     remote_src: yes
   become: yes
   when:
-    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == true
 
 - name: download and extract the telemetry, node_exporter
   unarchive:
@@ -79,7 +123,7 @@
     remote_src: yes
   become: yes
   when:
-    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == true
 
 - name: download and extract the telemetry, pushgateway
   unarchive:
@@ -88,7 +132,7 @@
     remote_src: yes
   become: yes
   when:
-    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == true
 
 - name: download and extract the telemetry, alertmanager
   unarchive:
@@ -97,7 +141,7 @@
     remote_src: yes
   become: yes
   when:
-    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == False
+    - telemetryfilesexisted.stat.exists is undefined or telemetryfilesexisted.stat.exists == true
 
 - name: install prometheus
   shell: "{{ item }}"
@@ -241,6 +285,7 @@
     - cp /opt/opensds-hotpot-linux-amd64/bin/lvm_exporter /usr/local/bin/
     - chown root:root /usr/local/bin/lvm_exporter
   become: yes
+  ignore_errors: yes
 
 - name: edit lvm_exporter.service
   shell: "{{ item }}"
@@ -266,6 +311,7 @@
   with_items:
     - systemctl status lvm_exporter
   become: yes
+  ignore_errors: yes
 
 - name: configuring prometheus to scrape lvm_exporter
   tags:
@@ -290,6 +336,8 @@
   with_items:
     - systemctl status prometheus
   become: yes
+  ignore_errors: yes
+
 # ---------start to install alertmanager---------
 - name: install alertmanager
   shell: "{{ item }}"

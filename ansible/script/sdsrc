@@ -27,8 +27,14 @@ OPENSDS_VERSION=${OPENSDS_VERSION:-v1beta}
 # Multi-cloud 
 MULTICLOUD_VERSION=${MULTICLOUD_VERSION:-v1}
 
+# Telemetry configuration.
+TELEMETRY_VERSION=${TELEMETRY_VERSION:-v1beta}
+
 # OpenSDS service name in keystone.
 OPENSDS_SERVER_NAME=${OPENSDS_SERVER_NAME:-opensds}
+
+#Telemetry service name in keystone.
+TELEMETRY_SERVER_NAME=${TELEMETRY_SERVER_NAME:-telemetry}
 
 # Multi-Cloud service name in keystone
 MULTICLOUD_SERVER_NAME=${MULTICLOUD_SERVER_NAME:-opensds}

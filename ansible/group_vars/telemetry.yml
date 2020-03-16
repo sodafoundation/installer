@@ -20,9 +20,30 @@ dummy:
 ###########
 # GENERAL #
 ###########
+apiserver_endpoint: "{{ host_ip }}:50060"
+controller_endpoint: "{{ host_ip }}:50061"
 
-# Do you need to install or clean up telemetry tools?
-enable_telemetry_tools: false
+
+# These fields are NOT suggested to be modified
+telemetry_work_dir: /opt/opensds-telemetry-linux-amd64
+opensds_config_dir: /etc/opensds
+opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
+opensds_log_dir: /var/log/opensds
+apiserver_log_file: "{{ opensds_log_dir }}/telemetryapi.log"
+controller_log_file: "{{ opensds_log_dir }}/telemetryctl.log"
+dock_log_file: "{{ opensds_log_dir }}/telemetrydock.log"
+
+
+##############
+# REPOSITORY #
+##############
+
+# If user specifies intalling from repository, then he can choose the specific
+# repository branch
+telemetry_repo_branch: "{{ repo_branch }}"
+
+# These fields are NOT suggested to be modified
+telemetry_remote_url: https://github.com/nguptaopensds/telemetry.git
 
 # Grafana Repository config
 grafana_repositroy: "deb https://packages.grafana.com/oss/deb stable main"
@@ -50,4 +71,3 @@ kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 
 opensds_conf_file: /etc/opensds/opensds.conf
-telemetry_work_dir: /opt/opensds-telemetry-linux-amd64

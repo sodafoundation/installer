@@ -92,7 +92,7 @@
         ps aux | grep osdsdock | grep -v grep && break
       done
   args:
-    chdir: "{{ hotpot_work_dir }}"
+    chdir: "{{ telemetry_work_dir }}"
   when:
     - install_from != "container"
 

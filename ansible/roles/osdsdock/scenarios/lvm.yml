@@ -52,7 +52,7 @@
 
 - name: create directory to volume group file
   file:
-    path: "{{ hotpot_work_dir }}/volumegroups"
+    path: "{{ telemetry_work_dir }}/volumegroups"
     state: directory
     recurse: yes
 
@@ -63,7 +63,7 @@
           local vg=$1
           local size=$2
 
-          local backing_file={{ hotpot_work_dir }}/volumegroups/${vg}.img
+          local backing_file={{ telemetry_work_dir }}/volumegroups/${vg}.img
           if ! sudo vgs $vg; then
               # Only create if the file doesn't already exists
               [[ -f $backing_file ]] || truncate -s $size $backing_file
@@ -87,9 +87,9 @@
               if [[ -e {{ lvm_nvme_device }} ]]; then
                   local vg={{ opensds_volume_group_nvme }}
                   local size={{ opensds_volume_group_nvme_size }}
-                  sudo mkdir -p {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
-                  sudo mount {{ lvm_nvme_device }} {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
-                  local backing_file={{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/${vg}.img
+                  sudo mkdir -p {{ telemetry_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
+                  sudo mount {{ lvm_nvme_device }} {{ telemetry_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
+                  local backing_file={{ telemetry_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/${vg}.img
                   if ! sudo vgs $vg; then
                       # Only create if the file doesn't already exists
                       [[ -f $backing_file ]] || truncate -s $size $backing_file

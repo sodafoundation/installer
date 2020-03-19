@@ -334,10 +334,17 @@ gitclone() {
     rm -fr ${SALTFS}/namespaces/${ENTITY}/${REPO} 2>/dev/null
 
     echo "${fork[solutions]}" | grep "${REPO}" >/dev/null 2>&1
-    if (( $? == 0 )) && [[ -n "${fork[uri]}" ]] && [[ -n "${fork[entity]}" ]] && [[ -n "${fork[branch]}" ]]; then
+    if (( $? == 0 )) && [[ -n "${fork[uri]}" ]] && [[ -n "${fork[entity]}" ]] && [[ -n "${fork[branch]}" ]]
+    then
         echo "... using fork: ${fork[entity]}, branch: ${fork[branch]}"
-        git clone ${fork[uri]}/${fork[entity]}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} >/dev/null 2>&1 || exit 11
-        cd  ${SALTFS}/namespaces/${ENTITY}/${REPO} && git checkout ${fork[branch]}
+        git clone ${fork[uri]}/${fork[entity]}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} >/dev/null 2>&1
+        if (( $? > 0 )); then
+            echo "git clone ${fork[uri]}/${fork[entity]}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} failed"
+            exit 1
+        fi
+        cd ${SALTFS}/namespaces/${ENTITY}/${REPO}
+        git checkout ${fork[branch]}
+        (( $? > 0 )) && pwd && echo "git checkout ${fork[branch]} failed" && exit 1
     else
         git clone ${URI}/${ENTITY}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} >/dev/null 2>&1 || exit 11
     fi
@@ -444,9 +451,9 @@ explain_add_salter() {
     echo "==> This script will add:"
     echo "${SALTFS}/salter/salter.sh   (salter orchestrator)"
     echo "/usr/local/bin/salter        (salter symlink)"
-    echo "Salt                         (orchestrator-of-infra-and-apps-at-scale)"
+    echo "salt                         (orchestrator-of-infra-and-apps-at-scale)"
     echo "${SALTFS}/namespaces/*       (namespaces and profiles)"
-    echo "${PILLARFS}/*                (namespaces and configs)"
+    echo "${PILLARFS}/namespaces/*     (namespaces and configs)"
     echo
     echo "==> Your namespace is:"
     echo "${SALTFS}/your/*             (profiles/configs designed by you)"
@@ -549,7 +556,7 @@ developer-definitions() {
     fork['uri']="https://github.com"
     fork['entity']="noelmcloughlin"
     fork['branch']="fixes"
-    fork['solutions']="salt-formula golang-formula"
+    fork['solutions']=""
 }
 
 solution-definitions() {
@@ -575,7 +582,7 @@ solution-definitions() {
 
 custom-add() {
     echo
-    ### required - salter-engine is insufficient ###
+    ### required if salter-engine is insufficient ###
     gitclone ${solution[uri]} ${solution[entity]} ${solution[repo]} ${solution[alias]} ${solution[subdir]}
     SKIP_UNNECESSARY_CLONE='true'
     losetup -D 2>/dev/null

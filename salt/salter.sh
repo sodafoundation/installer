@@ -34,14 +34,18 @@ BASE_ETC=/etc
 PY_VER=3
 STATEDIR=''
 USER=
-if [ `uname` == "FreeBSD" ]; then
-    BASE=/usr/local/etc
+OSNAME=`uname`
+if [ "${OSNAME}" == "FreeBSD" ]; then
+    # FreeBSD
+    BASE=/usr/local/srv
     BASE_ETC=/usr/local/etc
     STATEDIR=/states
     SUBDIR=/salt
-elif [ "$( uname )" = "Darwin" ]; then
-    # macos needs homebrew (unattended https://github.com/Homebrew/legacy-homebrew/issues/46779#issuecomment-162819088)
+fi
+if [ "${OSNAME}" == "Darwin" ]; then
+    BASE=/usr/local/srv
     USER=$( stat -f "%Su" /dev/console )
+    # homebrew unattended (https://github.com/Homebrew/legacy-homebrew/issues/46779#issuecomment-162819088)
     HOMEBREW=/usr/local/bin/brew
     ${HOMEBREW} >/dev/null 2>&1
     (( $? == 127 )) && su - ${USER} -c 'echo | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
@@ -57,8 +61,8 @@ DEBUGG=
 # bash version must be modern
 declare -A your solution fork 2>/dev/null || RC=$?
 if (( RC > 0 )); then
-    echo "[warning] your bash version is too old ..."
-    if [ "$( uname )" = "Darwin" ]; then
+    echo "[warning] your bash version is pretty old ..."
+    if [ "${OSNAME}" == "Darwin" ]; then
         (( RC > 0 )) && (su - ${USER} -c "${HOMEBREW} install bash" || exit 12) && RC=0
     else
         exit ${RC}
@@ -223,7 +227,7 @@ salt-bootstrap() {
              sudo chmod -R 0755 /usr/local/* /Library/Python/2.7/site-packages/pip* /Users/${USER}/Library/Caches/pip 2>/dev/null
 
              ### https://stackoverflow.com/questions/34386527/symbol-not-found-pycodecinfo-getincrementaldecoder
-             su - ${USER} -c 'hash -r python'
+             su - ${USER} -c 'hash -r python' 2>/dev/null
 
              ### pip https://pip.pypa.io/en/stable
              su - ${USER} -c 'curl https://bootstrap.pypa.io/get-pip.py -o ${PWD}/get-pip.py'
@@ -239,8 +243,16 @@ salt-bootstrap() {
              su - ${USER} -c "${HOMEBREW} link saltstack"
              su - ${USER} -c "${HOMEBREW} tap homebrew/services"
              echo $( hostname ) >/etc/salt/minion_id
+
              cp /usr/local/etc/saltstack/minion /etc/salt/minion 2>/dev/null
-             sed -i"bak" "s/#file_client: remote/file_client: local/" /etc/salt/minion 2>/dev/null
+             sed -i"bak" 's@#file_client: remote$@file_client: local@' /etc/salt/minion 2>/dev/null
+             sed -i"bak" 's@#  base:$@  base:@g' /etc/salt/minion 2>/dev/null
+             # state directory
+             sed -i"bak" 's@#file_roots:$@file_roots:@' /etc/salt/minion 2>/dev/null
+             sed -i"bak" "s@#    - /srv/salt@    - ${BASE}/salt@" /etc/salt/minion 2>/dev/null
+             # pillar directory
+             sed -i"bak" 's@#pillar_roots:$@pillar_roots:@' /etc/salt/minion 2>/dev/null
+             sed -i"bak" "s@#    - /srv/pillar@    - ${BASE}/pillar@" /etc/salt/minion 2>/dev/null
 
              ##Workaround https://github.com/Homebrew/brew/issues/4099
              echo '--no-alpn' >> ~/.curlrc
@@ -288,11 +300,11 @@ EOF
         rm /usr/bin/python 2>/dev/null; ln -s /usr/bin/python3 /usr/bin/python
     fi
     ### salt-api (except arch/macos/freebsd)
-    [ ! -f "/etc/arch-release" ] && [ "$(uname)" != "Darwin" ] && [ "$(uname)" != "FreeBSD" ] && pkg-add salt-api
+    [ ! -f "/etc/arch-release" ] && [ "${OSNAME}" != "Darwin" ] && [ "${OSNAME}" != "FreeBSD" ] && pkg-add salt-api
 
     ### salt minion
     [ ! -f "${BASE_ETC}/salt/minion" ] && echo "File ${BASE_ETC}/salt/minion not found" && exit 1
-    if [[ "`uname`" == "FreeBSD" ]] || [[ "`uname`" == "Darwin" ]]; then
+    if [[ "${OSNAME}" == "FreeBSD" ]] || [[ "${OSNAME}" == "Darwin" ]]; then
         sed -i"bak" "s@^\s*#*\s*master\s*: salt\s*\$@master: ${solution[saltmaster]}@" ${BASE_ETC}/salt/minion
     else
         sed -i "s@^\s*#*\s*master\s*: salt\s*\$@master: ${solution[saltmaster]}@" ${BASE_ETC}/salt/minion
@@ -303,15 +315,17 @@ EOF
     (systemctl enable salt-minion && systemctl start salt-minion) 2>/dev/null || service start salt-minion 2>/dev/null
     salt-key -A --yes >/dev/null 2>&1     ##accept pending registrations
 
-    ### reboot to activate a new kernel?
-    echo && KERNEL_VERSION=$( uname -r | awk -F. '{print $1"."$2"."$3"."$4"."$5}' )
-    echo "kernel before: ${KERNEL_VERSION}"
-    if [ "$(uname)" == "FreeBSD" ]; then
-        echo "kernel after: $( /bin/freebsd-version -k 2>/dev/null )"
-    else
-        echo "kernel after: $( pkg-query linux 2>/dev/null )"
+    if [ "$OSNAME" != "Darwin" ]; then
+        ### reboot to activate a new linux kernel
+        echo && KERNEL_VERSION=$( uname -r | awk -F. '{print $1"."$2"."$3"."$4"."$5}' )
+        echo "kernel before: ${KERNEL_VERSION}"
+        if [ "${OSNAME}" == "FreeBSD" ]; then
+            echo "kernel after: $( /bin/freebsd-version -k 2>/dev/null )"
+        else
+            echo "kernel after: $( pkg-query linux 2>/dev/null )"
+        fi
+        echo "Reboot if kernel was major-upgraded; if unsure reboot!"
     fi
-    echo "Reboot if kernel was major-upgraded; if unsure reboot!"
     echo
 }
 
@@ -334,8 +348,7 @@ gitclone() {
     rm -fr ${SALTFS}/namespaces/${ENTITY}/${REPO} 2>/dev/null
 
     echo "${fork[solutions]}" | grep "${REPO}" >/dev/null 2>&1
-    if (( $? == 0 )) && [[ -n "${fork[uri]}" ]] && [[ -n "${fork[entity]}" ]] && [[ -n "${fork[branch]}" ]]
-    then
+    if (( $? == 0 )) && [[ -n "${fork[uri]}" ]] && [[ -n "${fork[entity]}" ]] && [[ -n "${fork[branch]}" ]]; then
         echo "... using fork: ${fork[entity]}, branch: ${fork[branch]}"
         git clone ${fork[uri]}/${fork[entity]}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} >/dev/null 2>&1
         if (( $? > 0 )); then
@@ -346,7 +359,7 @@ gitclone() {
         git checkout ${fork[branch]}
         (( $? > 0 )) && pwd && echo "git checkout ${fork[branch]} failed" && exit 1
     else
-        git clone ${URI}/${ENTITY}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} >/dev/null 2>&1 || exit 11
+        git clone ${URI}/${ENTITY}/${REPO} ${SALTFS}/namespaces/${ENTITY}/${REPO} >/dev/null 2>&1 || exit 1
     fi
     ## Its important to ensure symlink points to *this* correct namespace
     rm -f ${SALTFS}/${ALIAS} 2>/dev/null ## this is important make sure symlink is current
@@ -379,7 +392,7 @@ highstate() {
 
     ## prepare formulas
     for formula in $( grep '^.* - ' ${SALTFS}/top.sls |awk '{print $2}' |cut -d'.' -f1 |uniq )
-     do
+    do
          ## adjust mismatched state/formula names
          case ${formula} in
          resharper|pycharm|goland|rider|datagrip|clion|rubymine|appcode|webstorm|phpstorm)
@@ -577,7 +590,7 @@ solution-definitions() {
 
     your['saltdir']="${SALTFS}/namespaces/your/file_roots"
     your['pillars']="${SALTFS}/namespaces/your/pillar_roots"
-    mkdir -p ${solution[saltdir]} ${solution[pillars]} ${your[saltdir]} ${your[pillars]} ${solution[logdir]} ${PILLARFS} ${BASE_ETC}/salt 2>/dev/null
+    mkdir -p ${solution[saltdir]} ${solution[pillars]} ${your[saltdir]} ${your[pillars]} ${solution[logdir]} $PILLARFS ${BASE_ETC}/salt 2>/dev/null
 }
 
 custom-add() {

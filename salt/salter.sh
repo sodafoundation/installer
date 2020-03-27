@@ -37,7 +37,7 @@ USER=
 OSNAME=`uname`
 if [ "${OSNAME}" == "FreeBSD" ]; then
     # FreeBSD
-    BASE=/usr/local/srv
+    BASE=/usr/local/etc
     BASE_ETC=/usr/local/etc
     STATEDIR=/states
     SUBDIR=/salt
@@ -189,14 +189,18 @@ pkg-remove() {
 #-----------------------
 
 get-salt-master-hostname() {
+   if [ -x "/usr/bin/zypper" ] || [ -x "/usr/bin/pacman" ]; then
+       pkg-add net-tools lsb-release 2>/dev/null
+       [ -x "/usr/bin/pacman" ] && pkg-add inetutils
+   fi
    hostname -f >/dev/null 2>&1
    if (( $? == 0 )); then
        FQDN=$(hostname -f)
    else
-       FQDN=$(hostname)
+       FQDN=$(hostname 2>/dev/null)
        cat <<HEREDOC
 
-   Note: 'hostname -f' is not working ...
+   Note: 'hostname' command not found or 'hostname -f' not working ...
    Unless you are using bind or NIS for host lookups you could change the
    FQDN (Fully Qualified Domain Name) and the DNS domain name (which is
    part of the FQDN) in the /etc/hosts. Meanwhile, I'll use short hostname.
@@ -213,8 +217,8 @@ HEREDOC
 
 salt-bootstrap() {
     get-salt-master-hostname
-    if [ -f "/usr/bin/zypper" ] || [ -f "/usr/sbin/pkg" ]; then
-        # No major version pegged packages support for suse/freebsd
+    if [ -f "/usr/bin/zypper" ] || [ -f "/usr/sbin/pkg" ] || [ -f "/usr/bin/pacman" ]; then
+        # No major version pegged packages support for suse/freebsd/arch
         SALT_VERSION=''
     fi
     rm -fr ${PILLARFS}/* 2>/dev/null

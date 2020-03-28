@@ -466,14 +466,19 @@ usage() {
 explain_add_salter() {
     echo
     echo "==> This script will add:"
-    echo "${SALTFS}/salter/salter.sh   (salter orchestrator)"
-    echo "/usr/local/bin/salter        (salter symlink)"
-    echo "salt                         (orchestrator-of-infra-and-apps-at-scale)"
-    echo "${SALTFS}/namespaces/*       (namespaces and profiles)"
-    echo "${PILLARFS}/namespaces/*     (namespaces and configs)"
+    echo "${SALTFS}/salter/salter.sh"
+    echo "                             Salter orchestrator"
+    echo "/usr/local/bin/salter"
+    echo "                             Salter symlink"
+    echo "salt"
+    echo "                             Orchestrator of infra and apps at scale"
+    echo "${SALTFS}/namespaces/*"
+    echo "                             Profiles"
+    echo "${PILLARFS}/namespaces/*"
+    echo "                             Profile configuration"
     echo
-    echo "==> Your namespace is:"
-    echo "${SALTFS}/your/*             (profiles/configs designed by you)"
+    echo "==> Your personal namespace is:"
+    echo "${SALTFS}/your/*"
 }
 
 interact() {

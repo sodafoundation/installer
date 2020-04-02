@@ -26,7 +26,7 @@
 trap exit SIGINT SIGTERM
 [ `id -u` != 0 ] && echo -e "\nRun script with sudo, exiting\n" && exit 1
 
-SALT_VERSION='stable 2019.2.3'    ##go with latest stable release
+SALT_VERSION='stable 3000'    ##go with latest stable release
 RC=0
 ACTION=
 BASE=/srv
@@ -290,7 +290,7 @@ salt-bootstrap() {
                 exit 1
              fi
              wget -O bootstrap_salt.sh https://bootstrap.saltstack.com || exit 10
-             (sh bootstrap_salt.sh -x python3 ${SALT_VERSION} && rm -f bootstrap_salt.sh) || exit 10
+             (sh bootstrap_salt.sh -F -x python3 ${SALT_VERSION} && rm -f bootstrap_salt.sh) || exit 10
              ;;
     esac
     ### stop debian interference with services (https://wiki.debian.org/chroot)

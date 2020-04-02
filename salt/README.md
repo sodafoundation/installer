@@ -9,7 +9,7 @@ Verified on CENTOS-7, UBUNTU-18, and OPENSUSE-15 with Salt 2018.3 and 2019.2 rel
 Solution View
 =============
 
-<a href="https://github.com/opensds/opensds">![Solution overview](lib/solutionDesign.png)</a>
+<a href="https://github.com/sodafoundation/opensds">![Solution overview](lib/solutionDesign.png)</a>
 
 Reference Vagrant setup
 =======================

@@ -1,12 +1,12 @@
-# opensds-installer
-Installer tool of opensds projects to simplify cluster deployment and configuration.
+# installer
+Installer tool of sodafoundation projects to simplify cluster deployment and configuration.
 
 ## Introduction
 This project is designed for locating the code for installing all required
-components to set up a cluster, including [Hotpot](https://github.com/opensds/opensds),
-[Sushi](https://github.com/opensds/nbp), [Gelato](https://github.com/opensds/multi-cloud),
-[Orchestration](https://github.com/opensds/orchestration) and
-[opensds-dashboard](https://github.com/opensds/opensds-dashboard). Currently we
+components to set up a cluster, including [Hotpot](https://github.com/sodafoundation/opensds),
+[Sushi](https://github.com/sodafoundation/nbp), [Gelato](https://github.com/sodafoundation/multi-cloud),
+[Orchestration](https://github.com/sodafoundation/orchestration) and
+[opensds-dashboard](https://github.com/sodafoundation/opensds-dashboard). Currently we
 support several install tools for diversity.
 
 ### Ansible
@@ -30,4 +30,4 @@ through salt tool.
 ## Contact
 * Mailing list: [opensds-tech-discuss](https://lists.opensds.io/mailman/listinfo/opensds-tech-discuss)
 * slack: #[opensds](https://opensds.slack.com)
-* Ideas/Bugs: [issues](https://github.com/opensds/opensds-installer/issues)
+* Ideas/Bugs: [issues](https://github.com/sodafoundation/installer/issues)

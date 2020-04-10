@@ -42,10 +42,14 @@ dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-hotpot_repo_branch: "{{ repo_branch }}"
+api_repo_branch: "{{ repo_branch }}"
+controller_repo_branch: "{{ repo_branch }}"
+dock_repo_branch: "{{ repo_branch }}"
 
 # These fields are NOT suggested to be modified
-hotpot_remote_url: https://github.com/opensds/opensds.git
+api_remote_url: https://github.com/sodafoundation/api.git
+controller_remote_url: https://github.com/sodafoundation/controller.git
+dock_remote_url: https://github.com/sodafoundation/dock.git
 
 
 ###########

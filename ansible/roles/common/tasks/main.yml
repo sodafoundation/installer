@@ -51,7 +51,7 @@
   with_items:
     - librados-dev
     - librbd-dev
-  when: ansible_os_family == "Debian" and deploy_project != "gelato"
+  when: ansible_os_family == "Debian"
 
 - name: create opensds work directory if it doesn't exist
   file:

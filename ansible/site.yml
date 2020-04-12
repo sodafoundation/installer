@@ -141,6 +141,7 @@
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/hotpot.yml
     - group_vars/telemetry.yml
   gather_facts: false
   become: True

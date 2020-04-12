@@ -1,7 +1,7 @@
 # installer
 
-[![Releases](https://img.shields.io/github/release/sodafoundation/api/all.svg?style=flat-square)](https://github.com/sodafoundation/api/releases)
-[![LICENSE](https://img.shields.io/github/license/sodafoundation/api.svg?style=flat-square)](https://github.com/sodafoundation/api/blob/master/LICENSE)
+[![Releases](https://img.shields.io/github/release/sodafoundation/installer/all.svg?style=flat-square)](https://github.com/sodafoundation/installer/releases)
+[![LICENSE](https://img.shields.io/github/license/sodafoundation/installer.svg?style=flat-square)](https://github.com/sodafoundation/installer/blob/master/LICENSE)
 
 <img src="https://sodafoundation.io/wp-content/uploads/2020/01/SODA_logo_outline_color_800x800.png" width="200" height="200">
 

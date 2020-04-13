@@ -57,9 +57,9 @@ dock_remote_url: https://github.com/sodafoundation/dock.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-api_release: "{{ release_version }}" # The version should be at least v0.20.0
-controller_release: "{{ release_version }}" # The version should be at least v0.20.0
-dock_release: "{{ release_version }}" # The version should be at least v0.20.0
+api_release: "{{ release_version }}" # The version should be at least v0.12.0
+controller_release: "{{ release_version }}" # The version should be at least v0.12.0
+dock_release: "{{ release_version }}" # The version should be at least v0.12.0
 
 # These fields are NOT suggested to be modified
 api_download_url: https://github.com/sodafoundation/api/releases/download/{{ api_release }}/soda-api-{{ api_release }}-linux-amd64.tar.gz

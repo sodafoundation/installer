@@ -17,6 +17,7 @@
 # This step is needed to upgrade ansible to version 2.4.x which is required for
 # the ceph backend installation using ceph-ansible.
 
+
 REQUIRED_ANAIBLE_VER=${REQUIRED_ANAIBLE_VER:-}
 
 SCRIPT_PATH=$(cd $(dirname $0); pwd)
@@ -65,9 +66,14 @@ if [ "`which ansible`" != ""  ]; then
 fi
 
 # incorrect version removed, or no ansible found.
+# enable universe repo
+echo Enabling universe repository.
+sudo add-apt-repository universe
 echo Installing ansible ${REQUIRED_ANSIBLE_VER} required for ceph-ansible ${CEPH_ANSIBLE_BRANCH} branch.
 sudo add-apt-repository -y ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
+# Let universe and ansible repo update together
 sudo apt-get update
+sudo apt-get install sshpass pv gawk
 sudo apt-get install -y ansible
 sleep 3
 sudo add-apt-repository -y -r ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}

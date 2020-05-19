@@ -73,8 +73,7 @@ echo Installing ansible ${REQUIRED_ANSIBLE_VER} required for ceph-ansible ${CEPH
 sudo add-apt-repository -y ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 # Let universe and ansible repo update together
 sudo apt-get update
-sudo apt-get install sshpass pv gawk
-sudo apt-get install -y ansible
+sudo apt-get install -y sshpass pv gawk docker docker.io docker-compose ansible
 sleep 3
 sudo add-apt-repository -y -r ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 

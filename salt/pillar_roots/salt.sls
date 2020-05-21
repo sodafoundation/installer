@@ -90,3 +90,5 @@ salt_formulas:
      - prometheus-formula
      - grafana-formula
      - sysstat-formula
+     - kubernetes-formula
+     - java-formula

@@ -50,6 +50,16 @@ opensds:
           password: {{ site.devstack_password }}
           tenantName: {{ site.hotpot_service }}
 
+      nfs:
+        tgtBindIp: {{ site.tgtBindIp }}
+
+      netapp_ontap_san:
+        version: 1
+        username: {{ site.hotpot_service }}
+        password: {{ site.devstack_password }}
+        managementLIF: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+        dataLIF: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+
       lvm:
         tgtBindIp: {{ site.tgtBindIp }}
         pool:
@@ -652,8 +662,9 @@ packages:
     wanted:
       - tox
       - click
+      - requests
   pkgs:
-    wanted: []  ## populated by opensds-formula in map.jinja
+    #wanted: populated by map.jinja
     unwanted:
       - unattended-upgrades
      {%- if grains.os_family in ('RedHat',) %}
@@ -671,7 +682,7 @@ packages:
       - mariadb-server
       - mariadb-backup
       - mariadb-errmsg
-     {%- elif grains.os == "Ubuntu" %}
+     {%- elif grains.os == "Ubuntu" %}  {# what about debian os? #}
       - libmysqlclient-dev
       - libmysqlclient20
       - mysql-client-5.7
@@ -681,15 +692,11 @@ packages:
       - mysql-server-5.7
       - mysql-server-core-5.7
      {%- endif %}
+     {%- if grains.os_family == "Debian" %}
+      - libradosstriper-dev
+     {%- endif %}
   archives:
     wanted:
-      kubectl:
-        dest: /usr/local/bin
-        dl:
-          format: bin
-          source: {{ site.kubectl_url }}
-          hashsum: {{ site.kubectl_hashsum }}
-
       {{ site.gelato_service }}:
         dest: {{ site.gelato_path }}/{{ site.gelato_service }}
         options: '--strip-components=1'
@@ -727,3 +734,21 @@ packages:
       - {{ site.sushi_path }}
       - {{ site.hotpot_path }}
       # /var/lib/mysql/
+
+kubernetes:
+  dir:
+    binary: /usr/local/bin
+  kubectl:
+    version: '1.15.0'
+    linux:
+      altpriority: 1000
+    pkg:
+      binary:
+        source_hash: ecec7fe4ffa03018ff00f14e228442af5c2284e57771e4916b977c20ba4e5b39  #linux amd64 binary
+  minikube:
+    version: '1.2.0'
+    linux:
+      altpriority: 1000
+    pkg:
+      binary:
+        source_hash: eabd027438953d29a4b0f7b810c801919cc13bef3ebe7aff08c9534ac2b091ab  #linux amd64 binary

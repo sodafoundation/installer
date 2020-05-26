@@ -17,8 +17,7 @@
 # This step is needed to upgrade ansible to version 2.4.x which is required for
 # the ceph backend installation using ceph-ansible.
 
-
-REQUIRED_ANAIBLE_VER=${REQUIRED_ANAIBLE_VER:-}
+REQUIRED_ANSIBLE_VER=${REQUIRED_ANSIBLE_VER:-}
 
 SCRIPT_PATH=$(cd $(dirname $0); pwd)
 
@@ -66,24 +65,10 @@ if [ "`which ansible`" != ""  ]; then
 fi
 
 # incorrect version removed, or no ansible found.
-# enable universe repo
-echo Enabling universe repository.
-sudo add-apt-repository universe
-echo Enabling docker repositry
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common sshpass pv gawk
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 echo Installing ansible ${REQUIRED_ANSIBLE_VER} required for ceph-ansible ${CEPH_ANSIBLE_BRANCH} branch.
 sudo add-apt-repository -y ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
-# Let universe and ansible repo update together
 sudo apt-get update
-# Install docker and ansible dependencies
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io ansible
-# Installing docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
+sudo apt-get install -y ansible
 sleep 3
 sudo add-apt-repository -y -r ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 

@@ -120,6 +120,11 @@
   when: enable_orchestration == true
   tags: orchestration
 
+- name: include scenarios/sim.yml for cleaning up SIM service
+  include_tasks: scenarios/sim.yml
+  when: enable_sim == true
+  tags: sim
+
 - name: clean all configuration and log files
   file:
     path: "{{ item }}"

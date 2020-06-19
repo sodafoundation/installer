@@ -1,0 +1,65 @@
+# Copyright 2020 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# Start SIM
+
+- name: Install python virtual environment
+  pip:
+    name: virtualenv
+    state: latest
+    executable: pip3
+  become: yes
+  ignore_errors: yes
+
+- name: Install python requirements
+  pip:
+    requirements: '{{ sim_work_dir }}/requirements.txt'
+    virtualenv: '{{ sim_work_dir }}/venv'
+  become: yes
+  ignore_errors: yes
+
+- name: Install python virtual environment activate script
+  template:
+    src: ./script/virtualenv3_exec.j2
+    dest: '{{ venv }}/exec'
+    mode: 755
+  become: yes
+
+- name: Install sqlite3 package
+  apt: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - sqlite3 
+  become: yes
+
+- name: Copy SIM db register script
+  copy:
+    src: ./script/create_db.py
+    dest: '{{ sim_work_dir }}/dolphin/cmd/create_db.py'
+  become: yes
+
+
+- name: Execute sim manager
+  shell: "{{ item }}"
+  become: yes
+  with_items:
+    - '{{ venv }}/exec {{ sim_work_dir }}/setup.py install'
+    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/create_db.py --config-file {{ sim_work_dir }}/etc/dolphin/dolphin.conf  >/tmp/log0.txt 2>&1 &'
+    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/api.py --config-file {{ sim_work_dir }}/etc/dolphin/dolphin.conf  >/tmp/log1.txt 2>&1 &'
+    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/task.py --config-file {{ sim_work_dir }}/etc/dolphin/dolphin.conf  >/tmp/log2.txt 2>&1 &'
+    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/alert.py --config-file {{ sim_work_dir }}/etc/dolphin/dolphin.conf  >/tmp/log3.txt 2>&1 &'
+  args:
+    chdir: "{{ sim_work_dir }}"

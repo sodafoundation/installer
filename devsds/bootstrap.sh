@@ -19,6 +19,8 @@
 
 # Project to install
 TOP_DIR=$(cd $(dirname "$0") && pwd)
+echo TOP dir is ${TOP_DIR}
+
 source $TOP_DIR/sdsrc
 
 SODA_PROJECT=${SODA_PROJECT:-all}
@@ -35,7 +37,7 @@ OPT_DIR=/opt/sodafoundation
 mkdir -p $OPT_DIR
 
 # Golang version
-MINIMUM_GO_VERSION=${MINIMUM_GO_VERSION:-go1.12.1}
+MINIMUM_GO_VERSION=${MINIMUM_GO_VERSION:-go1.13.1}
 GOENV_PROFILE=${GOENV_PROFILE:-/etc/profile.d/goenv.sh}
 
 # Log file
@@ -165,6 +167,7 @@ build_project_list(){
         log Bootstrapping ${proj} ....
         "clone_${proj}_proj"
         "build_${proj}"
+        cd ${SODA_ROOT}
     done
 }
 

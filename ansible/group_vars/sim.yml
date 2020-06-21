@@ -30,6 +30,7 @@ sim_installation_type: "repository" # "{{ install_from }}"
 
 # These fields are NOT suggested to be modifie
 sim_work_dir: /opt/sim-linux-amd64
+sim_config_dir: /etc/dolphin
 venv: "{{ sim_work_dir }}/venv"
 
 

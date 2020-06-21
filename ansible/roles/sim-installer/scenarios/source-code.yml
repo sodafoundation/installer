@@ -55,3 +55,20 @@
   when:
     - sim_installation_type == "release"
     - simexisted.stat.exists is undefined or simexisted.stat.exists == false
+
+- name: Create SIM config dir in host
+  file:
+    path: "{{ sim_config_dir }}"
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: copy SIM configs to host
+  copy:
+    src: "{{ sim_work_dir }}/etc/dolphin/{{ item }}"
+    dest: "{{ sim_config_dir }}/{{ item }}"
+    mode: 0755
+  become: yes
+  with_items:
+    - dolphin.conf
+    - api-paste.ini

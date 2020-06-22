@@ -1,0 +1,74 @@
+# Copyright 2020 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# Install and start SIM
+- name: Check for SIM source code existed
+  stat:
+    path: "{{ sim_work_dir }}/setup.py"
+  register: simexisted
+
+- name: Download SIM source code if not exists
+  git:
+    repo: "{{ sim_remote_url }}"
+    dest: "{{ sim_work_dir }}"
+    version: "{{ sim_repo_branch }}"
+  when:
+    - sim_installation_type == "repository"
+    - simexisted.stat.exists is undefined or simexisted.stat.exists == false
+
+- name: ensure SIM directory exists
+  file:
+    path: "{{ sim_tarball_dir }}"
+    state: directory
+  when:
+    - sim_installation_type == "release"
+    - simexisted.stat.exists is undefined or simexisted.stat.exists == false
+
+- name: download and extract the SIM release tarball if not exists
+  unarchive:
+    src: "{{ sim_download_url }}"
+    dest: "{{ sim_tarball_dir }}"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+  when:
+    - sim_installation_type == "release"
+    - simexisted.stat.exists is undefined or simexisted.stat.exists == false
+
+- name: copy SIM tarball into SIM work directory
+  copy:
+    src: "{{ sim_tarball_dir }}/"
+    dest: "{{ sim_work_dir }}"
+    mode: 0755
+  become: yes
+  when:
+    - sim_installation_type == "release"
+    - simexisted.stat.exists is undefined or simexisted.stat.exists == false
+
+- name: Create SIM config dir in host
+  file:
+    path: "{{ sim_config_dir }}"
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: copy SIM configs to host
+  copy:
+    src: "{{ sim_work_dir }}/etc/dolphin/{{ item }}"
+    dest: "{{ sim_config_dir }}/{{ item }}"
+    mode: 0755
+  become: yes
+  with_items:
+    - dolphin.conf
+    - api-paste.ini

@@ -166,3 +166,18 @@
       when:
         - enable_orchestration == true
   tags: orchestration
+
+- name: Install SIM
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/sim.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: sim-installer
+      when:
+        - enable_sim == true
+  tags: sim

@@ -58,8 +58,9 @@
 - name: Install RabbitMQ package
   apt: 
     name: "{{ item }}"
-    update_cache: no
+    update_cache: yes
     install_recommends: yes
+    allow_unauthenticated: yes
     state: present
   with_items:
     - apt-transport-https 

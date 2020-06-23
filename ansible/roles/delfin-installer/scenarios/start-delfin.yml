@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-# Start SIM
+# Start delfin
 - name: Install sqlite3 package
   apt: 
     name: "{{ item }}"
@@ -32,8 +32,8 @@
 
 - name: Install python requirements
   pip:
-    requirements: '{{ sim_work_dir }}/requirements.txt'
-    virtualenv: '{{ sim_work_dir }}/venv'
+    requirements: '{{ delfin_work_dir }}/requirements.txt'
+    virtualenv: '{{ delfin_work_dir }}/venv'
   become: yes
 
 - name: Install python virtual environment activate script
@@ -43,20 +43,20 @@
     mode: 755
   become: yes
 
-- name: Copy SIM db register script
+- name: Copy delfin db register script
   copy:
     src: ./script/create_db.py
-    dest: '{{ sim_work_dir }}/dolphin/cmd/create_db.py'
+    dest: '{{ delfin_work_dir }}/delfin/cmd/create_db.py'
   become: yes
 
-- name: Execute sim manager
+- name: Execute delfin manager
   shell: "{{ item }}"
   become: yes
   with_items:
-    - '{{ venv }}/exec {{ sim_work_dir }}/setup.py install'
-    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/create_db.py --config-file {{ sim_config_dir }}/dolphin.conf  >/tmp/create_db.log 2>&1 &'
-    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/api.py --config-file {{ sim_config_dir }}/dolphin.conf  >/tmp/api.log 2>&1 &'
-    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/task.py --config-file {{ sim_config_dir }}/dolphin.conf  >/tmp/task.log 2>&1 &'
-    - '{{ venv }}/exec {{ sim_work_dir }}/dolphin/cmd/alert.py --config-file {{ sim_config_dir }}/dolphin.conf  >/tmp/alert.log 2>&1 &'
+    - '{{ venv }}/exec {{ delfin_work_dir }}/setup.py install'
+    - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/create_db.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/create_db.log 2>&1 &'
+    - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/api.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/api.log 2>&1 &'
+    - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/task.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/task.log 2>&1 &'
+    - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/alert.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/alert.log 2>&1 &'
   args:
-    chdir: "{{ sim_work_dir }}"
+    chdir: "{{ delfin_work_dir }}"

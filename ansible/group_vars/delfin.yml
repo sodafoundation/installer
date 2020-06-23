@@ -22,16 +22,16 @@ dummy:
 # GENERAL #
 ###########
 
-# Install SIM (true/false)
-enable_sim: false
+# Install delfin (true/false)
+enable_delfin: false
 
-# SIM installation types are: 'repository', 'release' and 'container''
-sim_installation_type: "repository" # "{{ install_from }}"
+# delfin installation types are: 'repository', 'release' and 'container''
+delfin_installation_type: "repository" # "{{ install_from }}"
 
 # These fields are NOT suggested to be modifie
-sim_work_dir: /opt/sim-linux-amd64
-sim_config_dir: /etc/dolphin
-venv: "{{ sim_work_dir }}/venv"
+delfin_work_dir: /opt/delfin-linux-amd64
+delfin_config_dir: /etc/delfin
+venv: "{{ delfin_work_dir }}/venv"
 
 
 ##############
@@ -40,18 +40,18 @@ venv: "{{ sim_work_dir }}/venv"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-sim_repo_branch: "{{ repo_branch }}"
+delfin_repo_branch: "{{ repo_branch }}"
 
 # These fields are NOT suggested to be modified
-sim_remote_url: https://github.com/sodafoundation/SIM.git
+delfin_remote_url: https://github.com/sodafoundation/delfin.git
 
 ###########
 # RELEASE #
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-sim_release: "{{ release_version }}" # The version should be greater than v0.12.0
+delfin_release: "{{ release_version }}" # The version should be greater than v0.12.0
 
 # These fields are NOT suggested to be modified
-sim_download_url: https://github.com/sodafoundation/SIM/archive/{{ sim_release }}.tar.gz
-sim_tarball_dir: /tmp/opensds-sim-{{ sim_release }}-linux-amd64
+delfin_download_url: https://github.com/sodafoundation/delfin/archive/{{ delfin_release }}.tar.gz
+delfin_tarball_dir: /tmp/sodafoundation-delfin-{{ delfin_release }}-linux-amd64

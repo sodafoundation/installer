@@ -167,17 +167,17 @@
         - enable_orchestration == true
   tags: orchestration
 
-- name: Install SIM
+- name: Install delfin
   hosts: controllers
   remote_user: root
   vars_files:
     - group_vars/common.yml
-    - group_vars/sim.yml
+    - group_vars/delfin.yml
   gather_facts: false
   become: True
   tasks:
     - import_role:
-        name: sim-installer
+        name: delfin-installer
       when:
-        - enable_sim == true
-  tags: sim
+        - enable_delfin == true
+  tags: delfin

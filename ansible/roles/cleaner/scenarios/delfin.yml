@@ -13,11 +13,11 @@
 # limitations under the License.
 
 ---
-- name: Get running SIM processes
-  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/sim-linux-amd64/dolphin/cmd/' | awk '{print $2}'"
+- name: Get running delfin processes
+  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/cmd/' | awk '{print $2}'"
   register: running_processes
 
-- name: Kill running SIM processes
+- name: Kill running delfin processes
   shell: "kill {{ item }}"
   with_items: "{{ running_processes.stdout_lines }}"
 
@@ -32,7 +32,7 @@
   shell: "kill -9 {{ item }}"
   with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
 
-- name: Stop service of SIM, if started
+- name: Stop service of delfin, if started
   service:
     name: "{{ item }}"
     state: stopped
@@ -41,17 +41,17 @@
     - redis-server
   become: yes
 
-- name: clean up all SIM directories
+- name: clean up all delfin directories
   file:
     path: "{{ item }}"
     state: absent
     force: yes
   with_items:
-    - "{{ sim_work_dir }}"
-    - "{{ sim_tarball_dir }}"
+    - "{{ delfin_work_dir }}"
+    - "{{ delfin_tarball_dir }}"
   ignore_errors: yes
   tags:
-    - sim
+    - delfin
     - clean
   when:
     - source_purge is undefined or source_purge != false

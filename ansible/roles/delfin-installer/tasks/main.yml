@@ -14,16 +14,16 @@
 
 - name: Check and Install Redis
   include_tasks: scenarios/redis.yml
-  when: sim_installation_type != "container"
+  when: delfin_installation_type != "container"
 
 - name: Check and Install RabbitMQ
   include_tasks: scenarios/rabbitmq.yml
-  when: sim_installation_type != "container"
+  when: delfin_installation_type != "container"
 
-- name: Get SIM source code
+- name: Get delfin source code
   include_tasks: scenarios/source-code.yml
-  when: sim_installation_type != "container"
+  when: delfin_installation_type != "container"
 
-- name: Start SIM processes
-  include_tasks: scenarios/start-sim.yml
-  when: sim_installation_type != "container"
+- name: Start delfin processes
+  include_tasks: scenarios/start-delfin.yml
+  when: delfin_installation_type != "container"

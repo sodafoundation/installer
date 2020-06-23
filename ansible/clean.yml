@@ -28,7 +28,7 @@
     - group_vars/sushi.yml
     - group_vars/dashboard.yml
     - group_vars/orchestration.yml
-    - group_vars/sim.yml
+    - group_vars/delfin.yml
   gather_facts: false
   become: True
   tasks:

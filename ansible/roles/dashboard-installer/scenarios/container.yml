@@ -29,3 +29,6 @@
       OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
       OPENSDS_GELATO_URL: "http://{{ host_ip }}:8089"
       OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
+      OPENSDS_S3_URL: "http://{{ host_ip }}:8090"
+      OPENSDS_S3_HOST: "{{ host_ip }}" 
+      OPENSDS_S3_PORT: "8090"

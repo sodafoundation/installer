@@ -80,6 +80,6 @@ controller_image_tag: "{{ release_version }}"
 dock_image_tag: "{{ release_version }}"
 
 # These fields are NOT suggested to be modified
-apiserver_docker_image: opensdsio/opensds-apiserver:{{ api_image_tag }}
-controller_docker_image: opensdsio/opensds-controller:{{ controller_image_tag }}
-dock_docker_image: opensdsio/opensds-dock:{{ dock_image_tag }}
+apiserver_docker_image: sodafoundation/apiserver:{{ api_image_tag }}
+controller_docker_image: sodafoundation/controller:{{ controller_image_tag }}
+dock_docker_image: sodafoundation/dock:{{ dock_image_tag }}

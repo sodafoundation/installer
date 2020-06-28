@@ -35,7 +35,7 @@ console_login_url: "{{ host_ip }}:8088"
 # DOCKER #
 ##########
 
-dashboard_docker_image: "opensdsio/dashboard:v0.10.0" # opensdsio/dashboard:{{ release_version }}
+dashboard_docker_image: "sodafoundation/dashboard:latest" # sodafoundation/dashboard:{{ release_version }}
 
 
 ##############

@@ -26,7 +26,7 @@ dummy:
 enable_delfin: false
 
 # delfin installation types are: 'repository', 'release' and 'container''
-delfin_installation_type: "repository" # "{{ install_from }}"
+delfin_installation_type: "{{ install_from }}"
 
 # These fields are NOT suggested to be modifie
 delfin_work_dir: /opt/delfin-linux-amd64

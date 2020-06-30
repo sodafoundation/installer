@@ -36,7 +36,7 @@ console_login_url: "{{ host_ip }}:8088"
 ##########
 
 
-dashboard_docker_image: "sodafoundation/dashboard:latest" # sodafoundation/dashboard:{{ release_version }}
+dashboard_docker_image: sodafoundation/dashboard:{{ release_version }}
 
 
 

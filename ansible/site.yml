@@ -166,3 +166,18 @@
       when:
         - enable_orchestration == true
   tags: orchestration
+
+- name: Install delfin
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/delfin.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: delfin-installer
+      when:
+        - enable_delfin == true
+  tags: delfin

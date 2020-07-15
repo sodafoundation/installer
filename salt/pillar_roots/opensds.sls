@@ -702,7 +702,7 @@ packages:
         options: '--strip-components=1'
         dl:
           format: tar
-          source: {{ site.gelato_uri }}/{{ site.gelato_release }}/opensds-multicloud-{{ site.gelato_release }}-linux-amd64.tar.gz
+          source: {{ site.gelato_uri }}/{{ site.gelato_release }}/soda-multicloud-{{ site.gelato_release }}-linux-amd64.tar.gz
           hashsum: {{ site.gelato_hashsum }}
 
       hotpot:

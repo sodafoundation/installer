@@ -70,11 +70,13 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { regexp: 'opensdsio/multi-cloud-api.*$', replace: 'opensdsio/multi-cloud-api:{{ gelato_image_tag }}'}
-    - { regexp: 'opensdsio/multi-cloud-backend.*$', replace: 'opensdsio/multi-cloud-backend:{{ gelato_image_tag }}'}
-    - { regexp: 'opensdsio/multi-cloud-s3.*$', replace: 'opensdsio/multi-cloud-s3:{{ gelato_image_tag }}'}
-    - { regexp: 'opensdsio/multi-cloud-dataflow.*$', replace: 'opensdsio/multi-cloud-dataflow:{{ gelato_image_tag }}'}
-    - { regexp: 'opensdsio/multi-cloud-datamover.*$', replace: 'opensdsio/multi-cloud-datamover:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-api.*$', replace: 'sodafoundation/multi-cloud-api:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-backend.*$', replace: 'sodafoundation/multi-cloud-backend:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-s3.*$', replace: 'sodafoundation/multi-cloud-s3:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-dataflow.*$', replace: 'sodafoundation/multi-cloud-dataflow:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-datamover.*$', replace: 'sodafoundation/multi-cloud-datamover:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-file.*$', replace: 'sodafoundation/multi-cloud-file:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/multi-cloud-block.*$', replace: 'sodafoundation/multi-cloud-block:{{ gelato_image_tag }}'}
   when: install_from == "release" or install_from == "container"
 
 - name: start service

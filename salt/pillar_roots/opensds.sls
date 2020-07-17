@@ -736,19 +736,92 @@ packages:
       # /var/lib/mysql/
 
 kubernetes:
-  dir:
-    binary: /usr/local/bin
-  kubectl:
-    version: '1.15.0'
-    linux:
-      altpriority: 1000
+  client:
+    version: 1.18.0
     pkg:
+      use_upstream: archive
+      archive:
+        source_hash: '594ca3eadc7974ec4d9e4168453e36ca434812167ef8359086cd64d048df525b7bd46424e7cc9c41e65c72bda3117326ba1662d1c9d739567f10f5684fd85bee'  # noqa 204
       binary:
-        source_hash: ecec7fe4ffa03018ff00f14e228442af5c2284e57771e4916b977c20ba4e5b39  #linux amd64 binary
-  minikube:
-    version: '1.2.0'
-    linux:
-      altpriority: 1000
+        source_hash: '6ea8261b503c6c63d616878837dc70b758d4a3aeb9996ade8e83b51aedac9698'
+  devtools:
+    wanted:
+    - minikube
     pkg:
-      binary:
-        source_hash: eabd027438953d29a4b0f7b810c801919cc13bef3ebe7aff08c9534ac2b091ab  #linux amd64 binary
+      minikube:
+        version: 1.12.0
+        binary:
+          source_hash: '3501b6c2be48183affa9497e7db6d751d92e1536267268b73ad1a936a2977122'
+  linux:
+    altpriority: 1000
+
+salt:
+  # Set this to 'py3' to install the Python 3 packages.
+  # If this is not set, the Python 2 packages will be installed by default.
+  py_ver: 'py3'
+
+  install_packages: False
+  master:
+    file_roots:
+      base:
+        - /srv/salt
+    pillar_roots:
+      base:
+        - /srv/pillar
+  minion:
+    file_roots:
+      base:
+        - /srv/salt
+    pillar_roots:
+      base:
+        - /srv/pillar
+  ssh_roster:
+    hotpot1:
+      host: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+      user: stack
+      sudo: True
+      priv: /etc/salt/ssh_keys/sshkey.pem
+salt_formulas:
+  git_opts:
+    default:
+      baseurl: https://github.com/saltstack-formulas
+      basedir: /srv/formulas
+  basedir_opts:
+    makedirs: True
+    user: root
+    group: root
+    mode: 755
+  minion_conf:
+    create_from_list: True
+  list:
+    base:
+     {{ '- epel-formula' if grains.os_family in ('RedHat',) else '' }}
+     - salt-formula
+     - openssh-formula
+     - packages-formula
+     - firewalld-formula
+     - etcd-formula
+     - ceph-formula
+     - deepsea-formula
+     - docker-formula
+     - etcd-formula
+     - firewalld-formula
+     - helm-formula
+     - iscsi-formula
+     - lvm-formula
+     - packages-formula
+     - devstack-formula
+     - golang-formula
+     - memcached-formula
+     - opensds-formula
+     - mysql-formula
+     - timezone-formula
+     - resolver-formula
+     - nginx-formula
+     - mongodb-formula
+     - node-formula
+     - apache-formula
+     - prometheus-formula
+     - grafana-formula
+     - sysstat-formula
+     - kubernetes-formula

@@ -120,7 +120,8 @@ pkg-add() {
              elif [ -f "/usr/bin/dnf" ]; then
                  /usr/bin/dnf install -y --best --allowerasing ${PACKAGES} || exit 1
              elif [ -f "/usr/bin/yum" ]; then
-                 /usr/bin/yum update -y || exit 1
+		 # centos/rhel has older package versions so allow newer upstream ones (skip-broken)
+                 /usr/bin/yum update -y --skip-broken || exit 1
                  /usr/bin/yum install -y ${PACKAGES} --skip-broken || exit 1
              elif [[ -f "/usr/bin/apt-get" ]]; then
                  /usr/bin/apt-get update --fix-missing -y || exit 1
@@ -153,7 +154,8 @@ pkg-update() {
              elif [ -f "/usr/bin/dnf" ]; then
                  /usr/bin/dnf upgrade -y --allowerasing "${PACKAGES}" || exit 1
              elif [ -f "/usr/bin/yum" ]; then
-                 /usr/bin/yum update -y "${PACKAGES}" || exit 1
+		 # centos/rhel has older package versions so allow newer upstream ones (skip-broken)
+                 /usr/bin/yum update -y "${PACKAGES}" --skip-broken || exit 1
              elif [[ -f "/usr/bin/apt-get" ]]; then
                  /usr/bin/apt-get upgrade -y "${PACKAGES}" || exit 1
              elif [[ -f "/usr/sbin/pkg" ]]; then
@@ -180,7 +182,8 @@ pkg-remove() {
              elif [ -f "/usr/bin/dnf" ]; then
                  /usr/bin/dnf remove -y "${PACKAGES}" || exit 1
              elif [ -f "/usr/bin/yum" ]; then
-                 /usr/bin/yum remove -y "${PACKAGES}" || exit 1
+		 # centos/rhel has older package versions so allow newer upstream ones (skip-broken)
+                 /usr/bin/yum remove -y "${PACKAGES}" --skip-broken || exit 1
              elif [[ -f "/usr/bin/apt-get" ]]; then
                  /usr/bin/apt-get remove -y "${PACKAGES}" || exit 1
              elif [[ -f "/usr/sbin/pkg" ]]; then
@@ -291,7 +294,7 @@ salt-bootstrap() {
              if [ -f "/usr/bin/dnf" ]; then
                  pkg-add ${PACKAGES} 2>/dev/null
              elif [ -f "/usr/bin/yum" ]; then
-                 # centos/rhel have many old package versions so we allow newer upstream packages
+		 # centos/rhel has older package versions so allow newer upstream ones (skip-broken)
                  pkg-add ${PACKAGES} --skip-broken 2>/dev/null
              else
                  pkg-add ${PACKAGES} 2>/dev/null

@@ -23,8 +23,8 @@ set +o xtrace
 soda:opensds:configuration(){
 
 # Copy api spec file to configuration path
-SODA_API_DIR=${SODA_DIR}/../../api
-cp $SODA_API_DIR/openapi-spec/swagger.yaml $SODA_CONFIG_DIR
+SODA_API_DIR=/opt/opensds-hotpot-linux-amd64
+cp $SODA_API_DIR/swagger.yaml $SODA_CONFIG_DIR
 
 # Set global configuration.
 cat >> $SODA_CONFIG_DIR/opensds.conf << OPENSDS_GLOBAL_CONFIG_DOC
@@ -58,10 +58,9 @@ soda::opensds::install(){
 # Run osdsdock and osdslet daemon in background.
 (
     cd ${SODA_API_DIR}
-    sudo build/out/bin/osdsapiserver --daemon
-    cd ..
-    sudo controller/build/out/bin/osdslet --daemon
-    sudo dock/build/out/bin/osdsdock --daemon
+    sudo bin/osdsapiserver --daemon
+    sudo bin/osdslet --daemon
+    sudo bin/osdsdock --daemon
 
     soda::echo_summary "Waiting for osdsapiserver to come up."
     soda::util::wait_for_url localhost:50040 "osdsapiserver" 0.5 80
@@ -83,14 +82,14 @@ soda::opensds::install(){
             $xtrace
         fi
     fi
-
+    
     # Copy bash completion script to system.
-    cp ${SODA_API_DIR}/osdsctl/completion/osdsctl.bash_completion /etc/bash_completion.d/
+    cp osdsctl.bash_completion /etc/bash_completion.d/
 
     export OPENSDS_AUTH_STRATEGY=$SODA_AUTH_STRATEGY
     export OPENSDS_ENDPOINT=http://localhost:50040
-    ${SODA_API_DIR}/build/out/bin/osdsctl profile create '{"name": "default_block", "description": "default policy", "storageType": "block"}'
-    ${SODA_API_DIR}/build/out/bin/osdsctl profile create '{"name": "default_file", "description": "default policy", "storageType": "file", "provisioningProperties":{"ioConnectivity": {"accessProtocol": "NFS"},"DataStorage":{"StorageAccessCapability":["Read","Write","Execute"]}}}'
+    ${SODA_API_DIR}/bin/osdsctl profile create '{"name": "default_block", "description": "default policy", "storageType": "block"}'
+    ${SODA_API_DIR}/bin/osdsctl profile create '{"name": "default_file", "description": "default policy", "storageType": "file", "provisioningProperties":{"ioConnectivity": {"accessProtocol": "NFS"},"DataStorage":{"StorageAccessCapability":["Read","Write","Execute"]}}}'
 
     if [ $? == 0 ]; then
         soda::echo_summary devsds installed successfully !! 

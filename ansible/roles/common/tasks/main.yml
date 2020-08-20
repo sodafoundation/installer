@@ -44,12 +44,12 @@
 
 - name: Install system packages on CentoS or RHEL
   when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat")
+        and ansible_distribution_major_version >= "8"
   yum:
     name:
       - make
       - gcc
       - python-pip
-      #- open-iscsi
     state: present
 
 - name: install requests package with pip

@@ -26,6 +26,13 @@
   when:
     - redisservice.stat.exists is undefined or redisservice.stat.exists == false
 
+- name: Change the redis default port to 26379
+  replace:
+    path: /etc/redis/redis.conf
+    regexp: "port 6379"
+    replace: "port {{ delfin_redis_port }}"
+  become: yes
+
 - name: Ensure Redis is started
   service: 
     name: redis-server 

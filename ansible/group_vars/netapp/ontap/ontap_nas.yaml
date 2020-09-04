@@ -1,0 +1,32 @@
+backendOptions:
+  version: 1
+  username: "username"
+  password: "password"
+  storageDriverName: "ontap-nas"
+  managementLIF: "1.2.3.4"
+  dataLIF: "1.2.3.5"
+  svm: "soda-svm"
+pool:
+  soda-pool:
+    storageType: file
+    availabilityZone: default
+    multiAttach: true
+    extras:
+      dataStorage:
+        provisioningPolicy: Thin
+        compression: false
+        deduplication: false
+        storageAccessCapability:
+          - Read
+          - Write
+          - Execute
+      ioConnectivity:
+        accessProtocol: nfs
+        maxIOPS: 7000000
+        maxBWS: 600
+        minIOPS: 1000000
+        minBWS: 100
+        latency: 100
+      advanced:
+        diskType: SSD
+        latency: 5ms

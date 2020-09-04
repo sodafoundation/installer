@@ -50,7 +50,11 @@ venv: "{{ orchestration_work_dir }}/venv"
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
 orchestration_repo_branch: "{{ repo_branch }}"
-orchestration_st2_installer_repo_branch: master
+
+# TODO: This is temp fix to use deprecated all in one image.
+# FIXME: Change the deprecated image to new st2-docker
+orchestration_st2_installer_repo_branch: DEPRECATED/all-in-one
+
 
 # These fields are NOT suggested to be modified
 orchestration_remote_url: https://github.com/sodafoundation/orchestration.git

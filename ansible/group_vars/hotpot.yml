@@ -75,8 +75,8 @@ dock_tarball_dir: /tmp/soda-dock-{{ dock_release }}-linux-amd64
 # CONTAINER #
 #############
 
-api_image_tag: "{{ release_version }}"
-controller_image_tag: "{{ release_version }}"
+api_image_tag: "v1.0.0"
+controller_image_tag: "v1.0.0"
 dock_image_tag: "{{ release_version }}"
 
 # These fields are NOT suggested to be modified

@@ -33,9 +33,8 @@
     replace: "port {{ delfin_redis_port }}"
   become: yes
 
-- name: Ensure Redis is started
+- name: Ensure Redis is restarted
   service: 
-    name: redis-server 
-    state: started 
-    enabled: yes
+    name: redis-server
+    state: restarted
   become: yes

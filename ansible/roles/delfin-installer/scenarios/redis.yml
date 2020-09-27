@@ -19,10 +19,10 @@
   register: redisservice
 
 - name: Ensure Redis is present
-  apt: 
-    name: redis-server 
-    state: latest
-  become: yes
+  shell: "{{ item }}"
+  with_items:
+    - ulimit -n 65536
+    - apt-get install -y redis-server
   when:
     - redisservice.stat.exists is undefined or redisservice.stat.exists == false
 

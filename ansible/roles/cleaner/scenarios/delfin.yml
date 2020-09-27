@@ -20,6 +20,7 @@
 - name: Kill running delfin processes
   shell: "kill {{ item }}"
   with_items: "{{ running_processes.stdout_lines }}"
+  ignore_errors: yes
 
 - wait_for:
     path: "/proc/{{ item }}/status"
@@ -40,6 +41,7 @@
     - rabbitmq-server
     - redis-server
   become: yes
+  ignore_errors: yes
 
 - name: clean up all delfin directories
   file:

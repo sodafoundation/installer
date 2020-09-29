@@ -14,7 +14,7 @@
 
 ---
 - name: Get running delfin processes
-  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/cmd/' | awk '{print $2}'"
+  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/' | awk '{print $2}'"
   register: running_processes
 
 - name: Kill running delfin processes

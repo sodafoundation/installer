@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 
-image: sodafoundation/csiplugin-block:v1.0.1
+image: sodafoundation/csiplugin-block:v1.1.0
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
 # ImageRestartPolicy: valid values are "Never", and "Always"

@@ -125,6 +125,11 @@
   when: enable_delfin == true
   tags: delfin
 
+- name: include scenarios/srm_toolchain.yml for cleaning up SRM Toolchain
+  include_tasks: scenarios/srm_toolchain.yml
+  when: install_srm_toolchain == true
+  tags: srm_toolchain
+
 - name: clean all configuration and log files
   file:
     path: "{{ item }}"

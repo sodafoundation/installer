@@ -97,6 +97,21 @@
       when:
         - enable_delfin == true
   tags: delfin
+  
+- name: Install SRM Toolchain
+  hosts: controllers
+  remote_user: root
+  vars_files: 
+    - group_vars/common.yml
+    - group_vars/delfin.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: srm-toolchain-installer
+      when:
+        - install_srm_toolchain == true
+  tags: srm_toolchain
 
 - name: Install Gelato
   hosts: controllers

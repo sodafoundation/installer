@@ -1,0 +1,62 @@
+groups:
+- name: Bandwidth
+  rules:
+
+  - alert: high_bandwidth
+    expr: storage_bandwidth > 80
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{$labels.storage_id}} is experiencing high Bandwidth usage"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing high bandwidth usage."
+  
+  - alert: critical_bandwidth
+    expr: storage_bandwidth > 90
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{$labels.storage_id}}  is experiencing critical Bandwidth usage"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing critical bandwidth usage. Please take remedial measures immediately"
+
+- name: Throughput
+  rules:
+
+  - alert: high_throughput
+    expr: storage_throughput > 80
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{$labels.storage_id}} is experiencing high throughput usage"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing high throughput usage."
+  
+  - alert: critical_bandwidth
+    expr: storage_throughput > 90
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{$labels.storage_id}} is experiencing critical throughput usage"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing critical throughput usage. Please take remedial measures immediately"
+- name: Response Time
+  rules:
+  
+  - alert: high_response_time
+    expr: storage_response_time > 20
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{$labels.storage_id}} is experiencing high response times"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing high response times."
+  
+  - alert: critical_response_time
+    expr: storage_response_time > 60
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{$labels.storage_id}} is experiencing very high response times."
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing very high response times. Please take remedial measures immediately"

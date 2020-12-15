@@ -48,6 +48,9 @@
     - { regexp: 'HOST_IP', replace: '{{ host_ip }}'}
   when: install_srm_toolchain == true
 
+- name: set PROMETHEUS as the default exporter
+  shell: export PROMETHEUS=True
+
 - name: start service
   shell: docker-compose up -d
   args:

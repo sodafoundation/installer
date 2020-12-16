@@ -77,6 +77,7 @@ srm_toolchain_dir: srm-toolchain
 # The working directory where the SRM Toolchain installer files are copied.
 srm_toolchain_work_dir: /opt/srm-toolchain
 
+# These are the recommended versions of image tags.
 prometheus_image_tag: v2.23.0
 alertmanager_image_tag: v0.21.0
 grafana_image_tag: 7.3.5

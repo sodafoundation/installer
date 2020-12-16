@@ -13,15 +13,24 @@
 # limitations under the License.
 
 ---
-- name: uninstall SRM Toolchain
-  shell: "{{ item }}"
-  with_items:
-    - bash ./script/srm_toolchain.sh uninstall docker
+- name: check for SRM Toolchain files existed
+  stat:
+    path: "{{ srm_toolchain_work_dir }}/docker-compose.yml"
+  register: srmtoolchainexisted
+
+- name: Stop and remove Prometheus, Alertmanager, Grafana containers but don't delete the images
+  shell: docker-compose rm -fs
+  args:
+    chdir: "{{ srm_toolchain_work_dir }}/"
   when:
-    - install_srm_toolchain == true
-  ignore_errors: yes
-  become: yes
-  tags: srm_toolchain
+    - source_purge == false
+
+- name: Stop and remove Prometheus, Alertmanager, Grafana containers & delete the images
+  shell: docker-compose down --rmi all
+  args:
+    chdir: "{{ srm_toolchain_work_dir }}/"
+  when:
+    - source_purge is undefined or source_purge != false
 
 - name: clean up all SRM Toolchain directories
   file:
@@ -36,4 +45,3 @@
     - clean
   when:
     - source_purge is undefined or source_purge != false
-  

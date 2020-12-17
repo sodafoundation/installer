@@ -16,7 +16,7 @@
   docker_container:
     name: dashboard
     image: "{{ dashboard_docker_image }}"
-    state: stopped
+    state: absent
   when: dashboard_installation_type == "container"
   ignore_errors: true
   tags: dashboard
@@ -31,7 +31,7 @@
   docker_container:
     name: osdslet
     image: "{{ controller_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -39,7 +39,7 @@
   docker_container:
     name: apiserver
     image: "{{ apiserver_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -47,7 +47,7 @@
   docker_container:
     name: osdsdock
     image: "{{ dock_docker_image }}"
-    state: stopped
+    state: absent
   when: install_from == "container"
   tags: hotpot
 
@@ -98,31 +98,6 @@
   when: sushi_plugin_type == "csi"
   tags: sushi
 
-- name: clean all configuration and log files
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "{{ opensds_config_dir }}"
-    - "{{ opensds_log_dir }}"
-    - "{{ opensds_certs_dir }}"
-  ignore_errors: yes
-
-- name: clean all created work directories
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "{{ hotpot_work_dir }}"
-    - "{{ sushi_work_dir }}"
-    - "{{ dashboard_work_dir }}"
-    - "{{ gelato_work_dir }}"
-  ignore_errors: yes
-  when: source_purge is undefined or source_purge != false
-  tags: clean
-
 - name: include scenarios/auth-keystone.yml when keystone specified
   include_tasks: scenarios/auth-keystone.yml
   when: opensds_auth_strategy == "keystone"
@@ -144,3 +119,34 @@
   include_tasks: scenarios/orchestration.yml
   when: enable_orchestration == true
   tags: orchestration
+
+- name: include scenarios/delfin.yml for cleaning up delfin service
+  include_tasks: scenarios/delfin.yml
+  when: enable_delfin == true
+  tags: delfin
+
+- name: clean all configuration and log files
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_log_dir }}"
+    - "{{ opensds_certs_dir }}"
+    - "{{ delfin_config_dir }}"
+  ignore_errors: yes
+
+- name: clean all created work directories
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ hotpot_work_dir }}"
+    - "{{ sushi_work_dir }}"
+    - "{{ dashboard_work_dir }}"
+    - "{{ gelato_work_dir }}"
+  ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean

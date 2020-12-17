@@ -238,7 +238,7 @@
   tags:
     - lvm_exporter
   with_items:
-    - cp /opt/opensds-hotpot-linux-amd64/bin/lvm_exporter /usr/local/bin/
+    - cp {{ hotpot_work_dir }}/bin/lvm_exporter /usr/local/bin/
     - chown root:root /usr/local/bin/lvm_exporter
   become: yes
 

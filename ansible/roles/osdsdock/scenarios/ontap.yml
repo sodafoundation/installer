@@ -38,4 +38,4 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { regexp: '127.0.0.1', replace: '{{host_ip}}'}
+    - { regexp: '127.0.0.1', replace: '{{ host_ip }}'}

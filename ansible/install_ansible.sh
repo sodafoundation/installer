@@ -17,7 +17,7 @@
 # This step is needed to upgrade ansible to version 2.4.x which is required for
 # the ceph backend installation using ceph-ansible.
 
-REQUIRED_ANAIBLE_VER=${REQUIRED_ANAIBLE_VER:-}
+REQUIRED_ANSIBLE_VER=${REQUIRED_ANSIBLE_VER:-}
 
 SCRIPT_PATH=$(cd $(dirname $0); pwd)
 

@@ -23,23 +23,39 @@
       - /bin/false
   when: go_path == ""
 
-- name: clean opensds controller data
+- name: clean sodafoundation api data
   shell: make clean
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/opensds"
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/api"
   when: deploy_project != "gelato"
   tags: hotpot
 
-- name: clean opensds multi-cloud engine data
+- name: clean sodafoundation controller data
   shell: make clean
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/controller"
+  when: deploy_project != "gelato"
+  tags: hotpot
+
+- name: clean sodafoundation dock data
+  shell: make clean
+  args:
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/dock"
+  when: deploy_project != "gelato"
+  tags: hotpot
+
+- name: clean sodafoundation multi-cloud engine data
+  shell: make clean
+  args:
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud"
   when: deploy_project != "hotpot"
   tags: gelato
+  ignore_errors: yes
 
-- name: clean opensds northbound plugin data
+- name: clean sodafoundation northbound plugin data
   shell: make clean
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/nbp"
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/nbp"
   when: sushi_plugin_type != "hotpot_only"
   tags: sushi
+  ignore_errors: yes

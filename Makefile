@@ -17,7 +17,7 @@ DIST_DIR := $(BASE_DIR)/build/dist
 VERSION ?= $(shell git describe --exact-match 2> /dev/null || \
                  git describe --match=$(git rev-parse --short=8 HEAD) \
 		 --always --dirty --abbrev=8)
-BUILD_TGT := opensds-installer-$(VERSION)
+BUILD_TGT := installer-$(VERSION)
 
 all: help
 
@@ -40,6 +40,7 @@ dist:
 	    cp -r $(BASE_DIR)/charts $(BUILD_TGT)/ && \
 	    cp -r $(BASE_DIR)/salt $(BUILD_TGT)/ && \
 	    cp -r $(BASE_DIR)/conf $(BUILD_TGT)/ && \
+	    cp -r $(BASE_DIR)/contrib $(BUILD_TGT)/ && \
 	    cp $(BASE_DIR)/LICENSE $(BUILD_TGT)/ && \
 	    zip -r $(DIST_DIR)/$(BUILD_TGT).zip $(BUILD_TGT) && \
 	    tar zcvf $(DIST_DIR)/$(BUILD_TGT).tar.gz $(BUILD_TGT) && \

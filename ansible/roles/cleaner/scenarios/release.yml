@@ -19,7 +19,9 @@
     state: absent
     force: yes
   with_items:
-    - "{{ hotpot_tarball_dir }}"
+    - "{{ api_tarball_dir }}"
+    - "{{ controller_tarball_dir }}"
+    - "{{ dock_tarball_dir }}"
     - "{{ sushi_tarball_dir }}"
     - "{{ orchestration_tarball_dir }}"
     - "{{ gelato_tarball_dir }}"

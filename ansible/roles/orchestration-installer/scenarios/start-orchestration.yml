@@ -21,6 +21,12 @@
     warn: false
   register: st2_pass
 
+- name: Upgrade python pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+  become: yes
+
 - name: Install python virtual environment
   pip:
     name: virtualenv

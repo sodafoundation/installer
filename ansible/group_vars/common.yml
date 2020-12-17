@@ -34,8 +34,7 @@ deploy_project: telemetry
 install_from: repository
 # These fields below will specify the tag based on install_from type
 repo_branch: master
-release_version: v0.10.0
-image_tag: v0.10.0
+release_version: v1.1.0
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'

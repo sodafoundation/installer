@@ -17,7 +17,7 @@
 - hosts:
   - controllers
   - docks
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   become: True
   
@@ -82,6 +82,21 @@
       when:
         - deploy_project != "gelato"
   tags: dock
+
+- name: Install delfin
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/delfin.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: delfin-installer
+      when:
+        - enable_delfin == true
+  tags: delfin
 
 - name: Install Gelato
   hosts: controllers
@@ -166,3 +181,4 @@
       when:
         - enable_orchestration == true
   tags: orchestration
+

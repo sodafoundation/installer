@@ -13,10 +13,10 @@
 # limitations under the License.
 
 ---
-- name: include scenarios/install_srm_toolchain.yml
+- name: include scenarios/install-srm-toolchain.yml
   tags:
     - srm_toolchain
-  include: scenarios/install_srm_toolchain.yml
+  include: scenarios/install-srm-toolchain.yml
 
 - name: set image tags for docker-compose configuration of SRM Toolchain
   replace:
@@ -28,6 +28,9 @@
     - { regexp: 'prom/prometheus.*$', replace: 'prom/prometheus:{{ prometheus_image_tag }}'}
     - { regexp: 'prom/alertmanager.*$', replace: 'prom/alertmanager:{{ alertmanager_image_tag }}'}
     - { regexp: 'grafana/grafana.*$', replace: 'grafana/grafana:{{ grafana_image_tag }}'}
+    - { regexp: 'SODA_PROMETHEUS_PORT', replace: '{{ prometheus_port }}'}
+    - { regexp: 'SODA_ALERTMANAGER_PORT', replace: '{{ alertmanager_port }}'}
+    - { regexp: 'SODA_GRAFANA_PORT', replace: '{{ grafana_port }}'}
   when: install_srm_toolchain == true
 
 - name: replace host_ip in prometheus configuration

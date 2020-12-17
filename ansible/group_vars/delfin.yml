@@ -58,29 +58,6 @@ delfin_release: "v1.0.0"
 delfin_download_url: https://github.com/sodafoundation/delfin/archive/{{ delfin_release }}.tar.gz
 delfin_tarball_dir: /tmp/sodafoundation-delfin-{{ delfin_release }}-linux-amd64
 
-#########################
-# INSTALL SRM TOOLCHAIN #
-#########################
-# The SRM Toolchain is required if you wish to use the SODA Dashboard to view the metrics and visualization. 
-# If you set this to true then the installer will install Prometheus:v2.23.0, AlertManager:v0.21.0 and Grafana:7.3.5. 
-# Please note that this installer will install the above as docker containers. 
-# If you already have any of the above running then please make the appropriate 
-# changes to the docker container name and ports at {srm_toolchain_dir}/docker-compose.yml
-# If you set this to false then you will not be able to view the visualization using SODA Dashboard. 
-# You can however configure your own dashboard or receiver to connect with Delfin.
-
-install_srm_toolchain: false
-
-# The source directory where the SRM Toolchain installer files reside
-srm_toolchain_dir: srm-toolchain
-
-# The working directory where the SRM Toolchain installer files are copied.
-srm_toolchain_work_dir: /opt/srm-toolchain
-
-# These are the recommended versions of image tags.
-prometheus_image_tag: v2.23.0
-alertmanager_image_tag: v0.21.0
-grafana_image_tag: 7.3.5
 
 
 

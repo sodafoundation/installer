@@ -10,4 +10,4 @@ providers:
   updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
   options:
     path: /var/lib/grafana/dashboards
-
+    foldersFromFilesStructure: true

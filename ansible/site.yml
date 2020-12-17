@@ -104,6 +104,7 @@
   vars_files: 
     - group_vars/common.yml
     - group_vars/delfin.yml
+    - group_vars/srm-toolchain.yml
   gather_facts: false
   become: True
   tasks:

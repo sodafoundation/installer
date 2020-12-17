@@ -16,7 +16,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     ports:
-      - 9090:9090
+      - SODA_PROMETHEUS_PORT:SODA_PROMETHEUS_PORT
     links:
       - alertmanager:alertmanager
     restart: always
@@ -29,7 +29,7 @@ services:
     image: prom/alertmanager: { alertmanager_docker_version }
     container_name: monitoring_alertmanager
     ports:
-      - 9093:9093
+      - SODA_ALERTMANAGER_PORT:SODA_ALERTMANAGER_PORT
     volumes:
       - ./alertmanager/:/etc/alertmanager/
     restart: always
@@ -45,7 +45,7 @@ services:
     depends_on:
       - prometheus
     ports:
-      - 3000:3000
+      - SODA_GRAFANA_PORT:SODA_GRAFANA_PORT
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/dashboards:/var/lib/grafana/dashboards

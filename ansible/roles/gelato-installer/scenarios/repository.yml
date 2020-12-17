@@ -25,14 +25,14 @@
 
 - name: check for gelato source code existed
   stat:
-    path: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    path: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud"
   ignore_errors: yes
   register: gelatoexisted
 
 - name: download gelato source code if not exists
   git:
     repo: "{{ gelato_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    dest: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud"
     version: "{{ gelato_repo_branch }}"
   when:
     - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false
@@ -42,22 +42,22 @@
   environment:
     GOPATH: "{{ go_path }}"
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/multi-cloud"
+    chdir: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud"
 
 - name: copy gelato docker-compose.yml file into gelato work directory
   copy:
-    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/docker-compose.yml"
+    src: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud/docker-compose.yml"
     dest: "{{ gelato_work_dir }}"
 
 - name: copy gelato s3 into gelato work directory
   copy:
-    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/s3"
+    src: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud/s3"
     dest: "{{ gelato_work_dir }}"
   ignore_errors: yes
 
 - name: copy gelato examples into gelato work directory
   copy:
-    src: "{{ go_path }}/src/github.com/opensds/multi-cloud/examples"
+    src: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud/examples"
     dest: "{{ gelato_work_dir }}"
   ignore_errors: yes
 

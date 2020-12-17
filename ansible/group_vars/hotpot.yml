@@ -42,10 +42,14 @@ dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-hotpot_repo_branch: "{{ repo_branch }}"
+api_repo_branch: "{{ repo_branch }}"
+controller_repo_branch: "{{ repo_branch }}"
+dock_repo_branch: "{{ repo_branch }}"
 
 # These fields are NOT suggested to be modified
-hotpot_remote_url: https://github.com/opensds/opensds.git
+api_remote_url: https://github.com/sodafoundation/api.git
+controller_remote_url: https://github.com/sodafoundation/controller.git
+dock_remote_url: https://github.com/sodafoundation/dock.git
 
 
 ###########
@@ -53,20 +57,29 @@ hotpot_remote_url: https://github.com/opensds/opensds.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-hotpot_release: v0.10.1 # The version should be at least v0.2.1
+api_release: "v1.0.0" # The version should be at least v0.12.0
+controller_release: "v1.0.0" # The version should be at least v0.12.0
+dock_release: "{{ release_version }}" # The version should be at least v0.12.0
 
 # These fields are NOT suggested to be modified
-hotpot_download_url: https://github.com/opensds/opensds/releases/download/{{ hotpot_release }}/opensds-hotpot-{{ hotpot_release }}-linux-amd64.tar.gz
-hotpot_tarball_dir: /tmp/opensds-hotpot-{{ hotpot_release }}-linux-amd64
+api_download_url: https://github.com/sodafoundation/api/releases/download/{{ api_release }}/soda-api-{{ api_release }}-linux-amd64.tar.gz
+controller_download_url: https://github.com/sodafoundation/controller/releases/download/{{ controller_release }}/soda-controller-{{ controller_release }}-linux-amd64.tar.gz
+dock_download_url: https://github.com/sodafoundation/dock/releases/download/{{ dock_release }}/soda-dock-{{ dock_release }}-linux-amd64.tar.gz
+
+api_tarball_dir: /tmp/soda-api-{{ api_release }}-linux-amd64
+controller_tarball_dir: /tmp/soda-controller-{{ controller_release }}-linux-amd64
+dock_tarball_dir: /tmp/soda-dock-{{ dock_release }}-linux-amd64
 
 
 #############
 # CONTAINER #
 #############
 
-hotpot_image_tag: v0.10.1
+api_image_tag: "v1.0.0"
+controller_image_tag: "v1.0.0"
+dock_image_tag: "{{ release_version }}"
 
 # These fields are NOT suggested to be modified
-apiserver_docker_image: opensdsio/opensds-apiserver:{{ hotpot_image_tag }}
-controller_docker_image: opensdsio/opensds-controller:{{ hotpot_image_tag }}
-dock_docker_image: opensdsio/opensds-dock:{{ hotpot_image_tag }}
+apiserver_docker_image: sodafoundation/apiserver:{{ api_image_tag }}
+controller_docker_image: sodafoundation/controller:{{ controller_image_tag }}
+dock_docker_image: sodafoundation/dock:{{ dock_image_tag }}

@@ -13,31 +13,92 @@
 # limitations under the License.
 
 ---
-- name: check for hotpot release files existed
+# api
+- name: check for api release files existed
   stat:
-    path: "{{ hotpot_work_dir }}/bin"
-  register: hotpotreleasesexisted
+    path: "{{ hotpot_work_dir }}/bin/osdsapiserver"
+  register: apireleasesexisted
 
-- name: download and extract the hotpot release tarball if not exists
+- name: download and extract the api release tarball if not exists
   unarchive:
-    src: "{{ hotpot_download_url }}"
+    src: "{{ api_download_url }}"
     dest: /tmp/
     remote_src: yes
   when:
-    - hotpotreleasesexisted.stat.exists is undefined or hotpotreleasesexisted.stat.exists == false
+    - apireleasesexisted.stat.exists is undefined or apireleasesexisted.stat.exists == false
 
-- name: change the mode of all binary files in hotpot release
+- name: change the mode of all binary files in api release
   file:
-    path: "{{ hotpot_tarball_dir }}/bin"
+    path: "{{ api_tarball_dir }}/bin"
     mode: 0755
     recurse: yes
   when:
-    - hotpotreleasesexisted.stat.exists is undefined or hotpotreleasesexisted.stat.exists == false
+    - apireleasesexisted.stat.exists is undefined or apireleasesexisted.stat.exists == false
 
-- name: copy hotpot tarball into hotpot work directory
+- name: copy api tarball into hotpot work directory
   copy:
-    src: "{{ hotpot_tarball_dir }}/"
+    src: "{{ api_tarball_dir }}/"
     dest: "{{ hotpot_work_dir }}"
     mode: 0755
   when:
-    - hotpotreleasesexisted.stat.exists is undefined or hotpotreleasesexisted.stat.exists == false
+    - apireleasesexisted.stat.exists is undefined or apireleasesexisted.stat.exists == false
+
+# controller
+- name: check for controller release files existed
+  stat:
+    path: "{{ hotpot_work_dir }}/bin/osdslet"
+  register: controllerreleasesexisted
+
+- name: download and extract the controller release tarball if not exists
+  unarchive:
+    src: "{{ controller_download_url }}"
+    dest: /tmp/
+    remote_src: yes
+  when:
+    - controllerreleasesexisted.stat.exists is undefined or controllerreleasesexisted.stat.exists == false
+
+- name: change the mode of all binary files in controller release
+  file:
+    path: "{{ controller_tarball_dir }}/bin"
+    mode: 0755
+    recurse: yes
+  when:
+    - controllerreleasesexisted.stat.exists is undefined or controllerreleasesexisted.stat.exists == false
+
+- name: copy controller tarball into hotpot work directory
+  copy:
+    src: "{{ controller_tarball_dir }}/"
+    dest: "{{ hotpot_work_dir }}"
+    mode: 0755
+  when:
+    - controllerreleasesexisted.stat.exists is undefined or controllerreleasesexisted.stat.exists == false
+
+# dock
+- name: check for dock release files existed
+  stat:
+    path: "{{ hotpot_work_dir }}/bin/osdsdock"
+  register: dockreleasesexisted
+
+- name: download and extract the dock release tarball if not exists
+  unarchive:
+    src: "{{ dock_download_url }}"
+    dest: /tmp/
+    remote_src: yes
+  when:
+    - dockreleasesexisted.stat.exists is undefined or dockreleasesexisted.stat.exists == false
+
+- name: change the mode of all binary files in dock release
+  file:
+    path: "{{ dock_tarball_dir }}/bin"
+    mode: 0755
+    recurse: yes
+  when:
+    - dockreleasesexisted.stat.exists is undefined or dockreleasesexisted.stat.exists == false
+
+- name: copy dock tarball into hotpot work directory
+  copy:
+    src: "{{ dock_tarball_dir }}/"
+    dest: "{{ hotpot_work_dir }}"
+    mode: 0755
+  when:
+    - dockreleasesexisted.stat.exists is undefined or dockreleasesexisted.stat.exists == false

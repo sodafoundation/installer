@@ -28,7 +28,7 @@ dummy:
 # If you set this to false then you will not be able to view the visualization using SODA Dashboard. 
 # You can however configure your own dashboard or receiver to connect with Delfin.
 
-install_srm_toolchain: true
+install_srm_toolchain: false
 
 # The source directory where the SRM Toolchain installer files reside
 srm_toolchain_dir: srm-toolchain

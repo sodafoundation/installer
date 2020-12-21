@@ -18,7 +18,7 @@
     - srm_toolchain
   include: scenarios/install-srm-toolchain.yml
 
-- name: set image tags for docker-compose configuration of SRM Toolchain
+- name: replace image tags and ports for prometheus, alertmanager and grafana in docker-compose configuration of SRM Toolchain
   replace:
     path: "{{ srm_toolchain_work_dir }}/docker-compose.yml"
     regexp: "{{ item.regexp }}"
@@ -33,22 +33,24 @@
     - { regexp: 'SODA_GRAFANA_PORT', replace: '{{ grafana_port }}'}
   when: install_srm_toolchain == true
 
-- name: replace host_ip in prometheus configuration
+- name: replace host_ip and Alertmanager Port in prometheus configuration
   replace:
     path: "{{ srm_toolchain_work_dir }}/prometheus/prometheus.yml"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
     - { regexp: 'HOST_IP', replace: '{{ host_ip }}'}
+    - { regexp: 'SODA_ALERTMANAGER_PORT', replace: '{{ alertmanager_port }}'}
   when: install_srm_toolchain == true
 
-- name: replace host_ip in datasource configuration for grafana
+- name: replace host_ip and prometheus port in datasource configuration for grafana
   replace:
     path: "{{ srm_toolchain_work_dir }}/grafana/provisioning/datasources/all.yml"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
     - { regexp: 'HOST_IP', replace: '{{ host_ip }}'}
+    - { regexp: 'SODA_PROMETHEUS_PORT', replace: '{{ prometheus_port }}'}
   when: install_srm_toolchain == true
 
 - name: set PROMETHEUS as the default exporter

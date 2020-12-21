@@ -21,7 +21,7 @@ alerting:
   - scheme: http
     static_configs:
     - targets:
-      - "alertmanager:9093"
+      - "alertmanager:SODA_ALERTMANAGER_PORT"
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -37,3 +37,4 @@ scrape_configs:
 
     static_configs:
          - targets: ['HOST_IP:8195']
+         

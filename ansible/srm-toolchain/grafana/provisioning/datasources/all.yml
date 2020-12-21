@@ -14,7 +14,8 @@ datasources:
   type: 'prometheus'
   access: 'proxy'
   org_id: 1
-  url: "http://HOST_IP:9090"
+  url: "http://HOST_IP:SODA_PROMETHEUS_PORT"
   is_default: true
   version: 1
   editable: true
+  

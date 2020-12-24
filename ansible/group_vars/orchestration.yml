@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Install Orchestration Manager (true/false)
-enable_orchestration: false
+enable_orchestration: true
 
 # Orchestration configuration input
 hotpot_ip: "{{ host_ip }}"
@@ -65,7 +65,7 @@ orchestration_st2_installer_remote_url: https://github.com/StackStorm/st2-docker
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-orchestration_release:  v0.12.0 # "{{ release_version }}" The version should be greater than v0.5.4
+orchestration_release: "{{ orchestration_release_version }}" #The version should be greater than v0.5.4
 
 # These fields are NOT suggested to be modified
 orchestration_download_url: https://github.com/sodafoundation/orchestration/archive/{{ orchestration_release }}.tar.gz

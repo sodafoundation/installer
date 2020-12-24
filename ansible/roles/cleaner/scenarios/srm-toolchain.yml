@@ -26,7 +26,6 @@
     - source_purge == false
     - srmtoolchainexisted.stat.isdir is defined and srmtoolchainexisted.stat.isdir
 
-
 - name: Stop and remove Prometheus, Alertmanager, Grafana containers & delete the images
   shell: docker-compose down --rmi all
   args:

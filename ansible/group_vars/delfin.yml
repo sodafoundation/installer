@@ -71,7 +71,7 @@ delfin_remote_url: https://github.com/sodafoundation/delfin.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-delfin_release: "v1.0.0"
+delfin_release: "v1.1.0-rc1"
 
 # These fields are NOT suggested to be modified
 delfin_download_url: https://github.com/sodafoundation/delfin/archive/{{ delfin_release }}.tar.gz

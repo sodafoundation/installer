@@ -58,6 +58,6 @@
     - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/api.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/api.log 2>&1 &'
     - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/task.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/task.log 2>&1 &'
     - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/cmd/alert.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/alert.log 2>&1 &'
-    - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/exporter/exporter_server.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/exporter.log 2>&1 &'
+    - '{{ venv }}/exec {{ delfin_work_dir }}/delfin/exporter/prometheus/exporter_server.py --config-file {{ delfin_config_dir }}/delfin.conf  >/tmp/exporter.log 2>&1 &'
   args:
     chdir: "{{ delfin_work_dir }}"

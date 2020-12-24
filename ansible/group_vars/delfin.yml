@@ -36,6 +36,25 @@ venv: "{{ delfin_work_dir }}/venv"
 delfin_redis_ip: 127.0.0.1
 delfin_redis_port: 26379
 
+# Exporter configurations for Kafka, Prometheus & Alert Manager
+# Uncomment exporters to enable
+performance_exporters: #PerformanceExporterPrometheus, PerformanceExporterKafka
+alert_exporters: #AlertExporterPrometheus
+
+# Exporter configurations for Kafka
+delfin_exporter_kafka_ip: 'localhost'
+delfin_exporter_kafka_port: 9092
+delfin_exporter_kafka_topic: 'delfin-kafka'
+
+# Exporter configurations for Prometheus
+delfin_exporter_prometheus_ip: 0.0.0.0
+delfin_exporter_prometheus_port: 8195
+delfin_exporter_prometheus_cache_file: '/var/lib/delfin/delfin_exporter.txt'
+
+# Exporter configurations for Alert Manager
+delfin_exporter_alertmanager_host: 'localhost'
+delfin_exporter_alertmanager_port: 9093
+
 ##############
 # REPOSITORY #
 ##############

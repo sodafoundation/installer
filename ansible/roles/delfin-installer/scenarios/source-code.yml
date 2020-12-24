@@ -91,3 +91,104 @@
     option: backend_server
     value: "{{ delfin_redis_ip }}:{{ delfin_redis_port }}"
   become: yes
+
+# Performance Export Configurations
+- name: Check and remove performance exporters configs
+  ini_file:
+    create: no
+    state: absent
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: DEFAULT
+    option: performance_exporters
+    value: ""
+  become: yes
+  when:
+    - performance_exporters == None
+
+- name: Enable Performance Exporter configuration
+  ini_file:
+    create: no
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: DEFAULT
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: performance_exporters, value: "{{ performance_exporters }}" }
+  become: yes
+  when:
+    - performance_exporters != None
+
+# Performance exporter - Kafka configuration
+- name: Update Kafka Exporter configuration
+  ini_file:
+    create: no
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: KAFKA_EXPORTER
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: kafka_ip, value: "{{ delfin_exporter_kafka_ip }}" }
+    - { option: kafka_port, value: "{{ delfin_exporter_kafka_port }}" }
+    - { option: kafka_topic_name, value: "{{ delfin_exporter_kafka_topic }}" }
+  become: yes
+  when:
+    - performance_exporters != None
+    - "'PerformanceExporterKafka' in performance_exporters"
+
+# Performance exporter - Prometheus configuration
+- name: Update Prometheus Exporter configuration
+  ini_file:
+    create: no
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: PROMETHEUS_EXPORTER
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: metric_server_ip, value: "{{ delfin_exporter_prometheus_ip }}" }
+    - { option: metric_server_port, value: "{{ delfin_exporter_prometheus_port }}" }
+    - { option: metric_server_file, value: "{{ delfin_exporter_prometheus_cache_file }}" }
+  become: yes
+  when:
+    - performance_exporters != None
+    - "'PerformanceExporterPrometheus' in performance_exporters"
+
+# Alert Exporter Configurations
+- name: Check and remove alert exporters configs
+  ini_file:
+    create: no
+    state: absent
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: DEFAULT
+    option: alert_exporters
+    value: ""
+  become: yes
+  when:
+    - alert_exporters == None
+
+- name: Enable AlertManager Exporter configuration
+  ini_file:
+    create: no
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: DEFAULT
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: alert_exporters, value: "{{ alert_exporters }}" }
+  become: yes
+  when:
+    - alert_exporters != None
+
+- name: Update AlertManager Exporter configuration
+  ini_file:
+    create: no
+    path: "{{ delfin_config_dir }}/delfin.conf"
+    section: PROMETHEUS_ALERT_MANAGER_EXPORTER
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+        - { option: alert_manager_host, value: "{{ delfin_exporter_alertmanager_host }}" }
+        - { option: alert_manager_port, value: "{{ delfin_exporter_alertmanager_port }}" }
+  become: yes
+  when:
+    - alert_exporters != None
+    - "'AlertExporterPrometheus' in alert_exporters"

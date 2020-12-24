@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # Install Orchestration Manager (true/false)
-enable_orchestration: true
+enable_orchestration: false
 
 # Orchestration configuration input
 hotpot_ip: "{{ host_ip }}"

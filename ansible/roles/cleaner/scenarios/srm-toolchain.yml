@@ -24,6 +24,8 @@
     chdir: "{{ srm_toolchain_work_dir }}/"
   when:
     - source_purge == false
+    - srmtoolchainexisted.stat.isdir is defined and srmtoolchainexisted.stat.isdir
+
 
 - name: Stop and remove Prometheus, Alertmanager, Grafana containers & delete the images
   shell: docker-compose down --rmi all
@@ -31,6 +33,7 @@
     chdir: "{{ srm_toolchain_work_dir }}/"
   when:
     - source_purge is undefined or source_purge != false
+    - srmtoolchainexisted.stat.isdir is defined and srmtoolchainexisted.stat.isdir
 
 - name: clean up all SRM Toolchain directories
   file:
@@ -45,3 +48,5 @@
     - clean
   when:
     - source_purge is undefined or source_purge != false
+    - srmtoolchainexisted.stat.isdir is defined and srmtoolchainexisted.stat.isdir
+    

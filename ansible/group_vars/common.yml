@@ -27,11 +27,11 @@ host_ip: 127.0.0.1
 
 # This field indicates which project should be deploy
 # 'hotpot', 'gelato' or 'all'
-deploy_project: all
+deploy_project: telemetry
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: release
+install_from: repository
 # These fields below will specify the tag based on install_from type
 repo_branch: master
 release_version: v1.2.0-rc1

@@ -85,7 +85,7 @@
         - { option: driver, value: "{{ db_driver }}" }
   become: yes
 
-- name: run osdsdock daemon service
+- name: run telemetrydock daemon service
   shell:
     cmd: |
       i=0
@@ -93,12 +93,12 @@
         i="$((i+1))"
         [ "$i" -lt 4 ]
       do
-        nohup bin/osdsdock > osdsdock.out 2> osdsdock.err < /dev/null &
+        nohup bin/telemetrydock > telemetrydock.out 2> telemetrydock.err < /dev/null &
         sleep 5
-        ps aux | grep osdsdock | grep -v grep && break
+        ps aux | grep telemetrydock | grep -v grep && break
       done
   args:
-    chdir: "{{ hotpot_work_dir }}"
+    chdir: /opt/opensds-telemetry-linux-amd64
   when:
     - install_from != "container"
 

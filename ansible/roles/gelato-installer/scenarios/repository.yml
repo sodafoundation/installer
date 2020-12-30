@@ -38,7 +38,7 @@
     - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false
 
 - name: build gelato docker images
-  shell: make docker
+  shell: make docker -d
   environment:
     GOPATH: "{{ go_path }}"
   args:

@@ -34,7 +34,7 @@ deploy_project: all
 install_from: release
 # These fields below will specify the tag based on install_from type
 repo_branch: master
-release_version: v1.2.0-rc1
+release_version: v1.2.0-rc2
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
@@ -55,8 +55,9 @@ opensds_conf_file: /etc/opensds/opensds.conf
 
 api_release_version: v1.0.0
 controller_release_version: v1.0.0
-dock_release_version: v1.1.0
-dashboard_release_version: v1.2.0-rc1
-gelato_release_version: v1.2.0-rc1
+dock_release_version: v1.2.0-rc2
+dashboard_release_version: v1.2.0-rc2
+gelato_release_version: v1.2.0-rc2
 sushi_release_version: v1.1.0
 orchestration_release_version: v0.12.0
+delfin_release_version: v1.1.0-rc2

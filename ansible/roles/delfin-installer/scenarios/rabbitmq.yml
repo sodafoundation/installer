@@ -21,19 +21,19 @@
   apt:
     autoclean: yes
 
+- name: Import RabbitMQ public key
+  apt_key:
+    url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+    state: present
+  become: yes
+  when:
+    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
+
 - name: Add RabbitMQ official repo
   apt_repository: 
     repo: deb https://dl.bintray.com/rabbitmq/debian {{ ansible_distribution_release }} main
     state: present
     filename: rabbitmq
-  become: yes
-  when:
-    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
-
-- name: Import RabbitMQ public key
-  apt_key:
-    url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
-    state: present
   become: yes
   when:
     - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false

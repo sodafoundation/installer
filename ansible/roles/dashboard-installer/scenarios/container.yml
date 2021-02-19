@@ -32,3 +32,8 @@
       OPENSDS_S3_URL: "http://{{ host_ip }}:8090"
       OPENSDS_S3_HOST: "{{ host_ip }}" 
       OPENSDS_S3_PORT: "8090"
+      SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
+      SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
+      SODA_GRAFANA_PORT: "{{ grafana_port }}"
+      SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"
+         

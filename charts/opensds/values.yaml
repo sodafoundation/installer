@@ -72,7 +72,7 @@ osdsdock:
   name: dock
   replicaCount: 1
 
-  image: sodafoundation/dock:v1.1.0
+  image: sodafoundation/dock:v1.2.0
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
@@ -101,7 +101,7 @@ osdsdashboard:
   name: dashboard
   replicaCount: 1
 
-  image: sodafoundation/dashboard:v1.1.0
+  image: sodafoundation/dashboard:v1.2.0
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent

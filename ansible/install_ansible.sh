@@ -68,7 +68,12 @@ fi
 echo Installing ansible ${REQUIRED_ANSIBLE_VER} required for ceph-ansible ${CEPH_ANSIBLE_BRANCH} branch.
 sudo add-apt-repository -y ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 sudo apt-get update
-sudo apt-get install -y ansible
+if [ "${REQUIRED_ANSIBLE_VER}" == "2.4" ]; then
+    PKG_VER=`apt-cache showpkg ansible | sed '/^Provides:/,/^Reverse Provides:/{//!b};d'   | egrep ^2\\.4 | sort -r | head -1 | awk '{print $1;}'`
+    sudo apt-get install -y ansible=${PKG_VER}
+else
+    sudo apt-get install -y ansible
+fi
 sleep 3
 sudo add-apt-repository -y -r ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
 

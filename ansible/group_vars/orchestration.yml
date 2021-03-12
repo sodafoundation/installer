@@ -50,7 +50,11 @@ venv: "{{ orchestration_work_dir }}/venv"
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
 orchestration_repo_branch: "{{ repo_branch }}"
-orchestration_st2_installer_repo_branch: master
+
+# TODO: This is temp fix to use deprecated all in one image.
+# FIXME: Change the deprecated image to new st2-docker
+orchestration_st2_installer_repo_branch: DEPRECATED/all-in-one
+
 
 # These fields are NOT suggested to be modified
 orchestration_remote_url: https://github.com/sodafoundation/orchestration.git
@@ -61,7 +65,7 @@ orchestration_st2_installer_remote_url: https://github.com/StackStorm/st2-docker
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-orchestration_release:  v0.10.0 # "{{ release_version }}" The version should be greater than v0.5.4
+orchestration_release: "{{ orchestration_release_version }}" #The version should be greater than v0.5.4
 
 # These fields are NOT suggested to be modified
 orchestration_download_url: https://github.com/sodafoundation/orchestration/archive/{{ orchestration_release }}.tar.gz

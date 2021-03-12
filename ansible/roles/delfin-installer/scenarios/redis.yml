@@ -19,16 +19,22 @@
   register: redisservice
 
 - name: Ensure Redis is present
-  apt: 
-    name: redis-server 
-    state: latest
-  become: yes
+  shell: "{{ item }}"
+  with_items:
+    - ulimit -n 65536
+    - apt-get install -y redis-server
   when:
     - redisservice.stat.exists is undefined or redisservice.stat.exists == false
 
-- name: Ensure Redis is started
+- name: Change the redis default port to 26379
+  replace:
+    path: /etc/redis/redis.conf
+    regexp: "port 6379"
+    replace: "port {{ delfin_redis_port }}"
+  become: yes
+
+- name: Ensure Redis is restarted
   service: 
-    name: redis-server 
-    state: started 
-    enabled: yes
+    name: redis-server
+    state: restarted
   become: yes

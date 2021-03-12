@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2020 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,27 +14,27 @@
 
 ---
 
-- name: configure opensds global info osdsdock ontap
+- name: configure soda global info osdsdock ontap nas
   ini_file:
     path: "{{ opensds_conf_file }}"
-    section: netapp_ontap_san
+    section: netapp_ontap_nas
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items:
-        - { option: name, value: "{{ ontap_name }}" }
-        - { option: description, value: "{{ ontap_description }}" }
-        - { option: driver_name, value: "{{ ontap_driver_name }}" }
-        - { option: config_path, value: "{{ ontap_config_path }}" }
+        - { option: name, value: "{{ ontap_nas_name }}" }
+        - { option: description, value: "{{ ontap_nas_description }}" }
+        - { option: driver_name, value: "{{ ontap_nas_driver_name }}" }
+        - { option: config_path, value: "{{ ontap_nas_config_path }}" }
   become: yes
 
-- name: copy opensds ontap backend file to ontap config path if specify ontap backend
+- name: copy soda ontap backend file to ontap config path if specify ontap nas as backend
   copy:
-    src: ../../../group_vars/netapp/ontap/ontap.yaml
-    dest: "{{ ontap_config_path }}"
+    src: ../../../group_vars/netapp/ontap/ontap_nas.yaml
+    dest: "{{ ontap_nas_config_path }}"
 
-- name: update opensds ontap backend file if specify ontap backend
+- name: update soda ontap backend file if specify ontap nas backend
   replace:
-    path: "{{ ontap_config_path }}"
+    path: "{{ ontap_nas_config_path }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:

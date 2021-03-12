@@ -26,13 +26,34 @@ dummy:
 enable_delfin: false
 
 # delfin installation types are: 'repository', 'release' and 'container''
-delfin_installation_type: "repository" # "{{ install_from }}"
+delfin_installation_type: "{{ install_from }}"
 
 # These fields are NOT suggested to be modifie
 delfin_work_dir: /opt/delfin-linux-amd64
 delfin_config_dir: /etc/delfin
 venv: "{{ delfin_work_dir }}/venv"
 
+delfin_redis_ip: 127.0.0.1
+delfin_redis_port: 26379
+
+# Exporter configurations for Kafka, Prometheus & Alert Manager
+# Uncomment exporters to enable
+performance_exporters: #PerformanceExporterPrometheus, PerformanceExporterKafka
+alert_exporters: #AlertExporterPrometheus
+
+# Exporter configurations for Kafka
+delfin_exporter_kafka_ip: 'localhost'
+delfin_exporter_kafka_port: 9092
+delfin_exporter_kafka_topic: 'delfin-kafka'
+
+# Exporter configurations for Prometheus
+delfin_exporter_prometheus_ip: 0.0.0.0
+delfin_exporter_prometheus_port: 8195
+delfin_exporter_prometheus_cache_file: '/var/lib/delfin/delfin_exporter.txt'
+
+# Exporter configurations for Alert Manager
+delfin_exporter_alertmanager_host: 'localhost'
+delfin_exporter_alertmanager_port: 9093
 
 ##############
 # REPOSITORY #
@@ -50,7 +71,7 @@ delfin_remote_url: https://github.com/sodafoundation/delfin.git
 ###########
 
 # If user specifies intalling from release,then he can choose the specific version
-delfin_release: "{{ release_version }}" # The version should be greater than v0.12.0
+delfin_release: "{{ delfin_release_version }}"
 
 # These fields are NOT suggested to be modified
 delfin_download_url: https://github.com/sodafoundation/delfin/archive/{{ delfin_release }}.tar.gz

@@ -29,12 +29,29 @@
     - group_vars/dashboard.yml
     - group_vars/orchestration.yml
     - group_vars/delfin.yml
+    - group_vars/srm-toolchain.yml
   gather_facts: false
   become: True
   tasks:
     - import_role:
         name: cleaner
-    
+
+- name: uninstall multi-cloud HA services.
+  hosts: k8smaster
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: gelato-ha-uninstaller
+      when:
+        - gelato_ha == true
+  tags: gelato_ha
+
+
 - name: uninstall tools for telemetry
   hosts: controllers
   remote_user: root

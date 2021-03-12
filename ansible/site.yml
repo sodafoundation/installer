@@ -17,7 +17,7 @@
 - hosts:
   - controllers
   - docks
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   become: True
   
@@ -83,6 +83,38 @@
         - deploy_project != "gelato"
   tags: dock
 
+- name: Install delfin
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/delfin.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: delfin-installer
+      when:
+        - enable_delfin == true
+  tags: delfin
+  
+- name: Install SRM Toolchain
+  hosts: controllers
+  remote_user: root
+  vars_files: 
+    - group_vars/common.yml
+    - group_vars/delfin.yml
+    - group_vars/srm-toolchain.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: srm-toolchain-installer
+      when:
+        - install_srm_toolchain == true
+  tags: srm_toolchain
+
+# Defines deployment design and assigns role to server groups
 - name: Install Gelato
   hosts: controllers
   remote_user: root
@@ -94,6 +126,9 @@
   gather_facts: false
   become: True
   tasks:
+    - debug:
+        msg: "Multicloud HA is being installed, skipping Multicloud local install"
+      when: gelato_ha == true
     - import_role:
         name: common
       when: common_role_done is not defined
@@ -101,7 +136,27 @@
         name: gelato-installer
       when:
         - deploy_project != "hotpot"
+        - gelato_ha == false  
   tags: gelato
+ 
+- name: Install Gelato - HA Mode
+  hosts:
+  -  k8smaster
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+  remote_user: root    #get from group_vars/common.yml
+  tasks:
+    - debug:
+        msg: "Start MultiCloud HA install"
+    - import_role:
+        name: gelato-ha-installer
+      when:
+        - deploy_project != "hotpot"
+        - gelato_ha == true
+  tags: gelato-ha
 
 - name: Install Sushi
   hosts: controllers
@@ -128,6 +183,8 @@
   remote_user: root
   vars_files:
     - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/srm-toolchain.yml
     - group_vars/dashboard.yml
   gather_facts: false
   become: True
@@ -167,17 +224,3 @@
         - enable_orchestration == true
   tags: orchestration
 
-- name: Install delfin
-  hosts: controllers
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/delfin.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: delfin-installer
-      when:
-        - enable_delfin == true
-  tags: delfin

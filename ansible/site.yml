@@ -115,6 +115,7 @@
   tags: srm_toolchain
 
 # Defines deployment design and assigns role to server groups
+
 - name: Install Gelato
   hosts: controllers
   remote_user: root

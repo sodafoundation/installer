@@ -16,4 +16,4 @@ before_script:
 
 script:
   - chmod +x ./ci_check.sh
-  - echo | /bin/bash ./ci_check.sh
+  - travis_wait 30 echo | /bin/bash ./ci_check.sh

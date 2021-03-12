@@ -14,12 +14,13 @@
 
 ---
 - name: Get running delfin processes
-  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/cmd/' | awk '{print $2}'"
+  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/' | awk '{print $2}'"
   register: running_processes
 
 - name: Kill running delfin processes
   shell: "kill {{ item }}"
   with_items: "{{ running_processes.stdout_lines }}"
+  ignore_errors: yes
 
 - wait_for:
     path: "/proc/{{ item }}/status"
@@ -40,6 +41,7 @@
     - rabbitmq-server
     - redis-server
   become: yes
+  ignore_errors: yes
 
 - name: clean up all delfin directories
   file:

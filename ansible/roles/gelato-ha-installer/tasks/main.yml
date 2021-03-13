@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2021 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@
   include: scenarios/release.yml
   when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container"
 
-- name: Execute the kubectl yamls.
+
+- name: Execute the kubernetes manifests.
   shell: "{{ item }}"
   args:
     chdir: "{{ gelato_work_dir }}/multi-cloud/K8s"
@@ -39,4 +40,32 @@
   become_user: ubuntu
   when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container"
 
+- name: get multi-cloud service status
+  shell: kubectl get all -n=soda-multi-cloud
+  become_user: ubuntu
+
   
+- name: get the IPs of API Service.
+  shell: kubectl get svc api --no-headers | awk '{print $3}'
+  register: api_ip
+  become_user: ubuntu
+  when: install_from == "release" or install_from == "container"
+- debug:
+    msg:
+      - "{{ api_ip.stdout }}"
+
+- name: get the IPs of S3 Service.
+  shell: kubectl get svc s3api --no-headers | awk '{print $3}'
+  register: s3_ip
+  become_user: ubuntu
+  when: install_from == "release" or install_from == "container"
+- debug:
+    msg:
+      - "{{ s3_ip.stdout }}"
+
+# Used to copy the IP to Ansible installer host.
+- name: Register the host with variable
+  add_host:
+     name: "k8smaster"
+     soda_api_ip: " {{ api_ip.stdout }}"
+     soda_s3_ip: "{{ s3_ip.stdout }}"

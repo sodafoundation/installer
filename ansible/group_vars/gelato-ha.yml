@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2021 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ dummy:
 ###########
 
 # TODO : Polulate these IP , Port once the services are installed on K8s.
-#gelato_ha_api_ip = <IP of Multicloud API>
-#gelato_ha_api_port = <Port of Multicloud API>
+gelato_ha_api_ip: API_IP
+gelato_ha_api_port: API_PORT
 
-#gelato_ha_s3_ip = <IP of Multicloud S3>   
-#gelato_ha_s3_port = <Port of Multicloud S3>   
+gelato_ha_s3api_ip: S3_IP
+gelato_ha_s3api_port: S3_PORT
 
 # These fields are NOT suggested to be modifie
 gelato_work_dir: /opt/opensds-gelato-linux-amd64

@@ -159,6 +159,24 @@
         - gelato_ha == true
   tags: gelato-ha
 
+- name: Update the API, S3 IPs and Ports
+  hosts: controllers
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - debug:
+            msg: "Update the API, S3 IP and Port"
+    - import_role:
+        name: ha-ip-update
+      when:
+        - deploy_project != "hotpot"
+        - gelato_ha == true
+  tags: gelato-ha
+
+
 - name: Install Sushi
   hosts: controllers
   remote_user: root
@@ -179,6 +197,8 @@
         - sushi_plugin_type != "hotpot_only"
   tags: sushi
 
+# Dashboard to update the  roles/dashboard-installer/scenarios/container.yml
+# TODO : add debug to check the API, S3API IPs
 - name: deploy dashboard
   hosts: controllers
   remote_user: root
@@ -187,6 +207,7 @@
     - group_vars/auth.yml
     - group_vars/srm-toolchain.yml
     - group_vars/dashboard.yml
+    - group_vars/gelato-ha.yml
   gather_facts: false
   become: True
   tasks:

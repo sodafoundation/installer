@@ -28,7 +28,7 @@
     replace: "{{ item.replace }}"
   with_items:
     - { regexp: 'API_IP', replace: '{{ hostvars["k8smaster"]["soda_api_ip"] }}' }
-    - { regexp: 'API_PORT', replace: '30089'}
+    - { regexp: 'API_PORT', replace: '30099'}
     - { regexp: 'S3_IP', replace: '{{ hostvars["k8smaster"]["soda_s3_ip"] }}' }
     - { regexp: 'S3_PORT', replace: '30090'}
   become: yes

@@ -29,7 +29,7 @@
 - debug:
     msg: "{{ gelato_work_dir }}"
 
-- name: download and extract the gelato code if not exists
+- name: download the gelato code if not exists
   git:
     repo: "{{ gelato_remote_url }}"
     dest: "{{ gelato_work_dir }}/multi-cloud"

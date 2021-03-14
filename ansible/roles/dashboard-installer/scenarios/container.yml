@@ -37,11 +37,8 @@
       SODA_GRAFANA_PORT: "{{ grafana_port }}"
       SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"
   when: gelato_ha != true
-
-
-#gelato_ha_api_ip = <IP of Multicloud API>
-#gelato_ha_s3_ip = <IP of Multicloud S3>    
-- name: run dashboard containerized service
+  
+- name: run dashboard containerized service for mulit-cloud HA
   docker_container:
     name: dashboard
     image: "{{ dashboard_docker_image }}"

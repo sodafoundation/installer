@@ -148,7 +148,7 @@
     - group_vars/gelato-ha.yml
   gather_facts: false
   become: True
-  remote_user: root    #get from group_vars/common.yml
+
   tasks:
     - debug:
         msg: "Start MultiCloud HA install"
@@ -197,8 +197,6 @@
         - sushi_plugin_type != "hotpot_only"
   tags: sushi
 
-# Dashboard to update the  roles/dashboard-installer/scenarios/container.yml
-# TODO : add debug to check the API, S3API IPs
 - name: deploy dashboard
   hosts: controllers
   remote_user: root

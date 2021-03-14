@@ -18,12 +18,16 @@
     path: "{{ gelato_work_dir }}/multi-cloud"
   ignore_errors: yes
   register: gelatoexisted
+- debug:
+    msg: gelatoexisted
 
 
-- name: check for gelato release files existed
+- name: check for gelato deployment files existed
   stat:
     path: "{{ gelato_work_dir }}/multi-cloud/K8s/api-deployment.yaml"
   register: gelatoreleasesexisted
+- debug:
+    msg: "{{ gelato_work_dir }}"
 
 - name: download and extract the gelato code if not exists
   git:
@@ -32,5 +36,7 @@
     version: "{{ gelato_repo_branch }}"
   when:
     - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false
+- debug:
+    msg: "{{ gelato_remote_url }}"
 
 

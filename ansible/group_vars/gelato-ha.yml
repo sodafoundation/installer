@@ -22,12 +22,12 @@ dummy:
 # GENERAL #
 ###########
 
-# TODO : Polulate these IP , Port once the services are installed on K8s.
+#Polulate these IP , Port once the services are installed on K8s.
 gelato_ha_api_ip: API_IP
 gelato_ha_api_port: API_PORT
 
-gelato_ha_s3api_ip: S3_IP
-gelato_ha_s3api_port: S3_PORT
+gelato_ha_s3_ip: S3_IP
+gelato_ha_s3_port: S3_PORT
 
 # These fields are NOT suggested to be modifie
 gelato_work_dir: /opt/opensds-gelato-linux-amd64

@@ -91,5 +91,12 @@
     dest: "{{ opensds_config_dir }}"
   when: deploy_project != "gelato"
 
+
+- name: export the controller ip , to be used by gelato-ha installer.
+  add_host:
+     name: "controller"
+     controller_ip: " {{ host_ip }}"
+
+
 - set_fact: common_role_done=True
   when: common_role_done is not defined

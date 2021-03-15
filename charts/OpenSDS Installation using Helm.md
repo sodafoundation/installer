@@ -334,8 +334,8 @@ Logout of the dashboard as admin and login the dashboard again as a non-admin us
 
 #### For CSI Plugin
 ```
-wget https://github.com/sodafoundation/nbp/releases/download/v1.2.0/opensds-sushi-v1.2.0-linux-amd64.tar.gz
-tar zxvf opensds-sushi-v1.2.0-linux-amd64.tar.gz
+wget https://github.com/sodafoundation/nbp/releases/download/v1.2.1/opensds-sushi-v1.2.1-linux-amd64.tar.gz
+tar zxvf opensds-sushi-v1.2.1-linux-amd64.tar.gz
 cd /opensds-sushi-linux-amd64
 ```
 

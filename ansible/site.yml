@@ -127,9 +127,6 @@
   gather_facts: false
   become: True
   tasks:
-    - debug:
-        msg: "Multicloud HA is being installed, skipping Multicloud local install"
-      when: gelato_ha == true
     - import_role:
         name: common
       when: common_role_done is not defined
@@ -150,8 +147,6 @@
   become: True
 
   tasks:
-    - debug:
-        msg: "Start MultiCloud HA install"
     - import_role:
         name: gelato-ha-installer
       when:
@@ -167,8 +162,6 @@
   gather_facts: false
   become: True
   tasks:
-    - debug:
-            msg: "Update the API, S3 IP and Port"
     - import_role:
         name: ha-ip-update
       when:

@@ -45,7 +45,7 @@
     - bash "k8s-mongo.sh"
     - bash "k8s-deploy.sh"
   become_user: ubuntu
-  when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container" or install_gelato_ha_from == "repository"
+  
 
   # Get the list of servicses deployed.
 - name: get multi-cloud service status
@@ -57,13 +57,13 @@
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
   register: api_ip
   become_user: ubuntu
-  when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container" or install_gelato_ha_from == "repository"
+  
 
 - name: get the IPs of S3 Service.
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
   register: s3_ip
   become_user: ubuntu
-  when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container" or install_gelato_ha_from == "repository"
+  
 
 # Used to copy the IP to Ansible installer host.
 - name: Register the host with variable

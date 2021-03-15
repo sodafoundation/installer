@@ -36,6 +36,7 @@
     - import_role:
         name: cleaner
 
+# Uninstall the Multicloud services.        
 - name: uninstall multi-cloud HA services.
   hosts: k8smaster
   remote_user: root
@@ -50,6 +51,7 @@
       when:
         - gelato_ha == true
   tags: gelato_ha
+
 
 
 - name: uninstall tools for telemetry

@@ -27,10 +27,10 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { regexp: 'SODA_API_IP', replace: '{{ hostvars["k8smaster"]["soda_api_ip"] }}' }
-    - { regexp: 'SODA_API_PORT', replace: '30099'}
-    - { regexp: 'SODA_S3_IP', replace: '{{ hostvars["k8smaster"]["soda_s3_ip"] }}' }
-    - { regexp: 'SODA_S3_PORT', replace: '30090'}
+    - { regexp: 'MULTICLOUD_API_IP', replace: '{{ hostvars["k8smaster"]["soda_api_ip"] }}' }
+    - { regexp: 'MULTICLOUD_API_PORT', replace: '30099'}
+    - { regexp: 'MULTICLOUD_S3_IP', replace: '{{ hostvars["k8smaster"]["soda_s3_ip"] }}' }
+    - { regexp: 'MULTICLOUD_S3_PORT', replace: '30090'}
   become: yes
   when:
     - install_from == "release" or install_from == "container"

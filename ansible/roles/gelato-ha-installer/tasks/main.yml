@@ -55,13 +55,13 @@
   
 - name: get the IPs of API Service.
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
-  register: api_ip
+  register: multicloud_api_ip
   become_user: ubuntu
   
 
 - name: get the IPs of S3 Service.
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
-  register: s3_ip
+  register: multicloud_s3_ip
   become_user: ubuntu
   
 
@@ -69,5 +69,5 @@
 - name: Register the host with variable
   add_host:
      name: "k8smaster"
-     soda_api_ip: " {{ api_ip.stdout }}"
-     soda_s3_ip: "{{ s3_ip.stdout }}"
+     multicloud_api_ip: " {{ multicloud_api_ip.stdout }}"
+     multicloud_s3_ip: "{{ multicloud_s3_ip.stdout }}"

@@ -20,20 +20,20 @@
   register: gelatoha_stat
 
 
-- name: replace the api_ip and s3_ip in the gelato-ha.yml
+- name: replace the multicloud_api_ip and multicloud_s3_ip in the gelato-ha.yml
   hosts: controllers
   replace:
     path: "{{ role_path }}/../../group_vars/gelato-ha.yml"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { regexp: 'MULTICLOUD_API_IP', replace: '{{ hostvars["k8smaster"]["soda_api_ip"] }}' }
+    - { regexp: 'MULTICLOUD_API_IP', replace: '{{ hostvars["k8smaster"]["multicloud_api_ip"] }}' }
     - { regexp: 'MULTICLOUD_API_PORT', replace: '30099'}
-    - { regexp: 'MULTICLOUD_S3_IP', replace: '{{ hostvars["k8smaster"]["soda_s3_ip"] }}' }
+    - { regexp: 'MULTICLOUD_S3_IP', replace: '{{ hostvars["k8smaster"]["multicloud_s3_ip"] }}' }
     - { regexp: 'MULTICLOUD_S3_PORT', replace: '30090'}
   become: yes
   when:
     - install_from == "release" or install_from == "container"
     - gelatoha_stat.stat.exists
-    - hostvars["k8smaster"]["soda_api_ip"] is defined
-    - hostvars["k8smaster"]["soda_s3_ip"] is defined
+    - hostvars["k8smaster"]["multicloud_api_ip"] is defined
+    - hostvars["k8smaster"]["multicloud_s3_ip"] is defined

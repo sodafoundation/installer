@@ -25,7 +25,7 @@
 
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
-  when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container" or install_gelato_ha_from == "repository"
+  
 
 - name: Update the api, file, s3 deployments
   replace: dest="{{ gelato_work_dir }}/multi-cloud/K8s/{{item}}" regexp='KEYSTONE_IP' replace='{{ host_ip }}'

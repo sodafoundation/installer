@@ -36,4 +36,25 @@
       SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
       SODA_GRAFANA_PORT: "{{ grafana_port }}"
       SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"
-         
+  when: gelato_ha != true
+  
+- name: run dashboard containerized service for mulit-cloud HA
+  docker_container:
+    name: dashboard
+    image: "{{ dashboard_docker_image }}"
+    state: started
+    network_mode: host
+    restart_policy: always
+    env:
+      OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
+      OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
+      OPENSDS_GELATO_URL: "http://{{ gelato_ha_api_ip }}:{{ gelato_ha_api_port }}"
+      OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
+      OPENSDS_S3_URL: "http://{{ gelato_ha_s3_ip }}:{{ gelato_ha_s3_port }}"
+      OPENSDS_S3_HOST: "{{ gelato_ha_s3_ip }}"
+      OPENSDS_S3_PORT: "{{ gelato_ha_s3_port }}"
+      SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
+      SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
+      SODA_GRAFANA_PORT: "{{ grafana_port }}"
+      SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"      
+  when: gelato_ha == true

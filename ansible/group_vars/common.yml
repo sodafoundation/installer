@@ -25,6 +25,10 @@ dummy:
 # This field indicates local machine host ip
 host_ip: 127.0.0.1
 
+#Deploy multicloud in HA mode - default is false 
+gelato_ha: false 
+
+
 # This field indicates which project should be deploy
 # 'hotpot', 'gelato' or 'all'
 deploy_project: all
@@ -32,6 +36,10 @@ deploy_project: all
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
 install_from: release
+
+# Gelato- HA / Multi-Cloud HA installation is supported only from release / container. 
+install_gelato_ha_from: release   
+
 # These fields below will specify the tag based on install_from type
 repo_branch: master
 release_version: v1.2.1

@@ -28,7 +28,7 @@
   
 
 - name: Update the api, file, s3 deployments
-  replace: dest="{{ gelato_work_dir }}/multi-cloud/K8s/{{item}}" regexp='KEYSTONE_IP' replace='{{ host_ip }}'
+  replace: dest="{{ gelato_work_dir }}/multi-cloud/K8s/{{item}}" regexp = 'KEYSTONE_IP' replace = '{{ host_ip }}'
   become: yes
   with_items:
     - api-deployment.yaml
@@ -44,25 +44,25 @@
   with_items:
     - bash "k8s-mongo.sh"
     - bash "k8s-deploy.sh"
-  become_user: ubuntu
+  become_user: "{{ k8s_user }}"
   
 
   # Get the list of servicses deployed.
 - name: get multi-cloud service status
   shell: kubectl get all -n=soda-multi-cloud
-  become_user: ubuntu
+  become_user: "{{ k8s_user }}"
 
   
 - name: get the IPs of API Service.
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
   register: multicloud_api_ip
-  become_user: ubuntu
+  become_user: "{{ k8s_user }}"
   
 
 - name: get the IPs of S3 Service.
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
   register: multicloud_s3_ip
-  become_user: ubuntu
+  become_user: "{{ k8s_user }}"
   
 
 # Used to copy the IP to Ansible installer host.
@@ -71,3 +71,4 @@
      name: "k8smaster"
      multicloud_api_ip: "{{ multicloud_api_ip.stdout }}"
      multicloud_s3_ip: "{{ multicloud_s3_ip.stdout }}"
+

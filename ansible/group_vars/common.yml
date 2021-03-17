@@ -26,12 +26,12 @@ dummy:
 host_ip: 127.0.0.1
 
 #Deploy multicloud in HA mode - default is false 
-gelato_ha: false 
+gelato_ha: false
 
 
 # This field indicates which project should be deploy
 # 'hotpot', 'gelato' or 'all'
-deploy_project: all
+deploy_project: gelato
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'

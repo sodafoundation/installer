@@ -26,9 +26,5 @@ localhost ansible_connection=local
 
 # This group has the Kubernetes Master node details. The MultiCloud Pods are deployed on this Kubernetes cluster.
 [k8smaster]
-#master ansible_port=22 ansible_user=root ansible_host=192.168.20.xx
+# master ansible_port=22 ansible_user=root ansible_host=192.168.20.xx
 
-# This group has the list of Kubernetes Worker nodes. The K8s master node schedules the Pods on these nodes.
-[k8sworkers]
-#worker1 ansible_host=192.168.20.yy ansible_user=root
-#worker2 ansible_host=192.168.20.zz ansible_user=root

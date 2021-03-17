@@ -20,9 +20,9 @@
     chdir: "{{ gelato_work_dir }}/multi-cloud/K8s"
   with_items:
     - bash "k8s-delete-namespace.sh"      
-  become_user: ubuntu
+  become_user: "{{k8s_user}}"
   ignore_errors: yes
-  when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container"
+  
 
 # ---------delete the multi-cloud folder in /opt/opensds-gelato ---------
 - name: Clean artifact path ub /opt/opensds-gelato...
@@ -31,4 +31,4 @@
     path: "{{ gelato_work_dir }}/multi-cloud/"
   ignore_error: yes
   become: yes
-  when: install_gelato_ha_from == "release" or install_gelato_ha_from == "container"
+  

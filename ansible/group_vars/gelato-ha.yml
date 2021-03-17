@@ -27,11 +27,11 @@ k8s_user: K8S_USER
 
 # These variables should not be modified manually. 
 # These are populated by installer in a Multi-Cloud HA installation. 
-gelato_ha_api_ip: SODA_API_IP
-gelato_ha_api_port: SODA_API_PORT
+gelato_ha_api_ip: MULTICLOUD_API_IP
+gelato_ha_api_port: MULTICLOUD_API_PORT
 
-gelato_ha_s3_ip: SODA_S3_IP
-gelato_ha_s3_port: SODA_S3_PORT
+gelato_ha_s3_ip: MULTICLOUD_S3_IP
+gelato_ha_s3_port: MULTICLOUD_S3_PORT
 
 # These fields are NOT suggested to be modifie
 gelato_work_dir: /opt/opensds-gelato-linux-amd64

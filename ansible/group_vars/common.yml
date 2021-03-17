@@ -41,7 +41,7 @@ install_from: repository
 install_gelato_ha_from: release   
 
 # These fields below will specify the tag based on install_from type
-repo_branch: aks_isabela
+repo_branch: master
 release_version: v1.2.1
 
 # This field indicates which os family the system will be running, currently

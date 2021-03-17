@@ -31,9 +31,9 @@ deploy_project: all
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: release
+install_from: repository
 # These fields below will specify the tag based on install_from type
-repo_branch: master
+repo_branch: aks_isabela
 release_version: v1.2.1
 
 # This field indicates which os family the system will be running, currently

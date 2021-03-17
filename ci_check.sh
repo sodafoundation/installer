@@ -31,8 +31,8 @@ sed -i 's/^install_srm_toolchain: .*/install_srm_toolchain: '"true"'/g' ansible/
 sed -i 's/^enable_orchestration: .*/enable_orchestration: '"false"'/g' ansible/group_vars/orchestration.yml
 # Validate the installation using repository type
 sed -i 's/^install_from: .*/install_from: '"repository"'/g' ansible/group_vars/common.yml
-sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml  -i ansible/local.hosts
-sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -vvv -i ansible/local.hosts
+sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -vvv -i ansible/local.hosts
 
 # Disable both the SRM Toolchain and Orchestration Manager installation
 # sed -i 's/^enable_telemetry_tools: .*/enable_telemetry_tools: '"false"'/g' ansible/group_vars/telemetry.yml

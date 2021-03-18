@@ -73,16 +73,6 @@
     - delfin.conf
     - api-paste.ini
 
-
-- name: copy scheduler configs to host
-  copy:
-    src: "{{ delfin_work_dir }}/etc/{{ item }}"
-    dest: "{{ delfin_config_dir }}/{{ item }}"
-    mode: 0755
-  become: yes
-  with_items:
-    - scheduler_config.json
-
 - name: Update redis ip & port configuration
   ini_file:
     create: no

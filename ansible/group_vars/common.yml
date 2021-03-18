@@ -35,7 +35,7 @@ deploy_project: all
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'
-install_from: repository
+install_from: release
 
 # Gelato- HA / Multi-Cloud HA installation is supported only from release / container. 
 install_gelato_ha_from: release   

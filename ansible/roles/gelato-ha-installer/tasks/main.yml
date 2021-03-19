@@ -57,18 +57,10 @@
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
   register: multicloud_api_ip
   become_user: "{{ k8s_user }}"
-  
-
-- name: get the IPs of S3 Service.
-  shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
-  register: multicloud_s3_ip
-  become_user: "{{ k8s_user }}"
-  
 
 # Used to copy the IP to Ansible installer host.
 - name: Register the host with variable
   add_host:
      name: "k8smaster"
      multicloud_api_ip: "{{ multicloud_api_ip.stdout }}"
-     multicloud_s3_ip: "{{ multicloud_s3_ip.stdout }}"
 

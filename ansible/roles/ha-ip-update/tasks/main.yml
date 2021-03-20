@@ -34,3 +34,6 @@
     - install_from == "release" or install_from == "container"
     - gelatoha_stat.stat.exists
     - hostvars["k8smaster"]["multicloud_api_ip"] is defined
+
+- name: Pause for 2 seconds
+  pause: seconds=2

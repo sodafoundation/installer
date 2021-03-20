@@ -31,7 +31,7 @@ k8s_user: ubuntu
 # These are populated by installer in a Multi-Cloud HA installation.
 
 gelato_ha_api_ip: 0.0.0.0
-gelato_ha_api_port: 300909
+gelato_ha_api_port: 30099
 
 gelato_ha_s3_ip: 0.0.0.0
 gelato_ha_s3_port: 30090

@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-image: sodafoundation/csiplugin-file:v1.1.0
+image: sodafoundation/csiplugin-file:v1.2.1
 
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent

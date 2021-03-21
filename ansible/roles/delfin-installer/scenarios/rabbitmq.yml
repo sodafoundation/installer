@@ -21,36 +21,36 @@
   apt:
     autoclean: yes
 
-- name: Add RabbitMQ official repo
-  apt_repository: 
-    repo: deb https://dl.bintray.com/rabbitmq/debian xenial main 
-    state: present
-    filename: rabbitmq
-  become: yes
-  when:
-    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
-
 - name: Import RabbitMQ public key
-  apt_key: 
+  apt_key:
     url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
     state: present
   become: yes
   when:
     - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
 
-- name: Add Erlang official repo
+- name: Add RabbitMQ official repo
   apt_repository: 
-    repo: deb https://binaries.erlang-solutions.com/debian xenial contrib 
+    repo: deb https://dl.bintray.com/rabbitmq/debian {{ ansible_distribution_release }} main
     state: present
-    filename: erlang
+    filename: rabbitmq
   become: yes
   when:
     - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
 
 - name: Import Erlang public key
-  apt_key: 
+  apt_key:
     url: https://packages.erlang-solutions.com/debian/erlang_solutions.asc
     state: present
+  become: yes
+  when:
+    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
+
+- name: Add Erlang official repo
+  apt_repository:
+    repo: deb https://binaries.erlang-solutions.com/debian {{ ansible_distribution_release }} contrib
+    state: present
+    filename: erlang
   become: yes
   when:
     - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false

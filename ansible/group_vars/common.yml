@@ -23,10 +23,11 @@ dummy:
 ###########
 
 # This field indicates local machine host ip
+# For HA configuration, add the IP on which the Core Services (Hotpot) are reachable from the Kubernetes node.
 host_ip: 127.0.0.1
 
 #Deploy multicloud in HA mode - default is false 
-gelato_ha: false 
+gelato_ha: false
 
 
 # This field indicates which project should be deploy

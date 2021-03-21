@@ -114,6 +114,8 @@
         - install_srm_toolchain == true
   tags: srm_toolchain
 
+# Defines deployment design and assigns role to server groups
+
 - name: Install Gelato
   hosts: controllers
   remote_user: root
@@ -132,7 +134,41 @@
         name: gelato-installer
       when:
         - deploy_project != "hotpot"
+        - gelato_ha == false  
   tags: gelato
+ 
+- name: Install Gelato - HA Mode
+  hosts:
+  -  k8smaster
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+
+  tasks:
+    - import_role:
+        name: gelato-ha-installer
+      when:
+        - deploy_project != "hotpot"
+        - gelato_ha == true
+  tags: gelato-ha
+
+- name: Update the API, S3 IPs and Ports
+  hosts: controllers
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: ha-ip-update
+      when:
+        - deploy_project != "hotpot"
+        - gelato_ha == true
+  tags: gelato-ha
+
 
 - name: Install Sushi
   hosts: controllers
@@ -162,6 +198,7 @@
     - group_vars/auth.yml
     - group_vars/srm-toolchain.yml
     - group_vars/dashboard.yml
+    - group_vars/gelato-ha.yml
   gather_facts: false
   become: True
   tasks:

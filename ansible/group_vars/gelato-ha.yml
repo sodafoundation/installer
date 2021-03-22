@@ -22,13 +22,19 @@ dummy:
 # GENERAL #
 ###########
 
-# These variables should not be modified manually. 
-# These are populated by installer in a Multi-Cloud HA installation. 
-gelato_ha_api_ip: MULTICLOUD_API_IP
-gelato_ha_api_port: MULTICLOUD_API_PORT
+# User permitted to access the Kubernetes Cluster to deploy the multicloud services.
+# 'ubuntu' is a sample user, it should be replaced with the actual user permitted 
+# to access the Kubernetes Cluster, when deployed in production.
+k8s_user: ubuntu  
 
-gelato_ha_s3_ip: MULTICLOUD_S3_IP
-gelato_ha_s3_port: MULTICLOUD_S3_PORT
+# These IPs are dummy IPs, which get updated appropriately during deployment.
+# These are populated by installer in a Multi-Cloud HA installation.
+
+gelato_ha_api_ip: 0.0.0.0
+gelato_ha_api_port: 30099
+
+gelato_ha_s3_ip: 0.0.0.0
+gelato_ha_s3_port: 30090
 
 # These fields are NOT suggested to be modifie
 gelato_work_dir: /opt/opensds-gelato-linux-amd64

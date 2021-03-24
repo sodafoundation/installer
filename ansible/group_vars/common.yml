@@ -23,10 +23,11 @@ dummy:
 ###########
 
 # This field indicates local machine host ip
+# For HA configuration, add the IP on which the Core Services (Hotpot) are reachable from the Kubernetes node.
 host_ip: 127.0.0.1
 
 #Deploy multicloud in HA mode - default is false 
-gelato_ha: false 
+gelato_ha: false
 
 
 # This field indicates which project should be deploy
@@ -69,3 +70,7 @@ gelato_release_version: v1.2.1
 sushi_release_version: v1.2.1
 orchestration_release_version: v0.12.0
 delfin_release_version: v1.1.1
+
+#################
+# URLs, Environment Variables, IP addresses and Ports list
+soda_delfin_url: "http://{{ host_ip }}:8190"

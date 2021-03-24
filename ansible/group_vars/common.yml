@@ -70,3 +70,7 @@ gelato_release_version: v1.2.1
 sushi_release_version: v1.2.1
 orchestration_release_version: v0.12.0
 delfin_release_version: v1.1.1
+
+#################
+# URLs, Environment Variables, IP addresses and Ports list
+soda_delfin_url: "http://{{ host_ip }}:8190"

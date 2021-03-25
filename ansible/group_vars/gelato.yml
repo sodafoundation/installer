@@ -36,10 +36,10 @@ gelato_image_tag: "{{ gelato_release_version }}"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-gelato_repo_branch: "{{ repo_branch }}"
+gelato_repo_branch: "aks_fix"
 
 # These fields are NOT suggested to be modified
-gelato_remote_url: https://github.com/sodafoundation/multi-cloud.git
+gelato_remote_url: https://github.com/kumarashit/multi-cloud.git
 
 
 ###########

@@ -15,8 +15,8 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 3,
-    "iteration": 1607260489976,
+    "id": 1,
+    "iteration": 1616580581030,
     "links": [],
     "panels": [
       {
@@ -89,7 +89,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -101,7 +101,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_response_time",
+            "expr": "storage_responseTime",
             "interval": "",
             "intervalFactor": 1,
             "legendFormat": "Storage ID: {{storage_id}} ",
@@ -163,7 +163,7 @@
         "id": 16,
         "panels": [],
         "repeat": null,
-        "title": "Storage Bandwidth",
+        "title": "Storage Throughput",
         "type": "row"
       },
       {
@@ -222,7 +222,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -232,7 +232,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_bandwidth",
+            "expr": "storage_throughput",
             "interval": "",
             "legendFormat": "Storage ID: {{storage_id}}",
             "refId": "A"
@@ -242,7 +242,7 @@
         "timeFrom": null,
         "timeRegions": [],
         "timeShift": null,
-        "title": "Storage Bandwidth",
+        "title": "Storage Throughput",
         "tooltip": {
           "shared": true,
           "sort": 0,
@@ -334,7 +334,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -344,7 +344,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_read_bandwidth",
+            "expr": "storage_readThroughput",
             "interval": "",
             "legendFormat": "Storage ID: {{storage_id}}",
             "refId": "A"
@@ -354,7 +354,7 @@
         "timeFrom": null,
         "timeRegions": [],
         "timeShift": null,
-        "title": "Storage Read Bandwidth",
+        "title": "Storage Read Throughput",
         "tooltip": {
           "shared": true,
           "sort": 0,
@@ -446,7 +446,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -456,7 +456,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_write_bandwidth",
+            "expr": "storage_writeThroughput  ",
             "interval": "",
             "intervalFactor": 1,
             "legendFormat": "Storage ID: {{storage_id}}",
@@ -467,7 +467,7 @@
         "timeFrom": null,
         "timeRegions": [],
         "timeShift": null,
-        "title": "Storage Write Bandwidth",
+        "title": "Storage Write Throughput",
         "tooltip": {
           "shared": true,
           "sort": 0,
@@ -515,7 +515,7 @@
         },
         "id": 18,
         "panels": [],
-        "title": "Storage Throughput",
+        "title": "Storage Requests",
         "type": "row"
       },
       {
@@ -541,7 +541,7 @@
                 }
               ]
             },
-            "unit": "MBs"
+            "unit": "iops"
           },
           "overrides": []
         },
@@ -573,7 +573,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -583,7 +583,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_throughput",
+            "expr": "storage_requests",
             "interval": "",
             "legendFormat": "Storage ID: {{storage_id}}",
             "refId": "A"
@@ -593,7 +593,7 @@
         "timeFrom": null,
         "timeRegions": [],
         "timeShift": null,
-        "title": "Storage Throughput",
+        "title": "Storage Requests",
         "tooltip": {
           "shared": true,
           "sort": 0,
@@ -609,7 +609,7 @@
         },
         "yaxes": [
           {
-            "format": "MBs",
+            "format": "iops",
             "label": null,
             "logBase": 1,
             "max": null,
@@ -653,7 +653,7 @@
                 }
               ]
             },
-            "unit": "MBs"
+            "unit": "iops"
           },
           "overrides": []
         },
@@ -685,7 +685,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -695,7 +695,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_read_throughput",
+            "expr": "storage_readRequests",
             "interval": "",
             "legendFormat": "Storage ID: {{storage_id}}",
             "refId": "A"
@@ -705,7 +705,7 @@
         "timeFrom": null,
         "timeRegions": [],
         "timeShift": null,
-        "title": "Storage Read Throughput",
+        "title": "Storage Read Requests",
         "tooltip": {
           "shared": true,
           "sort": 0,
@@ -721,7 +721,7 @@
         },
         "yaxes": [
           {
-            "format": "MBs",
+            "format": "iops",
             "label": null,
             "logBase": 1,
             "max": null,
@@ -765,7 +765,7 @@
                 }
               ]
             },
-            "unit": "MBs"
+            "unit": "iops"
           },
           "overrides": []
         },
@@ -797,7 +797,7 @@
           "alertThreshold": true
         },
         "percentage": false,
-        "pluginVersion": "7.3.4",
+        "pluginVersion": "7.3.5",
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
@@ -807,7 +807,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "storage_write_throughput",
+            "expr": "storage_writeRequests",
             "interval": "",
             "legendFormat": "Storage ID: {{storage_id}}",
             "refId": "A"
@@ -817,7 +817,7 @@
         "timeFrom": null,
         "timeRegions": [],
         "timeShift": null,
-        "title": "Storage Write Throughput",
+        "title": "Storage Write Requests",
         "tooltip": {
           "shared": true,
           "sort": 0,
@@ -833,7 +833,7 @@
         },
         "yaxes": [
           {
-            "format": "MBs",
+            "format": "iops",
             "label": null,
             "logBase": 1,
             "max": null,
@@ -894,5 +894,5 @@
     "timezone": "",
     "title": "Performance Monitor - Overall",
     "uid": "y8JDvchGz",
-    "version": 11
+    "version": 4
   }

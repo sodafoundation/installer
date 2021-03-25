@@ -33,10 +33,28 @@
   add_host:
      name: "k8smaster"
      multicloud_api_ip: "{{ multicloud_api_ip.stdout }}"
-     
+
 - name: include scenarios/release.yml when installing from release
   include: scenarios/release.yml
   
+- name: Update the release version in deployment ymls
+  replace:
+    path: "{{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}"
+    regexp: 'RELEASE_VERSION'
+    replace: '{{ gelato_release_version }}'
+  become: yes
+  with_items:
+    - api-deployment.yaml
+    - backend-deployment.yaml
+    - block-deployment.yaml
+    - datamover-deployment.yaml
+    - dataflow-deployment.yaml
+    - file-deployment.yaml
+    - s3api-deployment.yaml
+    - s3-deployment.yaml
+  when:
+    - {{ gelato_release_version }} is defined
+
 - name: Update the api, file, s3 deployments
   replace:
     path: "{{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}"

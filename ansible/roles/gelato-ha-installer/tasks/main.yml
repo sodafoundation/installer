@@ -23,7 +23,10 @@
   with_items:
     - "{{ gelato_work_dir }}"
 
-- name: get the IPs of API Service.
+- name: include scenarios/release.yml when installing from release
+  include: scenarios/release.yml
+ 
+- name: get the IPs of Kubernetes Nodes (API, S3 services).
   shell: kubectl get nodes k8smaster -o wide --no-headers | awk '{print $6}'
   register: multicloud_api_ip
   become_user: "{{ k8s_user }}"
@@ -34,25 +37,10 @@
      name: "k8smaster"
      multicloud_api_ip: "{{ multicloud_api_ip.stdout }}"
 
-- name: include scenarios/release.yml when installing from release
-  include: scenarios/release.yml
   
-- name: Update the release version in deployment ymls
-  replace:
-    path: "{{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}"
-    regexp: 'RELEASE_VERSION'
-    replace: '{{ gelato_release_version }}'
-  become: yes
-  with_items:
-    - api-deployment.yaml
-    - backend-deployment.yaml
-    - block-deployment.yaml
-    - datamover-deployment.yaml
-    - dataflow-deployment.yaml
-    - file-deployment.yaml
-    - s3api-deployment.yaml
-    - s3-deployment.yaml
-  when: gelato_release_version is defined
+- name: Pause for 2 seconds
+  pause: seconds=2
+  
 
 - name: Update the api, file, s3 deployments
   replace:
@@ -70,14 +58,6 @@
 - name: Pause for 2 seconds
   pause: seconds=2
 
-- name: Execute the kubectl yamls.
-  shell: "{{ item }}"
-  args:
-    chdir: "{{ gelato_work_dir }}/multi-cloud/K8s"
-  with_items:
-    - bash "k8s-mongo.sh"
-    - bash "k8s-deploy.sh"
-  become_user: "{{ k8s_user }}"
   
   # Get the list of servicses deployed.
 - name: get multi-cloud service status

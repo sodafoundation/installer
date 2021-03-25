@@ -32,3 +32,57 @@
   when:
     - gelatoexisted.stat.exists is undefined or gelatoexisted.stat.exists == false
 
+- name: Update the release version in deployment ymls
+  replace:
+    path: "{{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}"
+    regexp: 'RELEASE_VERSION'
+    replace: '{{ gelato_release_version }}'
+  become: yes
+  with_items:
+    - api-deployment.yaml
+    - backend-deployment.yaml
+    - block-deployment.yaml
+    - datamover-deployment.yaml
+    - dataflow-deployment.yaml
+    - file-deployment.yaml
+    - s3api-deployment.yaml
+    - s3-deployment.yaml
+
+- name: Update the api, file, s3 deployments
+  replace:
+    path: "{{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}"
+    regexp: 'KEYSTONE_IP'
+    replace: '{{ host_ip }}'
+  become: yes
+  with_items:
+    - api-deployment.yaml
+    - file-deployment.yaml
+    - s3api-deployment.yaml
+  when:
+    - hostvars["controller"]["controller_ip"] is defined
+ 
+- name: Make k8s files executable. 
+  file: dest="{{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}" mode=a+x
+  become: yes
+  with_items:
+    - k8s-clean-mongo.sh
+    - k8s-cleanup.sh
+    - k8s-delete-namespace.sh
+    - k8s-mongo.sh
+    - k8s-deploy.sh
+
+
+- name: Pause for 2 seconds
+  pause: seconds=2
+
+- name: Execute the kubectl yamls.
+  become_user: "{{ k8s_user }}"
+  command: sh {{ gelato_work_dir }}/multi-cloud/K8s/{{ item }}
+  args:
+    chdir: "{{ gelato_work_dir }}/multi-cloud/K8s"
+  with_items:
+    - k8s-mongo.sh
+    - k8s-deploy.sh
+
+
+

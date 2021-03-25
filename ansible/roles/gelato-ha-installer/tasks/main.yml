@@ -52,8 +52,7 @@
     - file-deployment.yaml
     - s3api-deployment.yaml
     - s3-deployment.yaml
-  when:
-    - {{ gelato_release_version }} is defined
+  when: gelato_release_version is defined
 
 - name: Update the api, file, s3 deployments
   replace:

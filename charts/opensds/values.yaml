@@ -101,7 +101,7 @@ osdsdashboard:
   name: dashboard
   replicaCount: 1
 
-  image: sodafoundation/dashboard:v1.2.1
+  image: sodafoundation/dashboard:v1.2.2
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent

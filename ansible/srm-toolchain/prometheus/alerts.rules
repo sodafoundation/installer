@@ -3,7 +3,7 @@ groups:
   rules:
 
   - alert: high_bandwidth
-    expr: storage_bandwidth > 80
+    expr: storage_requests > 80
     for: 30s
     labels:
       severity: warning
@@ -12,7 +12,7 @@ groups:
       description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing high bandwidth usage."
   
   - alert: critical_bandwidth
-    expr: storage_bandwidth > 90
+    expr: storage_requests > 90
     for: 30s
     labels:
       severity: critical
@@ -24,7 +24,7 @@ groups:
   rules:
 
   - alert: high_throughput
-    expr: storage_throughput > 80
+    expr: storage_requests > 80
     for: 30s
     labels:
       severity: warning
@@ -33,7 +33,7 @@ groups:
       description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing high throughput usage."
   
   - alert: critical_bandwidth
-    expr: storage_throughput > 90
+    expr: storage_requests > 90
     for: 30s
     labels:
       severity: critical
@@ -44,7 +44,7 @@ groups:
   rules:
   
   - alert: high_response_time
-    expr: storage_response_time > 20
+    expr: storage_responseTime > 20
     for: 30s
     labels:
       severity: warning
@@ -53,7 +53,7 @@ groups:
       description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing high response times."
   
   - alert: critical_response_time
-    expr: storage_response_time > 60
+    expr: storage_responseTime > 60
     for: 30s
     labels:
       severity: critical

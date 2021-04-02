@@ -18,7 +18,7 @@ groups:
       severity: critical
     annotations:
       summary: "{{$labels.storage_id}}  is experiencing critical Bandwidth usage"
-      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing critical bandwidth usage. Please take remedial measures immediately"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing critical bandwidth usage. Please take remedial measures immediately."
 
 - name: Throughput
   rules:
@@ -39,7 +39,7 @@ groups:
       severity: critical
     annotations:
       summary: "{{$labels.storage_id}} is experiencing critical throughput usage"
-      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing critical throughput usage. Please take remedial measures immediately"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing critical throughput usage. Please take remedial measures immediately."
 - name: Response Time
   rules:
   
@@ -59,4 +59,4 @@ groups:
       severity: critical
     annotations:
       summary: "{{$labels.storage_id}} is experiencing very high response times."
-      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing very high response times. Please take remedial measures immediately"
+      description: "{{$labels.storage_id}} of {{$labels.job}} is experiencing very high response times. Please take remedial measures immediately."

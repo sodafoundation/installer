@@ -881,7 +881,7 @@
       ]
     },
     "time": {
-      "from": "now-30m",
+      "from": "now-24h",
       "to": "now"
     },
     "timepicker": {

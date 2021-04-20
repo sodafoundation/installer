@@ -23,6 +23,7 @@
     image: "{{ controller_docker_image }}"
     state: started
     network_mode: host
+    restart_policy: always
     volumes:
     - "/etc/opensds/:/etc/opensds"
 
@@ -32,5 +33,6 @@
     image: "{{ apiserver_docker_image }}"
     state: started
     network_mode: host
+    restart_policy: always
     volumes:
     - "/etc/opensds/:/etc/opensds"

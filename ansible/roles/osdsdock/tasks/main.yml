@@ -85,22 +85,60 @@
         - { option: driver, value: "{{ db_driver }}" }
   become: yes
 
-- name: run osdsdock daemon service
-  shell:
-    cmd: |
-      i=0
-      while
-        i="$((i+1))"
-        [ "$i" -lt 4 ]
-      do
-        nohup bin/osdsdock > osdsdock.out 2> osdsdock.err < /dev/null &
-        sleep 5
-        ps aux | grep osdsdock | grep -v grep && break
-      done
-  args:
-    chdir: "{{ hotpot_work_dir }}"
+# Enable SODA Dock Service as systemd process
+- name: check for Dock service source file existed
+  stat:
+    path: "{{ hotpot_work_dir }}/osdsdock.service"
+  register: dock_service_source_exists
+
+- name: Check if Dock service source file exists
+  debug:
+    var: dock_service_source_exists
+    verbosity: 2
+
+- name: Create the Dock service file
+  copy:
+    dest: "{{ hotpot_work_dir }}/osdsdock.service"
+    content: |
+      [Unit]
+      Description=SODA Dock Service
+      
+      StartLimitBurst=5
+
+      [Service]
+      User=root
+      Group=root
+      Restart=always
+      RestartSec=5s
+      ExecStart={{ hotpot_work_dir }}/bin/osdsdock > osdsdock.out 2> osdsdock.err < /dev/null
+
+      [Install]
+      WantedBy=multi-user.target
   when:
-    - install_from != "container"
+    - install_from != "container" and  dock_service_source_exists.stat.exists is undefined or dock_service_source_exists.stat.exists == false  
+
+- name: check for Dock service file existed
+  stat:
+    path: "/etc/systemd/system/osdsdock.service"
+  register: dock_service_exists
+
+- name: Check if Dock service file exists at systemd
+  debug:
+    var: dock_service_exists
+    verbosity: 2
+
+- name: Copy Dock service file to systemd
+  copy:
+    src: "{{ hotpot_work_dir }}/osdsdock.service"
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+  notify:
+    - Reload daemon
+    - Start Dock service
+  become: true
+  when:
+    - install_from != "container" and dock_service_exists.stat.exists is undefined or dock_service_exists.stat.exists == false
 
 - name: run osdsdock containerized service
   docker_container:
@@ -108,6 +146,7 @@
     image: "{{ dock_docker_image }}"
     state: started
     network_mode: host
+    restart_policy: always
     privileged: true
     volumes:
     - "/etc/opensds:/etc/opensds"

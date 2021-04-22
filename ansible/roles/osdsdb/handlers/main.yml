@@ -18,7 +18,7 @@
 
 - name: Start etcd service
   systemd:
-    name: etcd-3
+    name: soda-etcd
     state: started
     enabled: yes
 

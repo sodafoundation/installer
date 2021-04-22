@@ -54,7 +54,7 @@
 # Enable etcd service as systemd process
 - name: check for etcd service source file existed
   stat:
-    path: "{{ etcd_dir }}/etcd-3.service"
+    path: "{{ etcd_dir }}/soda-etcd.service"
   register: etcd_service_source_exists
 
 - name: Check if etcd service source file exists
@@ -64,7 +64,7 @@
 
 - name: Create the etcd service file
   copy:
-    dest: "{{ etcd_dir }}/etcd-3.service"
+    dest: "{{ etcd_dir }}/soda-etcd.service"
     content: |
       [Unit]
       Description=etcd
@@ -77,7 +77,7 @@
       LimitNOFILE=40000
       TimeoutStartSec=0
 
-      ExecStart={{ etcd_dir }}/etcd --name soda-etcd-3 --data-dir /var/lib/etcd --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }} --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }}
+      ExecStart={{ etcd_dir }}/etcd --name soda-etcd --data-dir /var/lib/etcd --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }} --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }}
 
       [Install]
       WantedBy=multi-user.target
@@ -87,7 +87,7 @@
 
 - name: check for etcd service file existed
   stat:
-    path: "/etc/systemd/system/etcd-3.service"
+    path: "/etc/systemd/system/soda-etcd.service"
   register: etcd_service_exists
 
 - name: Check if etcd service file exists at systemd
@@ -95,9 +95,9 @@
     var: etcd_service_exists
     verbosity: 2
 
-- name: Copy controller service file to systemd
+- name: Copy etcd service file to systemd
   copy:
-    src: "{{ etcd_dir }}/etcd-3.service"
+    src: "{{ etcd_dir }}/soda-etcd.service"
     dest: /etc/systemd/system
     owner: root
     group: root

@@ -48,10 +48,33 @@
 
 - name: Stop etcd service
   systemd:
-    name: etcd-3
+    name: soda-etcd
     state: stopped
 
 - name: Disable etcd service
   systemd:
-    name: etcd-3
+    name: soda-etcd
     enabled: no
+
+- name: Remove systemd service files
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "/etc/systemd/system/osdsapiserver.service"
+    - "/etc/systemd/system/osdslet.service"
+    - "/etc/systemd/system/osdsdock.service"
+    - "/etc/systemd/system/soda-etcd.service"
+  ignore_errors: yes
+  become: true
+
+- name: Remove etcd data dir
+  file:
+    path: "/var/lib/etcd/"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  become: true
+  when:
+    - database_purge == true

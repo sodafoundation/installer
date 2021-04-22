@@ -22,7 +22,7 @@
   tags: dashboard
 
 - name: kill osdslet and osdsdock and osdsapiserver and etcd daemon service
-  shell: killall osdslet osdsdock osdsapiserver
+  shell: killall osdslet osdsdock osdsapiserver etcd
   when: install_from != "container"
   notify:
     - Stop Controller service
@@ -34,20 +34,9 @@
     - Stop etcd service
     - Disable etcd service
     - Reload daemon
+    - Remove systemd service files
+    - Remove etcd data dir
   ignore_errors: true
-  tags: hotpot
-
-- name: clean all systemd service files for api, controller, dock and etcd
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "/etc/systemd/system/osdsapiserver.service"
-    - "/etc/systemd/system/osdslet.service"
-    - "/etc/systemd/system/osdsdock.service"
-    - "/etc/systemd/system/etcd-3.service"
-  ignore_errors: yes
   become: true
   tags: hotpot 
 

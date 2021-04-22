@@ -118,3 +118,4 @@
     - Start API service
   when:
     - api_service_exists.stat.exists is undefined or api_service_exists.stat.exists == false
+

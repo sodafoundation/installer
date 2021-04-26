@@ -72,7 +72,7 @@
     state: absent
     force: yes
   ignore_errors: yes
-  when: install_from != "container" database_purge is undefined or database_purge == true
+  when: install_from != "container" and database_purge is undefined or database_purge == true
   tags: hotpot
 
 - name: stop all gelato services

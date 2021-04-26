@@ -146,7 +146,6 @@
     image: "{{ dock_docker_image }}"
     state: started
     network_mode: host
-    restart_policy: always
     privileged: true
     volumes:
     - "/etc/opensds:/etc/opensds"

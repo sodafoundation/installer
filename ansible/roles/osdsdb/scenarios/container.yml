@@ -18,11 +18,16 @@
     name: docker-py
 - name: run etcd containerized service
   docker_container:
-    name: myetcd
+    name: soda-etcd
     image: "{{ etcd_docker_image }}"
-    command: /usr/local/bin/etcd --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }}
     state: started
-    network_mode: host
     restart_policy: always
+    network_mode: host
     volumes:
     - "/usr/share/ca-certificates/:/etc/ssl/certs"
+    - "etcd_data:/var/lib/etcd/"
+    env:
+      ETCD_LISTEN_CLIENT_URLS: http://{{ etcd_host }}:{{ etcd_port }}
+      ETCD_LISTEN_PEER_URLS: http://{{ etcd_host }}:{{ etcd_peer_port }}
+      ETCD_ADVERTISE_CLIENT_URLS: http://{{ etcd_host }}:{{ etcd_port }}
+      ETCD_DATA_DIR: /var/lib/etcd

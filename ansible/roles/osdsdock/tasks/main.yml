@@ -84,17 +84,36 @@
         - { option: endpoint, value: "{{ db_endpoint }}" }
         - { option: driver, value: "{{ db_driver }}" }
   become: yes
+# Enable SODA Dock as standalone application
+- name: run osdsdock daemon service
+  shell:
+    cmd: |
+      i=0
+      while
+        i="$((i+1))"
+        [ "$i" -lt 4 ]
+      do
+        nohup bin/osdsdock > osdsdock.out 2> osdsdock.err < /dev/null &
+        sleep 5
+        ps aux | grep osdsdock | grep -v grep && break
+      done
+  args:
+    chdir: "{{ hotpot_work_dir }}"
+  when:
+    - install_from != "container" and install_as_systemd == false
 
 # Enable SODA Dock Service as systemd process
 - name: check for Dock service source file existed
   stat:
     path: "{{ hotpot_work_dir }}/osdsdock.service"
   register: dock_service_source_exists
+  when: install_as_systemd == true
 
 - name: Check if Dock service source file exists
   debug:
     var: dock_service_source_exists
     verbosity: 2
+  when: install_as_systemd == true
 
 - name: Create the Dock service file
   copy:
@@ -115,17 +134,19 @@
       [Install]
       WantedBy=multi-user.target
   when:
-    - install_from != "container" and  dock_service_source_exists.stat.exists is undefined or dock_service_source_exists.stat.exists == false  
+    - install_from != "container" and install_as_systemd == true and ( dock_service_source_exists.stat.exists is undefined or dock_service_source_exists.stat.exists == false )  
 
 - name: check for Dock service file existed
   stat:
     path: "/etc/systemd/system/osdsdock.service"
   register: dock_service_exists
+  when: install_as_systemd == true
 
 - name: Check if Dock service file exists at systemd
   debug:
     var: dock_service_exists
     verbosity: 2
+  when: install_as_systemd == true
 
 - name: Copy Dock service file to systemd
   copy:
@@ -138,7 +159,7 @@
     - Start Dock service
   become: true
   when:
-    - install_from != "container" and dock_service_exists.stat.exists is undefined or dock_service_exists.stat.exists == false
+    - install_from != "container" and install_as_systemd == true and ( dock_service_source_exists.stat.exists is undefined or dock_service_source_exists.stat.exists == false )  
 
 - name: run osdsdock containerized service
   docker_container:

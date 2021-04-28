@@ -21,9 +21,18 @@
   ignore_errors: true
   tags: dashboard
 
-- name: kill osdslet and osdsdock and osdsapiserver and etcd daemon service
+# Kill all the systemd processes and disable services
+- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
   shell: killall osdslet osdsdock osdsapiserver etcd
-  when: install_from != "container"
+  when: install_from != "container" and install_as_systemd == false
+  ignore_errors: true
+  become: true
+  tags: hotpot
+
+# Kill all the systemd processes and disable services
+- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
+  shell: killall osdslet osdsdock osdsapiserver etcd
+  when: install_from != "container" and install_as_systemd == true
   notify:
     - Stop Controller service
     - Disable Controller service
@@ -38,7 +47,7 @@
     - Remove etcd data dir
   ignore_errors: true
   become: true
-  tags: hotpot 
+  tags: hotpot
 
 - name: kill osdslet containerized service
   docker_container:
@@ -64,28 +73,22 @@
   when: install_from == "container"
   tags: hotpot
 
-- name: kill etcd containerized service
-  docker_container:
-    name: soda-etcd
-    image: "{{ etcd_docker_image }}"
-    state: absent
-  when: install_from == "container"
-  tags: hotpot
-
-- name: remove etcd volume when installed as containerized service
-  docker_volume:
-    name: etcd_data
-    state: absent
-  when: install_from == "container" and database_purge is undefined or database_purge == true
-  tags: hotpot
-
-- name: clean etcd db resource
+- name: clean etcd folder
   file:
     path: "{{ etcd_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
-  when: install_from != "container" and database_purge is undefined or database_purge == true
+  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
+  tags: hotpot
+
+- name: clean etcd db
+  file:
+    path: "{{ etcd_data_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
   tags: hotpot
 
 - name: stop all gelato services

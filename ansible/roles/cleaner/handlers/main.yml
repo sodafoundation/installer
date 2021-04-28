@@ -71,7 +71,7 @@
 
 - name: Remove etcd data dir
   file:
-    path: "/var/lib/etcd/"
+    path: "{{ etcd_data_dir }}"
     state: absent
     force: yes
   ignore_errors: yes

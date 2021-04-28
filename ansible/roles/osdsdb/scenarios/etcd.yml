@@ -41,26 +41,26 @@
     - service_etcd_status.rc != 0
     - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
 
-#- name: run etcd daemon service
- # shell: nohup ./etcd 
- # --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} 
- # --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }}  
- # --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }} &>>etcd.log &
- # become: true
- # args:
- #   chdir: "{{ etcd_dir }}"
- # when: service_etcd_status.rc != 0
+# Enable etcd as a process
+- name: run etcd daemon service
+  shell: nohup ./etcd --data-dir {{ etcd_data_dir }} --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }}  --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }} &>>etcd.log &
+  become: true
+  args:
+    chdir: "{{ etcd_dir }}"
+  when: install_as_systemd == false and service_etcd_status.rc != 0
 
 # Enable etcd service as systemd process
 - name: check for etcd service source file existed
   stat:
     path: "{{ etcd_dir }}/soda-etcd.service"
   register: etcd_service_source_exists
+  when: install_as_systemd == true
 
 - name: Check if etcd service source file exists
   debug:
     var: etcd_service_source_exists
     verbosity: 2
+  when: install_as_systemd == true
 
 - name: Create the etcd service file
   copy:
@@ -77,23 +77,25 @@
       LimitNOFILE=40000
       TimeoutStartSec=0
 
-      ExecStart={{ etcd_dir }}/etcd --name soda-etcd --data-dir /var/lib/etcd --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }} --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }}
+      ExecStart={{ etcd_dir }}/etcd --name soda-etcd --data-dir {{ etcd_data_dir }} --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }} --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }}
 
       [Install]
       WantedBy=multi-user.target
   when:
-    - service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false  
+    - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
   become: true
 
 - name: check for etcd service file existed
   stat:
     path: "/etc/systemd/system/soda-etcd.service"
   register: etcd_service_exists
+  when: install_as_systemd == true
 
 - name: Check if etcd service file exists at systemd
   debug:
     var: etcd_service_exists
     verbosity: 2
+  when: install_as_systemd == true
 
 - name: Copy etcd service file to systemd
   copy:
@@ -105,7 +107,7 @@
     - Reload daemon
     - Start etcd service
   when:
-    - service_etcd_status.rc != 0 and etcd_service_exists.stat.exists is undefined or etcd_service_exists.stat.exists == false
+    - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
   become: true
 
 - name: check etcd cluster health

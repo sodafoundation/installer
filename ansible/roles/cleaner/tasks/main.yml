@@ -64,13 +64,28 @@
   when: install_from == "container"
   tags: hotpot
 
+- name: kill etcd containerized service
+  docker_container:
+    name: soda-etcd
+    image: "{{ etcd_docker_image }}"
+    state: absent
+  when: install_from == "container"
+  tags: hotpot
+
+- name: remove etcd volume when installed as containerized service
+  docker_volume:
+    name: etcd_data
+    state: absent
+  when: install_from == "container" and database_purge is undefined or database_purge == true
+  tags: hotpot
+
 - name: clean etcd db resource
   file:
     path: "{{ etcd_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
-  when: database_purge is undefined or database_purge == true
+  when: install_from != "container" and database_purge is undefined or database_purge == true
   tags: hotpot
 
 - name: stop all gelato services

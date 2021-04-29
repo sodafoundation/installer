@@ -183,7 +183,7 @@ install(){
     if [ "docker" == "$1" ]
     then
         docker pull opensdsio/opensds-authchecker:latest
-        docker run -d --privileged=true --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
+        docker run -d --privileged=true --restart=always --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
         docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
         keystone_credentials
         wait_for_keystone

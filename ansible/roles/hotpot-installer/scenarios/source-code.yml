@@ -13,6 +13,7 @@
 # limitations under the License.
 
 ---
+# Enable SODA Controller Service as process
 - name: run osdslet daemon service
   shell:
     cmd: |
@@ -27,7 +28,66 @@
       done
   args:
     chdir: "{{ hotpot_work_dir }}"
+  when: install_as_systemd == false
 
+# Enable SODA Controller Service as systemd process
+- name: check for Controller service source file existed
+  stat:
+    path: "{{ hotpot_work_dir }}/osdslet.service"
+  register: controller_service_source_exists
+  when: install_as_systemd == true
+
+- name: Check if Controller service source file exists
+  debug:
+    var: controller_service_source_exists
+    verbosity: 2
+  when: install_as_systemd == true
+
+- name: Create the Controller service file
+  copy:
+    dest: "{{ hotpot_work_dir }}/osdslet.service"
+    content: |
+      [Unit]
+      Description=SODA Controller Service
+      
+      StartLimitBurst=5
+
+      [Service]
+      User=root
+      Group=root
+      Restart=always
+      RestartSec=5s
+      ExecStart={{ hotpot_work_dir }}/bin/osdslet > osdslet.out 2> osdslet.err < /dev/null
+
+      [Install]
+      WantedBy=multi-user.target
+  when:
+    - install_as_systemd == true and ( controller_service_source_exists.stat.exists is undefined or controller_service_source_exists.stat.exists == false )  
+
+- name: check for Controller service file existed
+  stat:
+    path: "/etc/systemd/system/osdslet.service"
+  register: controller_service_exists
+  when: install_as_systemd == true
+
+- name: Check if Controller service file exists at systemd
+  debug:
+    var: controller_service_exists
+    verbosity: 2
+  when: install_as_systemd == true
+
+- name: Copy controller service file to systemd
+  copy:
+    src: "{{ hotpot_work_dir }}/osdslet.service"
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+  notify:
+    - Start Controller service
+  when:
+    - install_as_systemd == true and ( controller_service_source_exists.stat.exists is undefined or controller_service_source_exists.stat.exists == false )
+
+# Enable SODA API Service as process
 - name: run osdsapiserver daemon service
   shell:
     cmd: |
@@ -42,3 +102,62 @@
       done
   args:
     chdir: "{{ hotpot_work_dir }}"
+  when: install_as_systemd == false
+
+# Enable SODA API Service as systemd process
+- name: check for API service source file existed
+  stat:
+    path: "{{ hotpot_work_dir }}/osdsapiserver.service"
+  register: api_service_source_exists
+  when: install_as_systemd == true
+
+- name: Check if API service source file exists
+  debug:
+    var: api_service_source_exists
+    verbosity: 2
+  when: install_as_systemd == true
+
+- name: Create the API service file
+  copy:
+    dest: "{{ hotpot_work_dir }}/osdsapiserver.service"
+    content: |
+      [Unit]
+      Description=SODA API Service
+      
+      StartLimitBurst=5
+
+      [Service]
+      User=root
+      Group=root
+      Restart=always
+      RestartSec=5s
+      ExecStart={{ hotpot_work_dir }}/bin/osdsapiserver > osdsapiserver.out 2> osdsapiserver.err < /dev/null
+
+      [Install]
+      WantedBy=multi-user.target
+  when:
+    - install_as_systemd == true and ( api_service_source_exists.stat.exists is undefined or api_service_source_exists.stat.exists == false )  
+
+- name: check for API service file existed
+  stat:
+    path: "/etc/systemd/system/osdsapiserver.service"
+  register: api_service_exists
+  when: install_as_systemd == true
+
+- name: Check if API service file exists at systemd
+  debug:
+    var: api_service_exists
+    verbosity: 2
+  when: install_as_systemd == true
+
+- name: Copy api service file to systemd
+  copy:
+    src: "{{ hotpot_work_dir }}/osdsapiserver.service"
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+  notify:
+    - Start API service
+  when:
+    - install_as_systemd == true and ( api_service_source_exists.stat.exists is undefined or api_service_source_exists.stat.exists == false )  
+

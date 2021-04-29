@@ -25,6 +25,7 @@ dummy:
 db_driver: etcd
 db_endpoint: "{{ etcd_host }}:{{ etcd_port }},{{ etcd_host }}:{{ etcd_peer_port }}"
 
+etcd_data_dir: /var/lib/etcd
 
 ###########
 #  ETCD   #

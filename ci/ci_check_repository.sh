@@ -19,7 +19,7 @@ set -e
 
 # Only disable the Orchestration Manager installation
 sed -i 's/^install_srm_toolchain: .*/install_srm_toolchain: '"true"'/g' ansible/group_vars/srm-toolchain.yml
-#sed -i 's/^enable_delfin: .*/enable_delfin: '"true"'/g' ansible/group_vars/delfin.yml
+sed -i 's/^enable_delfin: .*/enable_delfin: '"true"'/g' ansible/group_vars/delfin.yml
 sed -i 's/^enable_orchestration: .*/enable_orchestration: '"false"'/g' ansible/group_vars/orchestration.yml
 # Validate the installation using repository type
 sed -i 's/^install_from: .*/install_from: '"repository"'/g' ansible/group_vars/common.yml

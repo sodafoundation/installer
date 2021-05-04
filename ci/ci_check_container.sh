@@ -18,7 +18,7 @@ set -e
 
 # Disable SRM Toolchain, Delfin and Orchestration Manager installation
 sed -i 's/^install_srm_toolchain: .*/install_srm_toolchain: '"false"'/g' ansible/group_vars/srm-toolchain.yml
-#sed -i 's/^enable_delfin: .*/enable_delfin: '"false"'/g' ansible/group_vars/delfin.yml
+sed -i 's/^enable_delfin: .*/enable_delfin: '"false"'/g' ansible/group_vars/delfin.yml
 sed -i 's/^enable_orchestration: .*/enable_orchestration: '"false"'/g' ansible/group_vars/orchestration.yml
 # Validate the installation using container type
 sed -i 's/^install_from: .*/install_from: '"container"'/g' ansible/group_vars/common.yml

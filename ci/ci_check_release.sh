@@ -17,10 +17,9 @@
 set -e
 
 # Enable SRM Toolchain, Delfin and Orchestration Manager installation
-# sed -i 's/^enable_telemetry_tools: .*/enable_telemetry_tools: '"true"'/g' ansible/group_vars/telemetry.yml
 sed -i 's/^install_srm_toolchain: .*/install_srm_toolchain: '"true"'/g' ansible/group_vars/srm-toolchain.yml
-#sed -i 's/^enable_delfin: .*/enable_delfin: '"true"'/g' ansible/group_vars/delfin.yml
-#sed -i 's/^enable_orchestration: .*/enable_orchestration: '"true"'/g' ansible/group_vars/orchestration.yml
+sed -i 's/^enable_delfin: .*/enable_delfin: '"true"'/g' ansible/group_vars/delfin.yml
+sed -i 's/^enable_orchestration: .*/enable_orchestration: '"true"'/g' ansible/group_vars/orchestration.yml
 # Validate the installation using release type
 sed -i 's/^install_from: .*/install_from: '"release"'/g' ansible/group_vars/common.yml
 sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -vv -i ansible/local.hosts

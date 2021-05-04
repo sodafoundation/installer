@@ -31,20 +31,64 @@ jobs:
           go-version: ${{ matrix.go-version }}
           # Whether to download only stable versions
           stable: true # optional, default is true
-      
+          
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: checkout the repository
         uses: actions/checkout@v2
+      
+      - name: List ansible sources in the runtime
+        run: |
+            echo "Installed Ansible Version in Runtime: "
+            ansible --version
+        
+      - name: List ansible sources and  Remove latest ansible on Ubuntu 16.04
+        run: |
+            echo "List the ansible sources"
+            ls /etc/apt/sources.list.d | grep ansible
+            echo "Remove ansible sources other than the required version"
+            sudo rm /etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list /etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list.save
+            echo "Updating the pacakage list"
+            sudo apt-get update
+        if: ${{ matrix.os == 'ubuntu-16.04' }}
 
       # Change the permissions of the ansible installer
       - name: 'Make ansible installer executable and run install ansible on OS: ${{ matrix.os }}'
         run: |
             sudo chmod +x ./ansible/install_ansible.sh
-            sudo ./ansible/install_ansible.sh
+            ./ansible/install_ansible.sh
         shell: bash
         env:
           CI: true
-   
+        if: ${{ always() }}
+
+      - name: Check Python and Python3 version
+        run: |
+            echo "Python version:"
+            python -V
+            echo "Python3 version:"
+            python3 -V
+        if: ${{ matrix.os == 'ubuntu-16.04' }}
+
+      - name: Setup and update Python3 to version 3.6 on Ubuntu 16.04
+        run: |
+            sudo apt-get install software-properties-common python-software-properties -y
+            sudo add-apt-repository ppa:deadsnakes/ppa
+            sudo apt-get update
+            sudo apt-get install python3.6 -y
+            sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
+            sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
+            sudo apt install python3.6-venv -y
+            sudo apt install python3.6-dev -y
+            sudo wget https://bootstrap.pypa.io/get-pip.py
+            sudo python3.6 get-pip.py
+            sudo ln -s /usr/bin/python3.6 /usr/local/bin/python3
+            sudo apt-get install python-distutils-extra -y
+            echo "Python2 Version:"
+            python -V
+            echo "Python3 version:"
+            python3 -V
+        if: ${{ matrix.os == 'ubuntu-16.04' }}
+
       - name: 'Make the CI check executable and initiate the testing with SODA release'
         run: |
           sudo chmod +x ./ci/ci_check_release.sh
@@ -52,7 +96,8 @@ jobs:
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
-      
+        if: ${{ always() }}
+
       - name: 'Make the CI check executable and initiate the testing with SODA repository'
         run: |
           sudo chmod +x ./ci/ci_check_repository.sh
@@ -60,7 +105,8 @@ jobs:
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
-      
+        if: ${{ always() }}
+
       - name: 'Make the CI check executable and initiate the testing with SODA Containers'
         run: |
           sudo chmod +x ./ci/ci_check_container.sh
@@ -68,3 +114,4 @@ jobs:
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
+        if: ${{ always() }}

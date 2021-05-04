@@ -67,10 +67,6 @@ fi
 # incorrect version removed, or no ansible found.
 echo Installing ansible ${REQUIRED_ANSIBLE_VER} required for ceph-ansible ${CEPH_ANSIBLE_BRANCH} branch.
 sudo add-apt-repository -y ppa:ansible/ansible-${REQUIRED_ANSIBLE_VER}
-echo "List the ansible sources"
-ls /etc/apt/sources.list.d | grep ansible
-echo "Remove ansible sources other than the required version"
-rm /etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list /etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list.save
 echo "Update the repository list"
 sudo apt-get update
 echo "Installing required ansible version"

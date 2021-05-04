@@ -1,0 +1,70 @@
+# This is a the GitHub Action to run the CI for SODA Dashboard
+
+name: SODA Installer CI
+
+# Controls when the action will run. 
+# Triggers the workflow on push or pull request events but only for the main branch
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        go-version: [1.13.x]
+        os: [ubuntu-16.04]
+        
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Setup Go environment
+        uses: actions/setup-go@v2.1.3
+        with:
+          # The Go version to download (if necessary) and use. Supports semver spec and ranges.
+          go-version: ${{ matrix.go-version }}
+          # Whether to download only stable versions
+          stable: true # optional, default is true
+      
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: checkout the repository
+        uses: actions/checkout@v2
+
+      # Change the permissions of the ansible installer
+      - name: 'Make ansible installer executable and run install ansible on OS: ${{ matrix.os }}'
+        run: |
+            sudo chmod +x ./ansible/install_ansible.sh
+            sudo ./ansible/install_ansible.sh
+        shell: bash
+        env:
+          CI: true
+   
+      - name: 'Make the CI check executable and initiate the testing with SODA release'
+        run: |
+          sudo chmod +x ./ci/ci_check_release.sh
+          ./ci/ci_check_release.sh
+        shell: bash
+        env:
+          GOPATH: "/home/runner/work/installer/"
+      
+      - name: 'Make the CI check executable and initiate the testing with SODA repository'
+        run: |
+          sudo chmod +x ./ci/ci_check_repository.sh
+          ./ci/ci_check_repository.sh
+        shell: bash
+        env:
+          GOPATH: "/home/runner/work/installer/"
+      
+      - name: 'Make the CI check executable and initiate the testing with SODA Containers'
+        run: |
+          sudo chmod +x ./ci/ci_check_container.sh
+          ./ci/ci_check_container.sh
+        shell: bash
+        env:
+          GOPATH: "/home/runner/work/installer/"

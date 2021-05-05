@@ -96,6 +96,16 @@ jobs:
             python3 -V
         if: ${{ matrix.os == 'ubuntu-16.04' }}
 
+      - name: 'Make the CI check executable and initiate the testing with SODA Containers'
+        run: |
+          sudo apt-get update
+          sudo chmod +x ./ci/ci_check_container.sh
+          ./ci/ci_check_container.sh
+        shell: bash
+        env:
+          GOPATH: "/home/runner/work/installer/"
+        if: ${{ always() }}
+
       - name: 'Make the CI check executable and initiate the testing with SODA repository'
         run: |
           sudo chmod +x ./ci/ci_check_repository.sh
@@ -114,12 +124,5 @@ jobs:
           GOPATH: "/home/runner/work/installer/"
         if: ${{ always() }}
 
-      - name: 'Make the CI check executable and initiate the testing with SODA Containers'
-        run: |
-          sudo chmod +x ./ci/ci_check_container.sh
-          ./ci/ci_check_container.sh
-        shell: bash
-        env:
-          GOPATH: "/home/runner/work/installer/"
-        if: ${{ always() }}
+      
 

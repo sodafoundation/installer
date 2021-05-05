@@ -71,37 +71,44 @@ jobs:
 
       - name: Setup and update Python3 to version 3.6 on Ubuntu 16.04
         run: |
+            echo "Install required packages for python3 upgrade"
             sudo apt-get install software-properties-common python-software-properties -y
+            echo "Add the python3 repository"
             sudo add-apt-repository ppa:deadsnakes/ppa
             sudo apt-get update
+            echo "Installing python3.6..."
             sudo apt-get install python3.6 -y
+            echo "Install and keep both python3.5.2 and python3.6"
             sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
             sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
-            sudo apt install python3.6-venv -y
-            sudo apt install python3.6-dev -y
+            echo "Install python3.6 virtual env and python3.6-dev"
+            sudo apt-get install python3.6-venv -y
+            sudo apt-get install python3.6-dev -y
             sudo wget https://bootstrap.pypa.io/get-pip.py
             sudo python3.6 get-pip.py
             sudo ln -s /usr/bin/python3.6 /usr/local/bin/python3
+            echo "Install python3.6 distutils"
             sudo apt-get install python-distutils-extra -y
+            pip install --upgrade pip
             echo "Python2 Version:"
             python -V
             echo "Python3 version:"
             python3 -V
         if: ${{ matrix.os == 'ubuntu-16.04' }}
 
-      - name: 'Make the CI check executable and initiate the testing with SODA release'
+      - name: 'Make the CI check executable and initiate the testing with SODA repository'
         run: |
-          sudo chmod +x ./ci/ci_check_release.sh
-          ./ci/ci_check_release.sh
+          sudo chmod +x ./ci/ci_check_repository.sh
+          ./ci/ci_check_repository.sh
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
         if: ${{ always() }}
 
-      - name: 'Make the CI check executable and initiate the testing with SODA repository'
+      - name: 'Make the CI check executable and initiate the testing with SODA release'
         run: |
-          sudo chmod +x ./ci/ci_check_repository.sh
-          ./ci/ci_check_repository.sh
+          sudo chmod +x ./ci/ci_check_release.sh
+          ./ci/ci_check_release.sh
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
@@ -115,3 +122,4 @@ jobs:
         env:
           GOPATH: "/home/runner/work/installer/"
         if: ${{ always() }}
+

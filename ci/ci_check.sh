@@ -73,7 +73,7 @@ case "$# $1" in
     install_release
     ;;
     "1 uninstall_release")
-    echo "Starting uninstall purge keystone..."
+    echo "Uninstall the SODA Release..."
     uninstall_release
     ;;
      *)

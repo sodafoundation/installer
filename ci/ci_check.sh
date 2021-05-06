@@ -73,7 +73,7 @@ case "$# $1" in
     install_release
     ;;
     "1 uninstall_release")
-    echo "Uninstall the SODA Release..."
+    echo "Uninstall the installation of SODA Release..."
     uninstall_release
     ;;
      *)

@@ -1,0 +1,59 @@
+{
+	"id": "b2f43c3a-bb53-49d8-8402-d8d597f2b534",
+	"values": [
+		{
+			"key": "authToken",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "HOST_IP",
+			"value": "127.0.0.1",
+			"enabled": true
+		},
+		{
+			"key": "OPENSDS_PORT",
+			"value": "50040",
+			"enabled": true
+		},
+		{
+			"key": "GELATO_PORT",
+			"value": "8089",
+			"enabled": true
+		},
+		{
+			"key": "S3_PORT",
+			"value": "8090",
+			"enabled": true
+		},
+		{
+			"key": "DELFIN_PORT",
+			"value": "8190",
+			"enabled": true
+		},
+		{
+			"key": "DELFIN_API_PATH",
+			"value": "v1",
+			"enabled": true
+		},
+		{
+			"key": "storage_id",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "PROJECT_ID",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "USER_ID",
+			"value": "",
+			"enabled": true
+		}
+	],
+	"name": "SODA API Workspace Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2021-04-16T04:14:13.660Z",
+	"_postman_exported_using": "Postman/7.36.5"
+}

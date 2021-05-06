@@ -1,0 +1,15 @@
+{
+  "name": "soda-e2e-tests",
+  "version": "1.0.0",
+  "description": "SODA E2E tests for CI",
+  "main": "index.js",
+  "scripts": {
+    "api_e2e": "node index.js",
+    "delfin_e2e": "node delfin.js"
+  },
+  "devDependencies": {
+    "newman": "5.2.2",
+    "newman-reporter-htmlextra": "1.20.3"
+  },
+  "author": "SODA Authors"
+}

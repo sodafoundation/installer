@@ -132,7 +132,7 @@ jobs:
       - name: Publish the SODA API E2E Test report
         uses: actions/upload-artifact@v2
         with: 
-          name: name: SODA_E2E_Test_Reports_${{ matrix.os }}
+          name: SODA_E2E_Test_Reports_${{ matrix.os }}
           path: ci/e2e_tests/e2e_reports/*.html
           retention-days: 90
         if: ${{ always() }}

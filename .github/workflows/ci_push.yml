@@ -1,4 +1,4 @@
-# This is the GitHub Action to run the CI for SODA Dashboard
+# This is the GitHub Action to run the CI for SODA Installer on any push to branches.
 
 name: SODA Installer CI
 
@@ -63,16 +63,12 @@ jobs:
           CI: true
         if: ${{ always() }}
 
-      - name: Check Python and Python3 version
-        run: |
-            echo "Python version:"
-            python -V
-            echo "Python3 version:"
-            python3 -V
-        if: ${{ matrix.os == 'ubuntu-16.04' }}
-
       - name: Setup and update Python3 to version 3.6 on Ubuntu 16.04
         run: |
+          echo "Python version:"
+          python -V
+          echo "Python3 version:"
+          python3 -V
           sudo chmod +x ./ci/config_ubuntu_xenial.sh
           ./ci/config_ubuntu_xenial.sh
         if: ${{ matrix.os == 'ubuntu-16.04' }}
@@ -102,39 +98,6 @@ jobs:
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
-        if: ${{ always() }}
-
-      
-      # Install Node on the runner
-      - name: Install Node
-        uses: actions/setup-node@v2
-        with: 
-          node-version: '10'
-        if: ${{ always() }}
-      
-      - name: Setup the test environment
-        run: |
-          sudo chmod +x ./ci/e2e_tests/config_e2e_tests.sh
-          cd ci/e2e_tests/ 
-          ./config_e2e_tests.sh 
-        if: ${{ always() }}
-
-      - name: Run the E2E tests using Postman collections for API & Delfin
-        id: run-newman-api
-        run: |
-          pwd
-          cd ci/e2e_tests/
-          echo "Running E2E tests for SODA API"
-          npm run api_e2e
-        if: ${{ always() }}
-
-      # Upload the contents of Test Results directory to workspace
-      - name: Publish the SODA API E2E Test report
-        uses: actions/upload-artifact@v2
-        with: 
-          name: SODA_E2E_Test_Reports_${{ matrix.os }}
-          path: ci/e2e_tests/e2e_reports/*.html
-          retention-days: 90
         if: ${{ always() }}
 
       - name: 'Uninstall SODA release and clean up'

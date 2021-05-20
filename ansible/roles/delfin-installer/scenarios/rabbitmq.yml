@@ -29,9 +29,34 @@
   when:
     - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
 
-- name: Add RabbitMQ official repo
+- name: Add Launchpad Erlang PPA key
+  apt_key:
+    keyserver: keyserver.ubuntu.com 
+    id: F77F1EDA57EBB1CC
+  become: yes
+  when:
+    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
+
+- name: Add PackageCloud RabbitMQ repository
+  apt_key:
+    url: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+    state: present
+  become: yes
+  when:
+    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
+
+- name: Add RabbitMQ Erlang official repo
   apt_repository: 
     repo: deb http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu {{ ansible_distribution_release }} main
+    state: present
+    filename: rabbitmq
+  become: yes
+  when:
+    - rabbitmqservice.stat.exists is undefined or rabbitmqservice.stat.exists == false
+
+- name: Add RabbitMQ Server official repo
+  apt_repository: 
+    repo: deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ {{ ansible_distribution_release }} main
     state: present
     filename: rabbitmq
   become: yes

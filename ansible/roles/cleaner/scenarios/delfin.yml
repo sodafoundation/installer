@@ -13,6 +13,15 @@
 # limitations under the License.
 
 ---
+- name: Stop delfin containers, if started
+  shell: "{{ item }}"
+  with_items:
+    - docker-compose down
+  become: yes
+  ignore_errors: yes
+  args:
+    chdir: "{{ delfin_work_dir }}"
+
 - name: Get running delfin processes
   shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/' | awk '{print $2}'"
   register: running_processes

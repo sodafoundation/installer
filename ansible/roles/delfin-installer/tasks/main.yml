@@ -22,8 +22,11 @@
 
 - name: Get delfin source code
   include_tasks: scenarios/source-code.yml
-  when: delfin_installation_type != "container"
 
 - name: Start delfin processes
   include_tasks: scenarios/start-delfin.yml
   when: delfin_installation_type != "container"
+
+- name: containerized delfin deployment
+  include_tasks: scenarios/container.yml
+  when: delfin_installation_type == "container"

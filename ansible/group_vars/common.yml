@@ -78,4 +78,8 @@ delfin_release_version: v1.2.1
 #################
 # URLs, Environment Variables, IP addresses and Ports list
 soda_delfin_url: "http://{{ host_ip }}:8190"
+
+# Inform the SODA Dashboard whether SODA Multicloud UI should support only service plans or backends
+# If true, user will have access only to the service plans for bucket management and not to the cloud backends
+# If false, user will have access to register cloud backends and access the cloud backends for bucket management.
 enable_storage_service_plans: false

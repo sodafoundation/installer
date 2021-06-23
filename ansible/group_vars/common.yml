@@ -78,3 +78,4 @@ delfin_release_version: v1.2.1
 #################
 # URLs, Environment Variables, IP addresses and Ports list
 soda_delfin_url: "http://{{ host_ip }}:8190"
+enable_storage_service_plans: false

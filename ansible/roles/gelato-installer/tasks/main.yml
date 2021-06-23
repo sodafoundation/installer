@@ -63,6 +63,7 @@
     replace: "{{ item.replace }}"
   with_items:
     - { regexp: 'OS_AUTH_AUTHSTRATEGY=.*$', replace: 'OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }}'}
+    - { regexp: 'IAM_HOST=.*$', replace: 'IAM_HOST={{ host_ip }}'}
 
 - name: set image tags for docker-compose configuration
   replace:

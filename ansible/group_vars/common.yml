@@ -43,7 +43,7 @@ install_gelato_ha_from: release
 
 # These fields below will specify the tag based on install_from type
 repo_branch: master
-release_version: v1.3.1
+release_version: v1.3.2
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
@@ -69,11 +69,11 @@ opensds_conf_file: /etc/opensds/opensds.conf
 api_release_version: v1.0.1
 controller_release_version: v1.0.1
 dock_release_version: v1.2.1
-dashboard_release_version: v1.3.1
-gelato_release_version: v1.3.1
+dashboard_release_version: v1.3.3
+gelato_release_version: v1.3.2
 sushi_release_version: v1.3.1
 orchestration_release_version: v0.12.1
-delfin_release_version: v1.2.1
+delfin_release_version: v1.2.2
 
 #################
 # URLs, Environment Variables, IP addresses and Ports list

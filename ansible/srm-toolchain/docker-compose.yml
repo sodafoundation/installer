@@ -50,6 +50,7 @@ services:
       - grafana_data:/var/lib/grafana
       - ./grafana/dashboards:/var/lib/grafana/dashboards
       - ./grafana/provisioning:/etc/grafana/provisioning
+    restart: always
     env_file:
       - config.grafana
 

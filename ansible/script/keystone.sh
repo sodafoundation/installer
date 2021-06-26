@@ -94,6 +94,7 @@ gelato_conf() {
     sed -i "s,OS_AUTH_URL=.*$,OS_AUTH_URL=http://$HOST_IP/identity," $compose_file
     sed -i "s,OS_USERNAME=.*$,OS_USERNAME=$MULTICLOUD_SERVER_NAME," $compose_file
     sed -i "s,OS_PASSWORD=.*$,OS_PASSWORD=$STACK_PASSWORD," $compose_file
+    sed -i "s,IAM_HOST=.*$,IAM_HOST=$HOST_IP," $compose_file
 }
 
 keystone_credentials () {

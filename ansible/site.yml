@@ -39,7 +39,7 @@
         name: auth-installer
   tags: keystone
 
-- name: Deploy OpenSDS Hotpot-installer
+- name: Deploy SODA Hotpot(api, controller, dock) installer
   hosts: controllers
   remote_user: root
   vars_files:

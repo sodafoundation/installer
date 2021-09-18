@@ -290,9 +290,9 @@ helm install csiplugin-file/ --name={ csiplugin_service_name }
 ### OpenSDS CLI tool
 #### Download cli tool
 ```
-wget https://github.com/sodafoundation/api/releases/download/v1.0.0/soda-api-v1.0.0-linux-amd64.tar.gz
-tar zxvf soda-api-v1.0.0-linux-amd64.tar.gz
-cp soda-api-v1.0.0-linux-amd64/bin/* /usr/local/bin
+wget https://github.com/sodafoundation/api/releases/download/v1.1.0/soda-api-v1.1.0-linux-amd64.tar.gz
+tar zxvf soda-api-v1.1.0-linux-amd64.tar.gz
+cp soda-api-v1.1.0-linux-amd64/bin/* /usr/local/bin
 chmod 755 /usr/local/bin/osdsctl
 
 export OPENSDS_ENDPOINT=http://{{ apiserver_cluster_ip }}:50040
@@ -334,8 +334,8 @@ Logout of the dashboard as admin and login the dashboard again as a non-admin us
 
 #### For CSI Plugin
 ```
-wget https://github.com/sodafoundation/nbp/releases/download/v1.2.1/opensds-sushi-v1.2.1-linux-amd64.tar.gz
-tar zxvf opensds-sushi-v1.2.1-linux-amd64.tar.gz
+wget https://github.com/sodafoundation/nbp/releases/download/v1.4.0/opensds-sushi-v1.4.0-linux-amd64.tar.gz
+tar zxvf opensds-sushi-v1.4.0-linux-amd64.tar.gz
 cd /opensds-sushi-linux-amd64
 ```
 

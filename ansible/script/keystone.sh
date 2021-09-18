@@ -94,6 +94,7 @@ gelato_conf() {
     sed -i "s,OS_AUTH_URL=.*$,OS_AUTH_URL=http://$HOST_IP/identity," $compose_file
     sed -i "s,OS_USERNAME=.*$,OS_USERNAME=$MULTICLOUD_SERVER_NAME," $compose_file
     sed -i "s,OS_PASSWORD=.*$,OS_PASSWORD=$STACK_PASSWORD," $compose_file
+    sed -i "s,IAM_HOST=.*$,IAM_HOST=$HOST_IP," $compose_file
 }
 
 keystone_credentials () {
@@ -183,7 +184,7 @@ install(){
     if [ "docker" == "$1" ]
     then
         docker pull opensdsio/opensds-authchecker:latest
-        docker run -d --privileged=true --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
+        docker run -d --privileged=true --restart=always --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
         docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
         keystone_credentials
         wait_for_keystone

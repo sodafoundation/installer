@@ -43,12 +43,16 @@ install_gelato_ha_from: release
 
 # These fields below will specify the tag based on install_from type
 repo_branch: master
-release_version: v1.2.1
+release_version: v1.4.0
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
 ansible_os_family: Debian
 
+# Install as systemd process or standalone application: true / false
+# true: Will install api, dock, controller and etcd processes as a systemd services and enable them. Recommended for production use
+# false: Will install api, dock, controller and etcd as standalone processes. Recommended for development use.
+install_as_systemd: true
 
 # delete all source packages
 source_purge: true
@@ -62,11 +66,21 @@ opensds_conf_file: /etc/opensds/opensds.conf
 ###############
 # Respective projects release versions
 
-api_release_version: v1.0.0
-controller_release_version: v1.0.0
-dock_release_version: v1.2.0
-dashboard_release_version: v1.2.1
-gelato_release_version: v1.2.1
-sushi_release_version: v1.2.1
-orchestration_release_version: v0.12.0
-delfin_release_version: v1.1.1
+api_release_version: v1.1.0
+controller_release_version: v1.1.0
+dock_release_version: v1.3.0
+dashboard_release_version: v1.4.0
+gelato_release_version: v1.4.0
+sushi_release_version: v1.4.0
+orchestration_release_version: v0.13.0
+delfin_release_version: v1.3.0
+
+#################
+# URLs, Environment Variables, IP addresses and Ports list
+soda_delfin_url: "http://{{ host_ip }}:8190"
+
+# ToDo: Use this variable across the SODA Projects. Currently using this only for the SODA Dashboard.
+# Inform the SODA Dashboard whether SODA Multicloud UI should support only service plans or backends
+# If true, user will have access only to the service plans for bucket management and not to the cloud backends
+# If false, user will have access to register cloud backends and access the cloud backends for bucket management.
+enable_storage_service_plans: false

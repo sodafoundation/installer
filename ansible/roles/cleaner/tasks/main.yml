@@ -21,10 +21,32 @@
   ignore_errors: true
   tags: dashboard
 
-- name: kill osdslet and osdsdock and osdsapiserver daemon service
-  shell: killall osdslet osdsdock osdsapiserver
-  when: install_from != "container"
+# Kill all the systemd processes and disable services
+- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
+  shell: killall osdslet osdsdock osdsapiserver etcd
+  when: install_from != "container" and install_as_systemd == false
   ignore_errors: true
+  become: true
+  tags: hotpot
+
+# Kill all the systemd processes and disable services
+- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
+  shell: killall osdslet osdsdock osdsapiserver etcd
+  when: install_from != "container" and install_as_systemd == true
+  notify:
+    - Stop Controller service
+    - Disable Controller service
+    - Stop API service
+    - Disable API service
+    - Stop Dock service
+    - Disable Dock service
+    - Stop etcd service
+    - Disable etcd service
+    - Reload daemon
+    - Remove systemd service files
+    - Remove etcd data dir
+  ignore_errors: true
+  become: true
   tags: hotpot
 
 - name: kill osdslet containerized service
@@ -51,13 +73,22 @@
   when: install_from == "container"
   tags: hotpot
 
-- name: clean etcd db resource
+- name: clean etcd folder
   file:
     path: "{{ etcd_dir }}"
     state: absent
     force: yes
   ignore_errors: yes
-  when: database_purge is undefined or database_purge == true
+  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
+  tags: hotpot
+
+- name: clean etcd db
+  file:
+    path: "{{ etcd_data_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
   tags: hotpot
 
 - name: stop all gelato services

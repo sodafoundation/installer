@@ -28,6 +28,7 @@
       OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
       OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
       OPENSDS_GELATO_URL: "http://{{ host_ip }}:8089"
+      SODA_DELFIN_URL: "{{ soda_delfin_url }}"
       OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
       OPENSDS_S3_URL: "http://{{ host_ip }}:8090"
       OPENSDS_S3_HOST: "{{ host_ip }}" 
@@ -35,6 +36,7 @@
       SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
       SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
       SODA_GRAFANA_PORT: "{{ grafana_port }}"
+      STORAGE_SERVICE_PLAN_ENABLED: "{{ enable_storage_service_plans }}"
       SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"
   when: gelato_ha != true
   
@@ -49,6 +51,7 @@
       OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
       OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
       OPENSDS_GELATO_URL: "http://{{ gelato_ha_api_ip }}:{{ gelato_ha_api_port }}"
+      SODA_DELFIN_URL: "{{ soda_delfin_url }}"
       OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
       OPENSDS_S3_URL: "http://{{ gelato_ha_s3_ip }}:{{ gelato_ha_s3_port }}"
       OPENSDS_S3_HOST: "{{ gelato_ha_s3_ip }}"
@@ -56,5 +59,6 @@
       SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
       SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
       SODA_GRAFANA_PORT: "{{ grafana_port }}"
+      STORAGE_SERVICE_PLAN_ENABLED: "{{ enable_storage_service_plans }}"
       SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"      
   when: gelato_ha == true

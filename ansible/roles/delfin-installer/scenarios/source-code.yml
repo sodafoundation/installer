@@ -25,7 +25,7 @@
     dest: "{{ delfin_work_dir }}"
     version: "{{ delfin_repo_branch }}"
   when:
-    - delfin_installation_type == "repository"
+    - delfin_installation_type != "release"
     - delfinexisted.stat.exists is undefined or delfinexisted.stat.exists == false
 
 - name: ensure delfin directory exists
@@ -56,40 +56,24 @@
     - delfin_installation_type == "release"
     - delfinexisted.stat.exists is undefined or delfinexisted.stat.exists == false
 
-- name: Create delfin config dir in host
-  file:
-    path: "{{ delfin_config_dir }}"
-    state: directory
-    mode: 0755
-  become: yes
-
-- name: copy delfin configs to host
-  copy:
-    src: "{{ delfin_work_dir }}/etc/delfin/{{ item }}"
-    dest: "{{ delfin_config_dir }}/{{ item }}"
-    mode: 0755
-  become: yes
-  with_items:
-    - delfin.conf
-    - api-paste.ini
-
-
-- name: copy scheduler configs to host
-  copy:
-    src: "{{ delfin_work_dir }}/etc/{{ item }}"
-    dest: "{{ delfin_config_dir }}/{{ item }}"
-    mode: 0755
-  become: yes
-  with_items:
-    - scheduler_config.json
-
 - name: Update redis ip & port configuration
   ini_file:
     create: no
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: coordination
     option: backend_server
     value: "{{ delfin_redis_ip }}:{{ delfin_redis_port }}"
+  become: yes
+  when: delfin_installation_type != "container"
+
+# Telemetry option for perf collection interval
+- name: Update Performance collection interval
+  ini_file:
+    create: no
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
+    section: TELEMETRY
+    option: performance_collection_interval
+    value: "{{ performance_collection_interval }}"
   become: yes
 
 # Performance Export Configurations
@@ -97,7 +81,7 @@
   ini_file:
     create: no
     state: absent
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: DEFAULT
     option: performance_exporters
     value: ""
@@ -108,7 +92,7 @@
 - name: Enable Performance Exporter configuration
   ini_file:
     create: no
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: DEFAULT
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -122,7 +106,7 @@
 - name: Update Kafka Exporter configuration
   ini_file:
     create: no
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: KAFKA_EXPORTER
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -139,14 +123,14 @@
 - name: Update Prometheus Exporter configuration
   ini_file:
     create: no
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: PROMETHEUS_EXPORTER
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items:
     - { option: metric_server_ip, value: "{{ delfin_exporter_prometheus_ip }}" }
     - { option: metric_server_port, value: "{{ delfin_exporter_prometheus_port }}" }
-    - { option: metric_server_file, value: "{{ delfin_exporter_prometheus_cache_file }}" }
+    - { option: metrics_dir, value: "{{ delfin_exporter_prometheus_metrics_dir }}" }
   become: yes
   when:
     - performance_exporters != None
@@ -157,7 +141,7 @@
   ini_file:
     create: no
     state: absent
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: DEFAULT
     option: alert_exporters
     value: ""
@@ -168,7 +152,7 @@
 - name: Enable AlertManager Exporter configuration
   ini_file:
     create: no
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: DEFAULT
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -181,7 +165,7 @@
 - name: Update AlertManager Exporter configuration
   ini_file:
     create: no
-    path: "{{ delfin_config_dir }}/delfin.conf"
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
     section: PROMETHEUS_ALERT_MANAGER_EXPORTER
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -192,3 +176,20 @@
   when:
     - alert_exporters != None
     - "'AlertExporterPrometheus' in alert_exporters"
+
+- name: Create delfin config dir in host
+  file:
+    path: "{{ delfin_config_dir }}"
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: copy delfin configs to host
+  copy:
+    src: "{{ delfin_work_dir }}/etc/delfin/{{ item }}"
+    dest: "{{ delfin_config_dir }}/{{ item }}"
+    mode: 0755
+  become: yes
+  with_items:
+    - delfin.conf
+    - api-paste.ini

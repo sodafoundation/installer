@@ -36,6 +36,12 @@ venv: "{{ delfin_work_dir }}/venv"
 delfin_redis_ip: 127.0.0.1
 delfin_redis_port: 26379
 
+delfin_rabbitmq_user: delfinuser
+delfin_rabbitmq_pass: delfinpass
+
+# Configurable Perf collection interval in seconds
+performance_collection_interval: 900
+
 # Exporter configurations for Kafka, Prometheus & Alert Manager
 # Uncomment exporters to enable
 performance_exporters: #PerformanceExporterPrometheus, PerformanceExporterKafka
@@ -49,7 +55,7 @@ delfin_exporter_kafka_topic: 'delfin-kafka'
 # Exporter configurations for Prometheus
 delfin_exporter_prometheus_ip: 0.0.0.0
 delfin_exporter_prometheus_port: 8195
-delfin_exporter_prometheus_cache_file: '/var/lib/delfin/delfin_exporter.txt'
+delfin_exporter_prometheus_metrics_dir: '/var/lib/delfin/metrics'
 
 # Exporter configurations for Alert Manager
 delfin_exporter_alertmanager_host: 'localhost'

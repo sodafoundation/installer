@@ -3,7 +3,7 @@
 name: servicebroker
 image:
 
-  service-broker: sodafoundation/service-broker:v1.2.0
+  service-broker: sodafoundation/service-broker:v1.3.0
 
   etcd-store: quay.io/coreos/etcd:latest
 # ImagePullPolicy; valid values are "IfNotPresent", "Never", and "Always"

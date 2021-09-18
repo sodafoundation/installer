@@ -14,7 +14,7 @@ osdsapiserver:
   name: apiserver
   replicaCount: 1
 
-  image: sodafoundation/apiserver:v1.0.0
+  image: sodafoundation/apiserver:v1.1.0
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
@@ -43,7 +43,7 @@ osdslet:
   name: controller
   replicaCount: 1
 
-  image: sodafoundation/controller:v1.0.0
+  image: sodafoundation/controller:v1.1.0
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
@@ -72,7 +72,7 @@ osdsdock:
   name: dock
   replicaCount: 1
 
-  image: sodafoundation/dock:v1.2.0
+  image: sodafoundation/dock:v1.3.0
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
@@ -101,7 +101,7 @@ osdsdashboard:
   name: dashboard
   replicaCount: 1
 
-  image: sodafoundation/dashboard:v1.2.1
+  image: sodafoundation/dashboard:v1.4.0
 
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent

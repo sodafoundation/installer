@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         go-version: [1.13.x]
-        os: [ubuntu-16.04, ubuntu-18.04]
+        os: [ubuntu-18.04]
         
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,20 +37,10 @@ jobs:
             echo "Installed Ansible Version in Runtime: "
             ansible --version
         
-      - name: List ansible sources and  Remove latest ansible on Ubuntu 16.04
-        run: |
-            echo "List the ansible sources"
-            ls /etc/apt/sources.list.d | grep ansible
-            echo "Remove ansible sources other than the required version"
-            sudo rm /etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list /etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list.save
-            echo "Updating the pacakage list"
-            sudo apt-get update
-        if: ${{ matrix.os == 'ubuntu-16.04' }}
-      
       - name: Remove latest ansible on Ubuntu 18.04
         run: |
             echo "uninstall with pipx"
-            pipx uninstall ansible-base
+            pipx uninstall ansible-core
         if: ${{ matrix.os == 'ubuntu-18.04'}}
 
       # Change the permissions of the ansible installer
@@ -63,16 +53,6 @@ jobs:
           CI: true
         if: ${{ always() }}
 
-      - name: Setup and update Python3 to version 3.6 on Ubuntu 16.04
-        run: |
-          echo "Python version:"
-          python -V
-          echo "Python3 version:"
-          python3 -V
-          sudo chmod +x ./ci/config_ubuntu_xenial.sh
-          ./ci/config_ubuntu_xenial.sh
-        if: ${{ matrix.os == 'ubuntu-16.04' }}
-      
       - name: 'Make the CI check executable and initiate the testing with SODA Containers'
         run: |
           sudo chmod +x ./ci/ci_check.sh

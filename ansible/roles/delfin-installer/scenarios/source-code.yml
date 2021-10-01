@@ -76,6 +76,16 @@
     value: "{{ performance_collection_interval }}"
   become: yes
 
+# Telemetry option for enabling dynamic processes
+- name: Enable dynamic sub-processes for performance collection
+  ini_file:
+    create: no
+    path: "{{ delfin_work_dir }}/etc/delfin/delfin.conf"
+    section: TELEMETRY
+    option: enable_dynamic_subprocess
+    value: "{{ enable_dynamic_subprocess }}"
+  become: yes
+
 # Performance Export Configurations
 - name: Check and remove performance exporters configs
   ini_file:

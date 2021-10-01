@@ -42,6 +42,9 @@ delfin_rabbitmq_pass: delfinpass
 # Configurable Perf collection interval in seconds
 performance_collection_interval: 900
 
+# Enable dynamic subprocess optimization for Perf collection
+enable_dynamic_subprocess: false
+
 # Exporter configurations for Kafka, Prometheus & Alert Manager
 # Uncomment exporters to enable
 performance_exporters: #PerformanceExporterPrometheus, PerformanceExporterKafka

@@ -27,7 +27,7 @@
   become: yes
 
 - name: run the equivalent of "apt-get update" as a separate step
-  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_lsb.major_release|int <=20)
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_lsb.major_release|int <=20)
   apt:
     update_cache: yes
 
@@ -40,7 +40,7 @@
     - gcc
     - python-pip
     - open-iscsi
-  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
 
 - name: install system packages on Ubuntu-20.04
   package:
@@ -74,7 +74,7 @@
   with_items:
     - librados-dev
     - librbd-dev
-  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_lsb.major_release|int <=20)
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_lsb.major_release|int <=20)
 
 - name: create opensds work directory if it doesn't exist
   file:

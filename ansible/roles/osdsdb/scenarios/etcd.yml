@@ -53,7 +53,7 @@
   register: etcd_service_source_exists
   when: 
     - install_as_systemd == true
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
 
 - name: Check if etcd service source file exists
   debug:
@@ -61,7 +61,7 @@
     verbosity: 2
   when: 
     - install_as_systemd == true
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
 
 - name: Create the etcd service file
   copy:
@@ -84,7 +84,7 @@
       WantedBy=multi-user.target
   when: 
     - install_as_systemd == true and service_etcd_status.rc != 0 and (etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false)
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)    
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)    
   become: true
 
 - name: check for etcd service file existed
@@ -92,7 +92,7 @@
     path: "/etc/systemd/system/soda-etcd.service"
   register: etcd_service_exists
   when:
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
     - install_as_systemd == true  
 
 - name: Check if etcd service file exists at systemd
@@ -100,7 +100,7 @@
     var: etcd_service_exists
     verbosity: 2
   when:
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
     - install_as_systemd == true  
 
 - name: Copy etcd service file to systemd
@@ -114,7 +114,7 @@
     - Start etcd service
   when: 
     - install_as_systemd == true and service_etcd_status.rc != 0 and (etcd_service_exists.stat.exists is undefined or etcd_service_exists.stat.exists == false)
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
     
   become: true
 
@@ -136,7 +136,7 @@
   ignore_errors: true
   register: sodaEtcdServiceResult
   when:
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
     - install_as_systemd == true
 
 - name: Display service facts
@@ -144,7 +144,7 @@
     var: sodaEtcdServiceResult
     verbosity: 4
   when:
-    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
     - install_as_systemd == true
 
 - name: check etcd cluster health

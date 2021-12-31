@@ -29,13 +29,17 @@
   get_url:
     url={{ etcd_download_url }}
     dest=/opt/{{ etcd_tarball }}
-  when: service_etcd_status.rc != 0 and (etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false)
+  when: 
+    - service_etcd_status.rc != 0
+    - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
 
 - name: extract the etcd tarball
   unarchive:
     src=/opt/{{ etcd_tarball }}
     dest=/opt/
-  when: service_etcd_status.rc != 0 and (etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false)
+  when: 
+    - service_etcd_status.rc != 0
+    - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
 
 # Enable etcd as a process
 # FixMe: On Ubuntu20.04 etcd fails to come up as a systemd process. Bring up etcd as a daemon on Ubuntu20.04 for now.

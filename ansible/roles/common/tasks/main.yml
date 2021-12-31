@@ -27,7 +27,7 @@
   become: yes
 
 - name: run the equivalent of "apt-get update" as a separate step
-  when: ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=20)
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_lsb.major_release|int <=20)
   apt:
     update_cache: yes
 
@@ -40,7 +40,7 @@
     - gcc
     - python-pip
     - open-iscsi
-  when: ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_facts['distribution_major_version'] <= 18)
 
 - name: install system packages on Ubuntu-20.04
   package:
@@ -51,7 +51,7 @@
     - gcc
     - python3-pip
     - open-iscsi
-  when: ansible_distribution == "Ubuntu" and ansible_lsb.major_release|int >=20
+  when: ansible_facts['distribution'] == 'Ubuntu' and ansible_lsb.major_release|int >=20
 
 - name: Install system packages on CentoS or RHEL
   when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat")
@@ -74,7 +74,7 @@
   with_items:
     - librados-dev
     - librbd-dev
-  when: ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=20)
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] >= 16 and ansible_lsb.major_release|int <=20)
 
 - name: create opensds work directory if it doesn't exist
   file:

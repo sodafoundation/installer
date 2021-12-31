@@ -24,7 +24,7 @@
 # Kill all the systemd processes and disable services
 - name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
   shell: killall osdslet osdsdock osdsapiserver etcd
-  when: install_from != "container" and install_as_systemd == false
+  when: (install_from != "container" and install_as_systemd == false) or ansible_distribution == "Ubuntu" and ansible_lsb.major_release|int >=20
   ignore_errors: true
   become: true
   tags: hotpot
@@ -88,7 +88,7 @@
     state: absent
     force: yes
   ignore_errors: yes
-  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
+  when: ( install_as_systemd == false or ( ansible_distribution == "Ubuntu" and ansible_lsb.major_release|int >=20 )) and ( database_purge is undefined or database_purge == true )
   tags: hotpot
 
 - name: stop all gelato services

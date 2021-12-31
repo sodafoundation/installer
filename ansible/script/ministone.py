@@ -60,6 +60,7 @@ def token_issue():
     else:
         return None
 
+
 def service_list(token):
     headers = {
         'Content-Type': 'application/json',
@@ -77,11 +78,12 @@ def service_list(token):
         result_list = json.loads(r_get.text)['services']
 
         for s in result_list:
-            result_dict[s['name']] =  s['id']
+            result_dict[s['name']] = s['id']
     except:
         return None
 
     return result_dict
+
 
 def endpoint_list(token, service):
 

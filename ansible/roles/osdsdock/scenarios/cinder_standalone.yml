@@ -18,11 +18,24 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - python-pip
+    - python3-pip
     - lvm2
     - thin-provisioning-tools
     - libffi-dev
     - docker-compose
+  when: ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+
+- name: install python-pip, lvm2, thin-provisioning-tools and docker-compose
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-pip
+    - lvm2
+    - thin-provisioning-tools
+    - libffi-dev
+    - docker-compose
+  when: ansible_distribution == "Ubuntu" and ansible_lsb.major_release|int >=20
 
 - name: configure cinder section in opensds global info if specify cinder backend
   shell: |

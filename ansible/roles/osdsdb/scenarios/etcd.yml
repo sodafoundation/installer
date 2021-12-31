@@ -29,38 +29,39 @@
   get_url:
     url={{ etcd_download_url }}
     dest=/opt/{{ etcd_tarball }}
-  when:
-    - service_etcd_status.rc != 0
-    - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
+  when: service_etcd_status.rc != 0 and (etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false)
 
 - name: extract the etcd tarball
   unarchive:
     src=/opt/{{ etcd_tarball }}
     dest=/opt/
-  when:
-    - service_etcd_status.rc != 0
-    - etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false
+  when: service_etcd_status.rc != 0 and (etcdexisted.stat.exists is undefined or etcdexisted.stat.exists == false)
 
 # Enable etcd as a process
+# FixMe: On Ubuntu20.04 etcd fails to come up as a systemd process. Bring up etcd as a daemon on Ubuntu20.04 for now.
 - name: run etcd daemon service
   shell: nohup ./etcd --data-dir {{ etcd_data_dir }} --advertise-client-urls http://{{ etcd_host }}:{{ etcd_port }} --listen-client-urls http://{{ etcd_host }}:{{ etcd_port }}  --listen-peer-urls http://{{ etcd_host }}:{{ etcd_peer_port }} &>>etcd.log &
   become: true
   args:
     chdir: "{{ etcd_dir }}"
-  when: install_as_systemd == false and service_etcd_status.rc != 0
+  when: (install_as_systemd == false and service_etcd_status.rc != 0) or ansible_distribution == "Ubuntu" and ansible_lsb.major_release|int >=20
 
 # Enable etcd service as systemd process
 - name: check for etcd service source file existed
   stat:
     path: "{{ etcd_dir }}/soda-etcd.service"
   register: etcd_service_source_exists
-  when: install_as_systemd == true
+  when: 
+    - install_as_systemd == true
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
 
 - name: Check if etcd service source file exists
   debug:
     var: etcd_service_source_exists
     verbosity: 2
-  when: install_as_systemd == true
+  when: 
+    - install_as_systemd == true
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
 
 - name: Create the etcd service file
   copy:
@@ -81,21 +82,26 @@
 
       [Install]
       WantedBy=multi-user.target
-  when:
-    - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
+  when: 
+    - install_as_systemd == true and service_etcd_status.rc != 0 and (etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false)
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)    
   become: true
 
 - name: check for etcd service file existed
   stat:
     path: "/etc/systemd/system/soda-etcd.service"
   register: etcd_service_exists
-  when: install_as_systemd == true
+  when:
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+    - install_as_systemd == true  
 
 - name: Check if etcd service file exists at systemd
   debug:
     var: etcd_service_exists
     verbosity: 2
-  when: install_as_systemd == true
+  when:
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+    - install_as_systemd == true  
 
 - name: Copy etcd service file to systemd
   copy:
@@ -106,9 +112,39 @@
   notify:
     - Reload daemon
     - Start etcd service
-  when:
-    - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
+  when: 
+    - install_as_systemd == true and service_etcd_status.rc != 0 and (etcd_service_exists.stat.exists is undefined or etcd_service_exists.stat.exists == false)
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+    
   become: true
+
+- name: sleep for 5 seconds and wait for etcd to come up
+  wait_for:
+    host: "{{ etcd_host }}"
+    port: "{{ etcd_port }}"
+    state: started
+    delay: 5
+    timeout: 120
+  
+
+- name: check status of soda-etcd service
+  shell: "{{  item }}"
+  with_items:
+    - systemctl status soda-etcd
+  become: true
+  ignore_errors: true
+  register: sodaEtcdServiceResult
+  when:
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+    - install_as_systemd == true
+
+- name: Display service facts
+  debug:
+    var: sodaEtcdServiceResult
+    verbosity: 4
+  when:
+    - ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
+    - install_as_systemd == true
 
 - name: check etcd cluster health
   shell: ./etcdctl --endpoints http://{{ etcd_host }}:{{ etcd_port }} cluster-health

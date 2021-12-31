@@ -116,7 +116,14 @@ wait_for_keystone () {
     do
         # get a token to check if keystone is working correctly or not.
         # keystone credentials such as OS_USERNAME must be set before.
-        python3 ${TOP_DIR}/ministone.py token_issue
+        if [ "$UBUNTU_VERSION" >= 20.04 ]; then
+            python3 ${TOP_DIR}/ministone.py token_issue
+            return
+        fi
+        if [ "$UBUNTU_VERSION" <= 18.04 ]; then
+            python ${TOP_DIR}/ministone.py token_issue
+            return
+        fi
         if [ "$?" == "0" ]; then
             return
         fi
@@ -188,7 +195,15 @@ install(){
         docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
         keystone_credentials
         wait_for_keystone
-        python3 ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
+        
+        if [ "$UBUNTU_VERSION" >= 20.04 ]; then
+            python3 ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
+            return
+        fi
+        if [ "$UBUNTU_VERSION" <= 18.04 ]; then
+            python ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
+            return
+        fi
     else
         create_user
         download_code
@@ -227,7 +242,15 @@ config_hotpot() {
         create_user_and_endpoint_for_hotpot
     else
         keystone_credentials
-        python3 ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
+        
+        if [ "$UBUNTU_VERSION" >= 20.04 ]; then
+            python3 ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
+            return
+        fi
+        if [ "$UBUNTU_VERSION" <= 18.04 ]; then
+            python ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
+            return
+        fi
     fi
 }
 
@@ -237,8 +260,22 @@ config_gelato() {
         create_user_and_endpoint_for_gelato
     else
         keystone_credentials
-        python3 ${TOP_DIR}/ministone.py endpoint_bulk_update "multicloud$MULTICLOUD_VERSION" "http://${HOST_IP}:8089/v1beta/%(tenant_id)s"
+        
+        if [ "$UBUNTU_VERSION" >= 20.04 ]; then
+            python3 ${TOP_DIR}/ministone.py endpoint_bulk_update "multicloud$MULTICLOUD_VERSION" "http://${HOST_IP}:8089/v1beta/%(tenant_id)s"
+            return
+        fi
+        if [ "$UBUNTU_VERSION" <= 18.04 ]; then
+            python ${TOP_DIR}/ministone.py endpoint_bulk_update "multicloud$MULTICLOUD_VERSION" "http://${HOST_IP}:8089/v1beta/%(tenant_id)s"
+            return
+        fi
     fi
+}
+
+# Get the Ubuntu OS Version
+get_ubuntu_version() {
+    Version=$(lsb_release -r)
+    UBUNTU_VERSION=$(cut -f2 <<< "$Version")
 }
 
 # ***************************
@@ -257,19 +294,23 @@ source "$TOP_DIR/sdsrc"
 case "$# $1" in
     "2 install")
     echo "Starting install keystone..."
+    get_ubuntu_version
     install $2
     ;;
     "2 uninstall")
     echo "Starting uninstall keystone..."
+    get_ubuntu_version
     uninstall $2
     ;;
     "3 config")
     [[ X$2 != Xhotpot && X$2 != Xgelato ]] && echo "config type must be hotpot or gelato" && exit 1
     echo "Starting config $2 ..."
+    get_ubuntu_version
     config_$2 $3
     ;;
     "1 uninstall_purge")
     echo "Starting uninstall purge keystone..."
+    get_ubuntu_version
     uninstall_purge
     ;;
      *)

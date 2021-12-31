@@ -125,6 +125,7 @@
     state: started
     delay: 5
     timeout: 120
+  when: ansible_distribution == "Ubuntu" and ansible_lsb.major_release|int >=20
   
 
 - name: check status of soda-etcd service

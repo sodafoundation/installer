@@ -5,8 +5,12 @@ name: SODA Installer CI
 # Controls when the action will run. 
 # Triggers the workflow on push or pull request events but only for the main branch
 # Allows you to run this workflow manually from the Actions tab
-on: [push, workflow_dispatch]
-
+on:
+  push:
+    branches:
+      - main
+      - feat/ubuntu2004
+  workflow_dispatch:
 jobs:
   # This workflow contains a single job called "build"
   build:

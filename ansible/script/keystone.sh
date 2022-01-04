@@ -116,7 +116,7 @@ wait_for_keystone () {
     do
         # get a token to check if keystone is working correctly or not.
         # keystone credentials such as OS_USERNAME must be set before.
-        python ${TOP_DIR}/ministone.py token_issue
+        python3 ${TOP_DIR}/ministone.py token_issue
         if [ "$?" == "0" ]; then
             return
         fi
@@ -188,7 +188,7 @@ install(){
         docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
         keystone_credentials
         wait_for_keystone
-        python ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
+        python3 ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
     else
         create_user
         download_code
@@ -227,7 +227,7 @@ config_hotpot() {
         create_user_and_endpoint_for_hotpot
     else
         keystone_credentials
-        python ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
+        python3 ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
     fi
 }
 
@@ -237,7 +237,7 @@ config_gelato() {
         create_user_and_endpoint_for_gelato
     else
         keystone_credentials
-        python ${TOP_DIR}/ministone.py endpoint_bulk_update "multicloud$MULTICLOUD_VERSION" "http://${HOST_IP}:8089/v1beta/%(tenant_id)s"
+        python3 ${TOP_DIR}/ministone.py endpoint_bulk_update "multicloud$MULTICLOUD_VERSION" "http://${HOST_IP}:8089/v1beta/%(tenant_id)s"
     fi
 }
 

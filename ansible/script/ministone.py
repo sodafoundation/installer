@@ -20,22 +20,23 @@ import requests
 import pprint
 import json
 
+
 def token_issue():
     body = {
         'auth': {
-            'identity': { 'methods': ['password'],
-                          'password': {
-                              'user': {
-                                  'name': OS_USERNAME,
-                                  'domain': { 'name': OS_USER_DOMAIN_NAME },
-                                  'password':  OS_PASSWORD
-                              }
-                          }
-                      },
+            'identity': {'methods': ['password'],
+                         'password': {
+                'user': {
+                    'name': OS_USERNAME,
+                    'domain': {'name': OS_USER_DOMAIN_NAME},
+                    'password':  OS_PASSWORD
+                }
+            }
+            },
             'scope': {
                 'project': {
                     'name':  OS_PROJECT_NAME,
-                    'domain': { 'name':  OS_USER_DOMAIN_NAME }
+                    'domain': {'name':  OS_USER_DOMAIN_NAME}
                 }
             }
         }
@@ -59,6 +60,7 @@ def token_issue():
     else:
         return None
 
+
 def service_list(token):
     headers = {
         'Content-Type': 'application/json',
@@ -76,11 +78,12 @@ def service_list(token):
         result_list = json.loads(r_get.text)['services']
 
         for s in result_list:
-            result_dict[s['name']] =  s['id']
+            result_dict[s['name']] = s['id']
     except:
         return None
 
     return result_dict
+
 
 def endpoint_list(token, service):
 
@@ -95,7 +98,7 @@ def endpoint_list(token, service):
             print('DEBUG: GET /v3/endpoints - status_code = %s' %
                   (r_get.status_code))
     except:
-       return None
+        return None
 
     if r_get.status_code != 200:
         return None
@@ -113,6 +116,7 @@ def endpoint_list(token, service):
 
     return ep_list
 
+
 def endpoint_bulk_update(token, service, url):
     headers = {
         'Content-Type': 'application/json',
@@ -127,7 +131,7 @@ def endpoint_bulk_update(token, service, url):
         print("DEBUG: ep_list: %s %s" % (ep_list, url))
 
     for ep in ep_list:
-        body = {"endpoint": { "url": url }}
+        body = {"endpoint": {"url": url}}
         endpoint_id = ep[0]
         if debug:
             print("DEBUG: %s / %s" %
@@ -147,6 +151,7 @@ def endpoint_bulk_update(token, service, url):
             print('DEBUG: PATCH /endpoints/XXXX - status_code = %s' %
                   (r_patch.status_code))
 
+
 #
 # ministone.py - A simple stupid keystone client with almost no dependencies.
 #
@@ -164,13 +169,13 @@ if __name__ == '__main__':
 
     debug = False
 
-    OS_AUTH_URL=os.environ['OS_AUTH_URL']
-    OS_PASSWORD=os.environ['OS_PASSWORD']
-    OS_PROJECT_DOMAIN_NAME=os.environ['OS_PROJECT_DOMAIN_NAME']
-    OS_PROJECT_NAME=os.environ['OS_PROJECT_NAME']
-    OS_USERNAME=os.environ['OS_USERNAME']
-    OS_USER_DOMAIN_NAME=os.environ['OS_USER_DOMAIN_NAME']
-    #OS_USER_DOMAIN_ID=os.environ['OS_USER_DOMAIN_ID']
+    OS_AUTH_URL = os.environ['OS_AUTH_URL']
+    OS_PASSWORD = os.environ['OS_PASSWORD']
+    OS_PROJECT_DOMAIN_NAME = os.environ['OS_PROJECT_DOMAIN_NAME']
+    OS_PROJECT_NAME = os.environ['OS_PROJECT_NAME']
+    OS_USERNAME = os.environ['OS_USERNAME']
+    OS_USER_DOMAIN_NAME = os.environ['OS_USER_DOMAIN_NAME']
+    # OS_USER_DOMAIN_ID=os.environ['OS_USER_DOMAIN_ID']
 
     # token_issue
     #   used for keystone process start up check.
@@ -178,15 +183,15 @@ if __name__ == '__main__':
     if len(sys.argv) == 2 and sys.argv[1] == 'token_issue':
         token = token_issue()
         if not token:
-           sys.exit(1)
+            sys.exit(1)
         else:
-           sys.exit(0)
+            sys.exit(0)
 
     # endpoint_bulk_update
     #   used for overwriting keystone endpoints
     if not ((len(sys.argv) == 4) and (sys.argv[1] == 'endpoint_bulk_update')):
         print('Specify service_name and url for bulk update. Exiting...')
-	sys.exit(1)
+        sys.exit(1)
 
     token = token_issue()
     if not token:

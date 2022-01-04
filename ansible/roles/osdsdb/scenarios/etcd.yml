@@ -74,6 +74,8 @@
       Type=notify
       Restart=always
       RestartSec=5s
+      User=root
+      Group=root
       LimitNOFILE=40000
       TimeoutStartSec=0
 
@@ -109,6 +111,15 @@
   when:
     - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
   become: true
+
+- name: sleep for 5 seconds and wait for etcd to come up
+  wait_for:
+    host: "{{ etcd_host }}"
+    port: "{{ etcd_port }}"
+    state: started
+    delay: 5
+    timeout: 120
+  when: ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int >=20
 
 - name: check etcd cluster health
   shell: ./etcdctl --endpoints http://{{ etcd_host }}:{{ etcd_port }} cluster-health

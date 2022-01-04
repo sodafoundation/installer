@@ -18,7 +18,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - python-pip
+    - python3-pip
     - lvm2
     - thin-provisioning-tools
     - libffi-dev

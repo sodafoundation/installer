@@ -47,20 +47,20 @@
   become: true
   args:
     chdir: "{{ etcd_dir }}"
-  when: install_as_systemd == false and service_etcd_status.rc != 0
+  when: install_etcd_as_systemd == false and service_etcd_status.rc != 0
 
 # Enable etcd service as systemd process
 - name: check for etcd service source file existed
   stat:
     path: "{{ etcd_dir }}/soda-etcd.service"
   register: etcd_service_source_exists
-  when: install_as_systemd == true
+  when: install_etcd_as_systemd == true
 
 - name: Check if etcd service source file exists
   debug:
     var: etcd_service_source_exists
     verbosity: 2
-  when: install_as_systemd == true
+  when: install_etcd_as_systemd == true
 
 - name: Create the etcd service file
   copy:
@@ -84,20 +84,20 @@
       [Install]
       WantedBy=multi-user.target
   when:
-    - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
+    - install_etcd_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
   become: true
 
 - name: check for etcd service file existed
   stat:
     path: "/etc/systemd/system/soda-etcd.service"
   register: etcd_service_exists
-  when: install_as_systemd == true
+  when: install_etcd_as_systemd == true
 
 - name: Check if etcd service file exists at systemd
   debug:
     var: etcd_service_exists
     verbosity: 2
-  when: install_as_systemd == true
+  when: install_etcd_as_systemd == true
 
 - name: Copy etcd service file to systemd
   copy:
@@ -109,7 +109,7 @@
     - Reload daemon
     - Start etcd service
   when:
-    - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
+    - install_etcd_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
   become: true
 
 - name: sleep for 5 seconds and wait for etcd to come up

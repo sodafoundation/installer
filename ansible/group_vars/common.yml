@@ -54,6 +54,11 @@ ansible_os_family: Debian
 # false: Will install api, dock, controller and etcd as standalone processes. Recommended for development use.
 install_as_systemd: true
 
+# Install  etcd as systemd process or standalone application: true / false
+# true: Will install etcd as a systemd service and enable it. Recommended for production use
+# false: Will install etcd as standalone process. Recommended for development use and on Ubuntu 20.04.
+install_etcd_as_systemd: false
+
 # delete all source packages
 source_purge: true
 

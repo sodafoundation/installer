@@ -9,7 +9,7 @@ on:
   pull_request:
     branches:
       - main
-      - feat/ubuntu2004
+      - ubuntu2004-experimental
   workflow_dispatch:
 
 jobs:

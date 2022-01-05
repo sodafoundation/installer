@@ -9,7 +9,7 @@ on:
   push:
     branches:
       - main
-      - feat/ubuntu2004
+      - ubuntu2004-experimental
   workflow_dispatch:
 jobs:
   # This workflow contains a single job called "build"

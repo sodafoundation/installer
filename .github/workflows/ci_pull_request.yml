@@ -67,16 +67,7 @@ jobs:
           GOPATH: "/home/runner/work/installer/"
         if: ${{ always() }}
 
-      - name: 'Make the CI check executable and initiate the testing with SODA repository'
-        run: |
-          sudo chmod +x ./ci/ci_check.sh
-          ./ci/ci_check.sh repository
-        shell: bash
-        env:
-          GOPATH: "/home/runner/work/installer/"
-        if: ${{ always() }}
-      
-      - name: 'Make the CI check executable and initiate the testing with SODA release'
+     - name: 'Make the CI check executable and initiate the testing with SODA release'
         run: |
           sudo chmod +x ./ci/ci_check.sh
           ./ci/ci_check.sh release

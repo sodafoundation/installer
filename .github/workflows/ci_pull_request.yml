@@ -42,6 +42,12 @@ jobs:
             echo "Installed Ansible Version in Runtime: "
             ansible --version
       
+      - name: Remove latest ansible on Ubuntu 20.04
+        run: |
+            echo "uninstall with pipx"
+            pipx uninstall ansible-core
+        if: ${{ matrix.os == 'ubuntu-20.04' }}
+
       # Change the permissions of the ansible installer
       - name: 'Make ansible installer executable and run install ansible on OS: ${{ matrix.os }}'
         run: |

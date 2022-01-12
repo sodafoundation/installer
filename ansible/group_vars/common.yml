@@ -43,7 +43,7 @@ install_gelato_ha_from: release
 
 # These fields below will specify the tag based on install_from type
 repo_branch: master
-release_version: v1.5.2
+release_version: v1.6.0
 
 # This field indicates which os family the system will be running, currently
 # support 'Debian' and 'RedHat'
@@ -52,7 +52,12 @@ ansible_os_family: Debian
 # Install as systemd process or standalone application: true / false
 # true: Will install api, dock, controller and etcd processes as a systemd services and enable them. Recommended for production use
 # false: Will install api, dock, controller and etcd as standalone processes. Recommended for development use.
-install_as_systemd: true
+install_as_systemd: false
+
+# Install  etcd as systemd process or standalone application: true / false
+# true: Will install etcd as a systemd service and enable it. Recommended for production use
+# false: Will install etcd as standalone process. Recommended for development use and on Ubuntu 20.04.
+install_etcd_as_systemd: false
 
 # delete all source packages
 source_purge: true
@@ -69,11 +74,11 @@ opensds_conf_file: /etc/opensds/opensds.conf
 api_release_version: v1.1.0
 controller_release_version: v1.1.0
 dock_release_version: v1.3.0
-dashboard_release_version: v1.5.1
-gelato_release_version: v1.5.1
+dashboard_release_version: v1.6.0
+gelato_release_version: v1.6.0
 sushi_release_version: v1.4.0
 orchestration_release_version: v0.13.0
-delfin_release_version: v1.4.1
+delfin_release_version: v1.5.0
 
 #################
 # URLs, Environment Variables, IP addresses and Ports list

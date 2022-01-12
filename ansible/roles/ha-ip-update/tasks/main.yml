@@ -22,7 +22,6 @@
 
 # Same IP is used for both the services. Only Port is different (predefined)
 - name: replace the gelato_ha_api_ip and gelato_ha_s3_ip in the gelato-ha.yml
-  hosts: controllers
   replace:
     path: "{{ role_path }}/../../group_vars/gelato-ha.yml"
     regexp: "{{ item.regexp }}"

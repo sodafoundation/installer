@@ -7,7 +7,7 @@ image: sodafoundation/csiplugin-file:v1.4.0
 # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: IfNotPresent
 # ImageRestartPolicy: valid values are "Never", and "Always"
-imageRestartPolicy: Never
+imageRestartPolicy: Always
 # Please modify data fields in real environment
 data:
   opensdsEndpoint: http://127.0.0.1:50040

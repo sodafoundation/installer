@@ -1,9 +1,9 @@
-# OpenSDS Multi-nodes installation using Ansible # 
-This document explain steps for a sample OpenSDS multi-node installation with three nodes (Eg. node-1, node-2 and node-3). First node is configured as Controller and other two nodes are configured as dock backends.
+# soda Multi-nodes installation using Ansible # 
+This document explain steps for a sample soda multi-node installation with three nodes (Eg. node-1, node-2 and node-3). First node is configured as Controller and other two nodes are configured as dock backends.
 ## 1. Installation ##
-Installation steps for OpenSDS Multi-nodes is similar to wiki page 'OpenSDS Cluster Installation through Ansible' https://github.com/opensds/opensds/wiki/OpenSDS-Cluster-Installation-through-Ansible
+Installation steps for soda Multi-nodes is similar to wiki page 'soda Cluster Installation through Ansible' https://github.com/soda/soda/wiki/soda-Cluster-Installation-through-Ansible
 
-Difference in steps for OpenSDS multi-nodes will be documented here.
+Difference in steps for soda multi-nodes will be documented here.
 ### Pre-config (Ubuntu 16.04)
 #### Setup SSH Connection (Needed on ALL Nodes)
 * Set password for root:
@@ -84,12 +84,12 @@ If you are running all nodes inside VMware, you need to install this virtualizat
     ssh-copy-id node-3
     ```
 #### Install following packages  (Needed on ALL Nodes):
-Please refer OpenSDS Cluster installation steps in [wiki.](https://github.com/opensds/opensds/wiki/OpenSDS-Cluster-Installation-through-Ansible) 
+Please refer soda Cluster installation steps in [wiki.](https://github.com/soda/soda/wiki/soda-Cluster-Installation-through-Ansible) 
 * docker & docker-compose
 * golang
-* opensds-installer code
+* soda-installer code
 * ansible tool
-### Configure opensds install variables (On Controllers node ONLY):
+### Configure soda install variables (On Controllers node ONLY):
 ##### System environment:
 Firstly you need to modify `host_ip` in `group_vars/common.yml`, and you can specify which project (hotpot or gelato) to be deployed:
 ```yaml
@@ -100,7 +100,7 @@ host_ip: 127.0.0.1
 # 'hotpot', 'gelato' or 'all'
 deploy_project: all
 ```
-If you want to integrate OpenSDS with k8s csi, please modify `nbp_plugin_type` to `csi` in `group_vars/sushi.yml`:
+If you want to integrate soda with k8s csi, please modify `nbp_plugin_type` to `csi` in `group_vars/sushi.yml`:
 ```yaml
 # 'hotpot_only' is the default integration way, but you can change it to 'csi'
 # or 'flexvolume'
@@ -173,11 +173,11 @@ Configure the auth and pool options to access cinder in `group_vars/cinder/cinde
 export HOST_IP={your_real_host_ip}
 ansible all -m ping -i local.hosts
 ```
-### Run opensds-ansible playbook to start deploy
+### Run soda-ansible playbook to start deploy
 ```bash
 ansible-playbook site.yml -i local.hosts
 ```
-## 2. How to test opensds cluster
-Please refer OpenSDS Cluster installation steps in [wiki.](https://github.com/opensds/opensds/wiki/OpenSDS-Cluster-Installation-through-Ansible)
-## 3. How to purge and clean opensds cluster
-Please refer OpenSDS Cluster installation steps in [wiki.](https://github.com/opensds/opensds/wiki/OpenSDS-Cluster-Installation-through-Ansible)
+## 2. How to test soda cluster
+Please refer soda Cluster installation steps in [wiki.](https://github.com/soda/soda/wiki/soda-Cluster-Installation-through-Ansible)
+## 3. How to purge and clean soda cluster
+Please refer soda Cluster installation steps in [wiki.](https://github.com/soda/soda/wiki/soda-Cluster-Installation-through-Ansible)

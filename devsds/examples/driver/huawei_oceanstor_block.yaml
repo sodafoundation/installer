@@ -9,7 +9,7 @@ authOptions:
   endpoints: "https://0.0.0.0:8088/deviceManager/rest"
 
 pool:
-  opensds_block:
+  soda_block:
     storageType: block
     availabilityZone: default
     extras:

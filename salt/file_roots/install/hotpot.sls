@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/hotpot.sls
+## soda-installer/salt/srv/salt/install/hotpot.sls
 base:
   '*':
-    - opensds.hotpot
+    - soda.hotpot

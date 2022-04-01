@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,21 +24,21 @@ CUR_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 
 export OPENSSL_CONF="${CUR_DIR}"/openssl.cnf
 
-COMPONENT=("opensds" "nbp")
+COMPONENT=("soda" "nbp")
 
-OPENSDS_CERT_DIR=$1
+soda_CERT_DIR=$1
 
-if [ -z "${OPENSDS_CERT_DIR}" ];then
-    OPENSDS_CERT_DIR="/opt/opensds-security"
+if [ -z "${soda_CERT_DIR}" ];then
+    soda_CERT_DIR="/opt/soda-security"
 fi
 
 # Clean up installation context
-if [ -d "${OPENSDS_CERT_DIR}" ];then
-    rm -rf "${OPENSDS_CERT_DIR}"
+if [ -d "${soda_CERT_DIR}" ];then
+    rm -rf "${soda_CERT_DIR}"
 fi
 
 # Generate root ca cert
-ROOT_CERT_DIR=${ROOT_CERT_DIR:-"${OPENSDS_CERT_DIR}"/ca}
+ROOT_CERT_DIR=${ROOT_CERT_DIR:-"${soda_CERT_DIR}"/ca}
 mkdir -p "${ROOT_CERT_DIR}"
 mkdir -p "${ROOT_CERT_DIR}"/demoCA/
 mkdir -p "${ROOT_CERT_DIR}"/demoCA/newcerts
@@ -59,9 +59,9 @@ for com in ${COMPONENT[*]};do
 	# Cancel the password for the private key
     openssl rsa -in "${ROOT_CERT_DIR}"/"${com}"-key.pem -out "${ROOT_CERT_DIR}"/"${com}"-key.pem -passin pass:xxxxx
 
-	mkdir -p "${OPENSDS_CERT_DIR}"/"${com}"
-	mv "${ROOT_CERT_DIR}"/"${com}"-key.pem "${OPENSDS_CERT_DIR}"/"${com}"/
-	mv "${ROOT_CERT_DIR}"/"${com}"-cert.pem "${OPENSDS_CERT_DIR}"/"${com}"/
+	mkdir -p "${soda_CERT_DIR}"/"${com}"
+	mv "${ROOT_CERT_DIR}"/"${com}"-key.pem "${soda_CERT_DIR}"/"${com}"/
+	mv "${ROOT_CERT_DIR}"/"${com}"-cert.pem "${soda_CERT_DIR}"/"${com}"/
 	rm -rf "${ROOT_CERT_DIR}"/"${com}"-csr.pem
 done
 

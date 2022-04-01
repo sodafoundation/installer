@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/dock.sls
+## soda-installer/salt/srv/salt/install/dock.sls
 base:
   '*':
-    - opensds.dock
+    - soda.dock

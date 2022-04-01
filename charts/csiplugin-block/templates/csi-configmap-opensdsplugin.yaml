@@ -1,13 +1,13 @@
 # This YAML file contains configmap objects,
-# which are necessary to run csi opensds plugin.
+# which are necessary to run csi soda plugin.
 
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: csi-configmap-opensdsplugin-block
+  name: csi-configmap-sodaplugin-block
 data:
-  opensdsendpoint: {{ .Values.data.opensdsEndpoint }}
-  opensdsauthstrategy: {{ .Values.data.opensdsAuthStrategy }}
+  sodaendpoint: {{ .Values.data.sodaEndpoint }}
+  sodaauthstrategy: {{ .Values.data.sodaAuthStrategy }}
   osauthurl: {{ .Values.data.osAuthURL }}
   osusername: {{ .Values.data.osUsername }}
   ospassword: {{ .Values.data.osPassword }}

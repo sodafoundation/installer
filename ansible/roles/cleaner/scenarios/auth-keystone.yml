@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-- name: uninstall opensds keystone with the script
+- name: uninstall soda keystone with the script
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh uninstall script
@@ -23,7 +23,7 @@
   become: yes
   tags: keystone
   
-- name: uninstall opensds keystone with the docker
+- name: uninstall soda keystone with the docker
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh uninstall docker
@@ -33,7 +33,7 @@
   become: yes
   tags: keystone
   
-- name: cleanup opensds keystone
+- name: cleanup soda keystone
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh uninstall_purge

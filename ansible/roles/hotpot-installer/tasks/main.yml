@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,34 +16,34 @@
 - name: generate certificates
   shell: "{{ item }}"
   with_items:
-    - bash ./script/create_cert.sh "{{ opensds_certs_dir }}"
+    - bash ./script/create_cert.sh "{{ soda_certs_dir }}"
   become: yes
 
 - name: hotpot keystone configuration when keystone is installed by script
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh config hotpot script
-  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  when: soda_auth_strategy == "keystone" and install_keystone_with_docker != true
   become: yes
 
 - name: hotpot keystone configuration when keystone is installed by docker
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh config hotpot docker
-  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
+  when: soda_auth_strategy == "keystone" and install_keystone_with_docker == true
   become: yes
 
 - name: configure openapi specification
   copy:
     src: "{{ hotpot_work_dir }}/swagger.yaml"
-    dest: "{{ opensds_config_dir }}"
+    dest: "{{ soda_config_dir }}"
   become: yes
   ignore_errors: true
 
-# ---------update opensds config file with opensds global info---------
-- name: configure opensds global info osdslet
+# ---------update soda config file with soda global info---------
+- name: configure soda global info osdslet
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdslet
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -52,26 +52,26 @@
         - { option: log_file, value: "{{ controller_log_file }}" }
   become: yes
 
-- name: configure opensds global info osdsapiserver
+- name: configure soda global info osdsapiserver
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdsapiserver
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items:
         - { option: api_endpoint, value: "{{ apiserver_endpoint }}" }
         - { option: log_file, value: "{{ apiserver_log_file }}" }
-        - { option: auth_strategy, value: "{{ opensds_auth_strategy }}" }
+        - { option: auth_strategy, value: "{{ soda_auth_strategy }}" }
         - { option: https_enabled, value: False }
         - { option: beego_https_cert_file, value: "" }
         - { option: beego_https_key_file, value: "" }
   become: yes
 
-- name: configure opensds global info database
+- name: configure soda global info database
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: database
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -80,11 +80,11 @@
         - { option: driver, value: "{{ db_driver }}" }
   become: yes
 
-# ---------update opensds config file with telemtetry configs---------
-- name: Set opensds.conf with telemetry options in osdsapiserver
+# ---------update soda config file with telemtetry configs---------
+- name: Set soda.conf with telemetry options in osdsapiserver
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdsapiserver
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -104,10 +104,10 @@
   tags: telemetry_conf
   when:
         - enable_telemetry_tools == true
-- name: Set opensds.conf with telemetry options in osdslet
+- name: Set soda.conf with telemetry options in osdslet
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdslet
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -125,7 +125,7 @@
 - name: Set push mechanism when NodeExporter is selected
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdslet
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -138,7 +138,7 @@
 - name: Set push mechanism when PushGateway is selected
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdslet
     option: "{{ item.option }}"
     value: "{{ item.value }}"

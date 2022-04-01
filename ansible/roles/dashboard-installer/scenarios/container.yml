@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@
     network_mode: host
     restart_policy: always
     env:
-      OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
-      OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
-      OPENSDS_GELATO_URL: "http://{{ host_ip }}:8089"
+      soda_AUTH_URL: "http://{{ host_ip }}/identity"
+      soda_HOTPOT_URL: "http://{{ host_ip }}:50040"
+      soda_GELATO_URL: "http://{{ host_ip }}:8089"
       SODA_DELFIN_URL: "{{ soda_delfin_url }}"
-      OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
-      OPENSDS_S3_URL: "http://{{ host_ip }}:8090"
-      OPENSDS_S3_HOST: "{{ host_ip }}" 
-      OPENSDS_S3_PORT: "8090"
+      soda_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
+      soda_S3_URL: "http://{{ host_ip }}:8090"
+      soda_S3_HOST: "{{ host_ip }}" 
+      soda_S3_PORT: "8090"
       SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
       SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
       SODA_GRAFANA_PORT: "{{ grafana_port }}"
@@ -48,14 +48,14 @@
     network_mode: host
     restart_policy: always
     env:
-      OPENSDS_AUTH_URL: "http://{{ host_ip }}/identity"
-      OPENSDS_HOTPOT_URL: "http://{{ host_ip }}:50040"
-      OPENSDS_GELATO_URL: "http://{{ gelato_ha_api_ip }}:{{ gelato_ha_api_port }}"
+      soda_AUTH_URL: "http://{{ host_ip }}/identity"
+      soda_HOTPOT_URL: "http://{{ host_ip }}:50040"
+      soda_GELATO_URL: "http://{{ gelato_ha_api_ip }}:{{ gelato_ha_api_port }}"
       SODA_DELFIN_URL: "{{ soda_delfin_url }}"
-      OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
-      OPENSDS_S3_URL: "http://{{ gelato_ha_s3_ip }}:{{ gelato_ha_s3_port }}"
-      OPENSDS_S3_HOST: "{{ gelato_ha_s3_ip }}"
-      OPENSDS_S3_PORT: "{{ gelato_ha_s3_port }}"
+      soda_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
+      soda_S3_URL: "http://{{ gelato_ha_s3_ip }}:{{ gelato_ha_s3_port }}"
+      soda_S3_HOST: "{{ gelato_ha_s3_ip }}"
+      soda_S3_PORT: "{{ gelato_ha_s3_port }}"
       SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
       SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
       SODA_GRAFANA_PORT: "{{ grafana_port }}"

@@ -74,7 +74,7 @@ salt_formulas:
      - devstack-formula
      - golang-formula
      - memcached-formula
-     - opensds-formula
+     - soda-formula
      - mysql-formula
      - timezone-formula
      - resolver-formula

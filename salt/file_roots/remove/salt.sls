@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/salt.sls
+## soda-installer/salt/srv/salt/salt.sls
 base:
   '*':
     {{ '- salt.pkgrepo' if grains.os_family|lower not in ('suse', 'freebsd') else '' }}   #Is suse fixed yet?

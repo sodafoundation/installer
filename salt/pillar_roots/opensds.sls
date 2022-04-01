@@ -1,16 +1,16 @@
 {% from "site.j2" import sitedata as site %}
 
-opensds:
+soda:
   deploy_project: {{ site.deploy_project }}
   host: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
   ports:
-    opensds: {{ site.port_hotpot }}
+    soda: {{ site.port_hotpot }}
     dock: {{ site.port_dock }}
   dir:
-    go: {{ site.go_path }}/src/github.com/opensds
+    go: {{ site.go_path }}/src/github.com/soda
   environ:
-    opensds_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}
-    opensds_auth_strategy: {{ site.auth_strategy }}
+    soda_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_hotpot }}
+    soda_auth_strategy: {{ site.auth_strategy }}
     csi_endpoint: {{ site.host_ipv4 or site.host_ipv6 or '127.0.0.1' }}:{{ site.port_csi }}
     gopath: {{ site.go_path }}
 
@@ -93,7 +93,7 @@ opensds:
 
   ########### DOCKS ###############
   dock:
-    opensdsconf:
+    sodaconf:
       osdsdock:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_dock }}
         dock_type: {{ site.dock_type }}
@@ -108,21 +108,21 @@ opensds:
         port_bindings:
           - '{{ site.port_dock }}:{{ site.port_dock }}'
     daemon:
-      opensds:
+      soda:
         strategy: binaries
       osdsdock:
         strategy: config-systemd
 
-  ############ OPENSDS TELEMETRY ###########
+  ############ soda TELEMETRY ###########
   telemetry: {}
 
-  ############ OPENSDS GELATO #############
+  ############ soda GELATO #############
   gelato:
     release: {{ site.gelato_release }}
     service: {{ site.gelato_service }}
     ids:
       - {{ site.gelato_service }}
-    opensdsconf:
+    sodaconf:
       {{ site.gelato_service }}:
         endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}
         port: {{ site.port_gelato }}
@@ -135,12 +135,12 @@ opensds:
           branch: {{ site.gelato_release }}
 
 
-  ############ OPENSDS AUTH #############
+  ############ soda AUTH #############
   auth:
     ids:
       - osdsauth
       - keystone_authtoken
-    opensdsconf:
+    sodaconf:
       keystone_authtoken:
         memcached_servers: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"  }}:11211'
         auth_uri: 'http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}/identity'
@@ -153,16 +153,16 @@ opensds:
         user_domain_name: {{ site.user_domain_name }}
     daemon:
       osdsauth:
-        strategy: config-keystone   ##verified on Ubuntu opensds-installer/salt
+        strategy: config-keystone   ##verified on Ubuntu soda-installer/salt
         endpoint_ipv4: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
-  ############ OPENSDS DATABASE #############
+  ############ soda DATABASE #############
   database:
     ids:
       - database
       - etcd
-    opensdsconf:
+    sodaconf:
       database:
         endpoint: '{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth1 }},http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}:{{ site.port_auth2 }}'
         credential: '{{ site.hotpot_service }}:{{ site.devstack_password }}@{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_mysql }}/dbname'
@@ -171,16 +171,16 @@ opensds:
         strategy: config-etcd-formula/container
 
 
-  ############### OPENSDS HOTPOT ################
+  ############### soda HOTPOT ################
   hotpot:
     release: {{ site.hotpot_release }}
     service: {{ site.hotpot_service }}
-    opensdsconf:
+    sodaconf:
       osdslet:
         api_endpoint: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}:{{ site.port_hotpot }}
         auth_strategy: {{ site.auth_strategy }}   ### note: noauth verified on ubuntu salt installer
     container:
-      opensds:
+      soda:
         image: {{ site.container_hotpot_img }}
         version: {{ site.hotpot_version }}
         ports:
@@ -189,14 +189,14 @@ opensds:
         port_bindings:
           - {{site.host_ipv4 or site.host_ipv6 or '127.0.0.1'}}:{{site.port_hotpot}}:{{site.port_hotpot}}
     daemon:
-      opensds:
+      soda:
         strategy: repo-config-build-binaries-systemd
         endpoint_ipv4: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         endpoint_port: {{ site.port_hotpot }}
 
-  ############### OPENSDS DASHBOARD(S) ################
+  ############### soda DASHBOARD(S) ################
   dashboard:
-    opensdsconf:
+    sodaconf:
       dashboard:
         endpoint: http://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
         port: {{ site.port_hotpot }}
@@ -205,14 +205,14 @@ opensds:
          image: {{ site.container_dashboard_img }}
          version: {{ site.dashboard_version }}
          env:
-           OPENSDS_HOST_IP: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
+           soda_HOST_IP: {{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1" }}
     daemon:
       dashboard:
         strategy: config-container
         repo:
           branch: {{ site.dashboard_version }}
 
-  ############### OPENSDS SUSHI NORTH-BOUND-PLUGINS ################
+  ############### soda SUSHI NORTH-BOUND-PLUGINS ################
   sushi:
     release: {{ site.sushi_release }}
     plugin_type: {{ site.dock_type }}
@@ -283,12 +283,12 @@ lvm:
   vg:
     remove:
       cinder-volumes:
-      opensds-volumes:
+      soda-volumes:
     create:
       cinder-volumes:
         devices:
           - /dev/loop0
-      opensds-volumes:
+      soda-volumes:
         devices:
           - /dev/loop1
 
@@ -324,8 +324,8 @@ firewalld:
           - 8883         ## mqtt-tls client
           - 15674        ## STOMP-over-WebSockets
           - 15675        ## MQTT-over-WebSockets
-    opensds:
-      short: opensds
+    soda:
+      short: soda
       description: Open Software Defined Storage
       ports:
         tcp:
@@ -366,7 +366,7 @@ firewalld:
         - ntp
         - saltstack
         - ceph
-        - opensds
+        - soda
         - rabbitmq
 
       {%- if grains.os == 'Fedora' %}
@@ -379,7 +379,7 @@ firewalld:
         - ntp
         - saltstack
         - ceph
-        - opensds
+        - soda
       {%- endif %}
 
 
@@ -445,7 +445,7 @@ devstack:
           options:
             project: {{ site.project_name }}
           user:
-            - opensds{{ site.hotpot_release }}
+            - soda{{ site.hotpot_release }}
             - {{ site.gelato_service }}{{ site.gelato_release }}
         {{ site.project_name }}:
           options:
@@ -454,15 +454,15 @@ devstack:
             - {{ site.project_name }}
     endpoint:
       create:
-        'opensds{{site.hotpot_release}} public https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
+        'soda{{site.hotpot_release}} public https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        'opensds{{site.hotpot_release}} internal https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
+        'soda{{site.hotpot_release}} internal https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        'opensds{{site.hotpot_release}} admin https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
+        'soda{{site.hotpot_release}} admin https://{{ site.host_ipv4 or site.host_ipv6 or "127.0.0.1"}}/{{ site.port_hotpot }}/{{ site.hotpot_release }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
@@ -653,7 +653,7 @@ packages:
       - tox
       - click
   pkgs:
-    wanted: []  ## populated by opensds-formula in map.jinja
+    wanted: []  ## populated by soda-formula in map.jinja
     unwanted:
       - unattended-upgrades
      {%- if grains.os_family in ('RedHat',) %}
@@ -699,11 +699,11 @@ packages:
           hashsum: {{ site.gelato_hashsum }}
 
       hotpot:
-        dest: {{ site.hotpot_path }}/opensds
+        dest: {{ site.hotpot_path }}/soda
         options: '--strip-components=1'
         dl:
           format: tar
-          source: {{ site.hotpot_uri }}/{{ site.hotpot_release }}/opensds-hotpot-{{ site.hotpot_release }}-linux-amd64.tar.gz
+          source: {{ site.hotpot_uri }}/{{ site.hotpot_release }}/soda-hotpot-{{ site.hotpot_release }}-linux-amd64.tar.gz
           hashsum: {{ site.hotpot_hashsum }}
 
       nbp:
@@ -711,7 +711,7 @@ packages:
         options: '--strip-components=1'
         dl:
           format: tar
-          source: {{ site.sushi_uri }}/{{ site.sushi_release }}/opensds-sushi-{{ site.sushi_release }}-linux-amd64.tar.gz
+          source: {{ site.sushi_uri }}/{{ site.sushi_release }}/soda-sushi-{{ site.sushi_release }}-linux-amd64.tar.gz
           hashsum: {{ site.sushi_hashsum }}
 
       cinder:
@@ -722,8 +722,8 @@ packages:
           source: {{ site.cinder_url }}
           hashsum: {{ site.cinder_hashsum }}
     unwanted:
-      - {{ site.go_path }}/src/github.com/opensds/nbp
-      - {{ site.go_path }}/src/github.com/opensds/opensds
+      - {{ site.go_path }}/src/github.com/soda/nbp
+      - {{ site.go_path }}/src/github.com/soda/soda
       - {{ site.sushi_path }}
       - {{ site.hotpot_path }}
       # /var/lib/mysql/

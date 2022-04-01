@@ -20,20 +20,20 @@ _XTRACE_SODA=$(set +o | grep xtrace)
 set +o xtrace
 
 
-soda:opensds:configuration(){
+soda:soda:configuration(){
 
 # Copy api spec file to configuration path
 SODA_API_DIR=${SODA_DIR}/../../api
 cp $SODA_API_DIR/openapi-spec/swagger.yaml $SODA_CONFIG_DIR
 
 # Set global configuration.
-cat >> $SODA_CONFIG_DIR/opensds.conf << OPENSDS_GLOBAL_CONFIG_DOC
+cat >> $SODA_CONFIG_DIR/soda.conf << soda_GLOBAL_CONFIG_DOC
 [osdsapiserver]
 api_endpoint = 0.0.0.0:50040
 auth_strategy = $SODA_AUTH_STRATEGY
 # If https is enabled, the default value of cert file
-# is /opt/opensds-security/sodafoundation/api-cert.pem,
-# and key file is /opt/opensds-security/sodafoundation/api-key.pem
+# is /opt/soda-security/sodafoundation/api-cert.pem,
+# and key file is /opt/soda-security/sodafoundation/api-key.pem
 https_enabled = False
 beego_https_cert_file =
 beego_https_key_file =
@@ -50,11 +50,11 @@ enabled_backends = $SODA_BACKEND_LIST
 endpoint = $HOST_IP:$ETCD_PORT,$HOST_IP:$ETCD_PEER_PORT
 driver = etcd
 
-OPENSDS_GLOBAL_CONFIG_DOC
+soda_GLOBAL_CONFIG_DOC
 }
 
-soda::opensds::install(){
-    soda:opensds:configuration
+soda::soda::install(){
+    soda:soda:configuration
 # Run osdsdock and osdslet daemon in background.
 (
     cd ${SODA_API_DIR}
@@ -71,7 +71,7 @@ soda::opensds::install(){
             KEYSTONE_IP=$HOST_IP
             export OS_AUTH_URL=http://$KEYSTONE_IP/identity
             export OS_USERNAME=admin
-            export OS_PASSWORD=opensds@123
+            export OS_PASSWORD=soda@123
             export OS_TENANT_NAME=admin
             export OS_PROJECT_NAME=admin
             export OS_USER_DOMAIN_ID=default
@@ -87,8 +87,8 @@ soda::opensds::install(){
     # Copy bash completion script to system.
     cp ${SODA_API_DIR}/osdsctl/completion/osdsctl.bash_completion /etc/bash_completion.d/
 
-    export OPENSDS_AUTH_STRATEGY=$SODA_AUTH_STRATEGY
-    export OPENSDS_ENDPOINT=http://localhost:50040
+    export soda_AUTH_STRATEGY=$SODA_AUTH_STRATEGY
+    export soda_ENDPOINT=http://localhost:50040
     ${SODA_API_DIR}/build/out/bin/osdsctl profile create '{"name": "default_block", "description": "default policy", "storageType": "block"}'
     ${SODA_API_DIR}/build/out/bin/osdsctl profile create '{"name": "default_file", "description": "default policy", "storageType": "file", "provisioningProperties":{"ioConnectivity": {"accessProtocol": "NFS"},"DataStorage":{"StorageAccessCapability":["Read","Write","Execute"]}}}'
 
@@ -98,15 +98,15 @@ soda::opensds::install(){
 )
 }
 
-soda::opensds::cleanup() {
+soda::soda::cleanup() {
     sudo killall -9 osdsapiserver osdslet osdsdock &>/dev/null
 }
 
-soda::opensds::uninstall(){
+soda::soda::uninstall(){
      : # Do nothing
 }
 
-soda::opensds::uninstall_purge(){
+soda::soda::uninstall_purge(){
      : # Do nothing
 }
 

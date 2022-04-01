@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
     network_mode: host
     restart_policy: always
     volumes:
-    - "/etc/opensds/:/etc/opensds"
+    - "/etc/soda/:/etc/soda"
 
 - name: run osdsapiserver containerized service
   docker_container:
@@ -35,4 +35,4 @@
     network_mode: host
     restart_policy: always
     volumes:
-    - "/etc/opensds/:/etc/opensds"
+    - "/etc/soda/:/etc/soda"

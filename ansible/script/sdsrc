@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,25 +21,25 @@ if [ "$HOST_IP" == "" ]; then
     die $LINENO "Could not determine host ip address. See local.conf for suggestions on setting HOST_IP."
 fi
 
-# OpenSDS configuration.
-OPENSDS_VERSION=${OPENSDS_VERSION:-v1beta}
+# soda configuration.
+soda_VERSION=${soda_VERSION:-v1beta}
 
 # Multi-cloud 
 MULTICLOUD_VERSION=${MULTICLOUD_VERSION:-v1}
 
-# OpenSDS service name in keystone.
-OPENSDS_SERVER_NAME=${OPENSDS_SERVER_NAME:-opensds}
+# soda service name in keystone.
+soda_SERVER_NAME=${soda_SERVER_NAME:-soda}
 
 # Multi-Cloud service name in keystone
-MULTICLOUD_SERVER_NAME=${MULTICLOUD_SERVER_NAME:-opensds}
+MULTICLOUD_SERVER_NAME=${MULTICLOUD_SERVER_NAME:-soda}
 
 # devstack keystone configuration
 STACK_GIT_BASE=${STACK_GIT_BASE:-https://git.openstack.org}
 STACK_USER_NAME=${STACK_USER_NAME:-stack}
-STACK_PASSWORD=${STACK_PASSWORD:-opensds@123}
+STACK_PASSWORD=${STACK_PASSWORD:-soda@123}
 STACK_HOME=${STACK_HOME:-/opt/stack}
 STACK_BRANCH=${STACK_BRANCH:-stable/queens}
 DEV_STACK_DIR=$STACK_HOME/devstack
 
 GOPATH=${GOPATH:-$HOME/gopath}
-OPENSDS_DIR=${GOPATH}/src/github.com/opensds/opensds
+soda_DIR=${GOPATH}/src/github.com/soda/soda

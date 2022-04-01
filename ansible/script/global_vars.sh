@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #  Global #
 ###########
 
-# The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
+# The IP (127.0.0.1) should be replaced with the soda actual endpoint IP
 host_ip=10.10.3.100
 
 # This field indicates which project should be deploy, including 'hotpot',

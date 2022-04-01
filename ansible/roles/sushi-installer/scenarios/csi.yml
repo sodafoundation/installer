@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,29 +13,29 @@
 # limitations under the License.
 
 ---
-- name: Configure opensds endpoint IP in opensds csi block plugin
+- name: Configure soda endpoint IP in soda csi block plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-opensdsplugin.yaml"
-    regexp: '^  opensdsendpoint'
-    line: '  opensdsendpoint: {{ hotpot_endpoint }}'
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-sodaplugin.yaml"
+    regexp: '^  sodaendpoint'
+    line: '  sodaendpoint: {{ hotpot_endpoint }}'
     backup: yes
 
-- name: Configure opensds auth strategy in opensds csi block plugin
+- name: Configure soda auth strategy in soda csi block plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-opensdsplugin.yaml"
-    regexp: '^  opensdsauthstrategy'
-    line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-sodaplugin.yaml"
+    regexp: '^  sodaauthstrategy'
+    line: '  sodaauthstrategy: {{ soda_auth_strategy }}'
     backup: yes
 
-- name: Configure keystone os auth url in opensds csi block plugin
+- name: Configure keystone os auth url in soda csi block plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-opensdsplugin.yaml"
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/block/csi-configmap-sodaplugin.yaml"
     regexp: '^  osauthurl'
     line: '  osauthurl: {{ keystone_os_auth_url }}'
     backup: yes
-  when: opensds_auth_strategy == "keystone"
+  when: soda_auth_strategy == "keystone"
 
-- name: Prepare and deploy opensds csi block plugin
+- name: Prepare and deploy soda csi block plugin
   shell: |
     . /etc/profile
     kubectl create -f deploy/kubernetes/block
@@ -43,29 +43,29 @@
     chdir: "{{ sushi_work_dir }}/csi"
   ignore_errors: yes
 
-- name: Configure opensds endpoint IP in opensds csi file plugin
+- name: Configure soda endpoint IP in soda csi file plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-opensdsplugin.yaml"
-    regexp: '^  opensdsendpoint'
-    line: '  opensdsendpoint: {{ hotpot_endpoint }}'
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-sodaplugin.yaml"
+    regexp: '^  sodaendpoint'
+    line: '  sodaendpoint: {{ hotpot_endpoint }}'
     backup: yes
 
-- name: Configure opensds auth strategy in opensds csi file plugin
+- name: Configure soda auth strategy in soda csi file plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-opensdsplugin.yaml"
-    regexp: '^  opensdsauthstrategy'
-    line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-sodaplugin.yaml"
+    regexp: '^  sodaauthstrategy'
+    line: '  sodaauthstrategy: {{ soda_auth_strategy }}'
     backup: yes
 
-- name: Configure keystone os auth url in opensds csi file plugin
+- name: Configure keystone os auth url in soda csi file plugin
   lineinfile:
-    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-opensdsplugin.yaml"
+    dest: "{{ sushi_work_dir }}/csi/deploy/kubernetes/file/csi-configmap-sodaplugin.yaml"
     regexp: '^  osauthurl'
     line: '  osauthurl: {{ keystone_os_auth_url }}'
     backup: yes
-  when: opensds_auth_strategy == "keystone"
+  when: soda_auth_strategy == "keystone"
 
-- name: Prepare and deploy opensds csi file plugin
+- name: Prepare and deploy soda csi file plugin
   shell: |
     . /etc/profile
     kubectl create -f deploy/kubernetes/file

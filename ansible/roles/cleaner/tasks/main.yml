@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@
   ignore_errors: yes
   tags: gelato
 
-- name: clean opensds flexvolume plugins binary file if flexvolume specified
+- name: clean soda flexvolume plugins binary file if flexvolume specified
   file:
     path: "{{ flexvolume_plugin_dir }}"
     state: absent
@@ -108,7 +108,7 @@
   when: sushi_plugin_type == "flexvolume"
   tags: sushi
 
-- name: clean opensds external provisioner plugin if flexvolume specified
+- name: clean soda external provisioner plugin if flexvolume specified
   shell: |
     . /etc/profile
     kubectl delete -f deploy/
@@ -118,7 +118,7 @@
   when: sushi_plugin_type == "flexvolume"
   tags: sushi
 
-- name: clean opensds csi plugin if csi plugin specified
+- name: clean soda csi plugin if csi plugin specified
   shell: |
     . /etc/profile
     kubectl delete -f deploy/kubernetes/block
@@ -131,7 +131,7 @@
 
 - name: include scenarios/auth-keystone.yml when keystone specified
   include_tasks: scenarios/auth-keystone.yml
-  when: opensds_auth_strategy == "keystone"
+  when: soda_auth_strategy == "keystone"
   tags: keystone
 
 - name: include scenarios/repository.yml if installed from repository
@@ -167,9 +167,9 @@
     state: absent
     force: yes
   with_items:
-    - "{{ opensds_config_dir }}"
-    - "{{ opensds_log_dir }}"
-    - "{{ opensds_certs_dir }}"
+    - "{{ soda_config_dir }}"
+    - "{{ soda_log_dir }}"
+    - "{{ soda_certs_dir }}"
     - "{{ delfin_config_dir }}"
   ignore_errors: yes
 

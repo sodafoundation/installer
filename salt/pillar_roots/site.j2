@@ -29,7 +29,7 @@
       'timezone': 'America/Denver',
 
       'enabled_backends': 'lvm, cinder, ceph',
-      'lvm_poolname': 'opensds-volumes',
+      'lvm_poolname': 'soda-volumes',
       'ceph_poolname': 'ceph-volumes',
       'cinder_poolname': 'cinder-volumes',
       'dorado_poolname': 'dorado-volumes',
@@ -37,17 +37,17 @@
 
       'gelato_release': 'v0.6.0',
       'gelato_service': 'multi-cloud',
-      'gelato_uri': 'https://github.com/opensds/multi-cloud/releases/download',
+      'gelato_uri': 'https://github.com/soda/multi-cloud/releases/download',
       'gelato_hashsum': '92a26c93a8b56472922d7b771eb41f3689e585e87aaee6466dae5684f14976ea',
 
       'hotpot_release': 'v0.6.0',
-      'hotpot_service': 'opensds',
+      'hotpot_service': 'soda',
       'hotpot_hashsum': '34916233b3f145491efd97108558938dadaa3f699f4508cf946e22f28aac4741',
-      'hotpot_uri': 'https://github.com/opensds/opensds/releases/download',
+      'hotpot_uri': 'https://github.com/soda/soda/releases/download',
 
       'sushi_release': 'v0.6.0',
       'sushi_hashsum': 'b609798db6f31a8a3d2261f88657c162821c0fa296e4e9dbe9a3dafa5e907270',
-      'sushi_uri': 'https://github.com/opensds/nbp/releases/download',
+      'sushi_uri': 'https://github.com/soda/nbp/releases/download',
 
       'cinder_release': '13.0.5',
       'cinder_hashsum': '6da0712d6ef69ee2fbab99a0613900d368d188ccafa2038c08198835cb80f52d',
@@ -69,16 +69,16 @@
       'cinder_version': 'stable/rocky',
 
       'devstack_enabled_services': 'mysql,key',
-      'devstack_password': 'opensds@123',
+      'devstack_password': 'soda@123',
       'project_domain_name': 'Default',
       'project_name': 'service',
       'user_domain_name': 'Default',
 
-      'devstack_path': '/opt/opensds-linux-amd64-devstack',
-      'hotpot_path': '/opt/opensds-linux-amd64',
-      'devstack_path': '/opt/opensds-linux-amd64-devstack',
-      'gelato_path': '/opt/opensds-gelato-linux-amd64',
-      'sushi_path': '/opt/opensds-sushi-linux-amd64',
+      'devstack_path': '/opt/soda-linux-amd64-devstack',
+      'hotpot_path': '/opt/soda-linux-amd64',
+      'devstack_path': '/opt/soda-linux-amd64-devstack',
+      'gelato_path': '/opt/soda-gelato-linux-amd64',
+      'sushi_path': '/opt/soda-sushi-linux-amd64',
       'go_prefix': '/usr/local',
       'go_root': '/usr/local/go',
       'go_path': '/usr/local/golang/packages',

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,11 +64,11 @@ chown stack:stack "$DEV_STACK_LOCAL_CONF"
 }
 
 hotpot_conf() {
-mkdir -p $OPENSDS_CONFIG_DIR
-cat > "$OPENSDS_CONFIG_DIR/opensds.conf" << OPENSDS_GLOBAL_CONFIG_DOC
+mkdir -p $soda_CONFIG_DIR
+cat > "$soda_CONFIG_DIR/soda.conf" << soda_GLOBAL_CONFIG_DOC
 [keystone_authtoken]
 memcached_servers = $HOST_IP:11211
-signing_dir = /var/cache/opensds
+signing_dir = /var/cache/soda
 cafile = /opt/stack/data/ca-bundle.pem
 auth_uri = http://$HOST_IP/identity
 project_domain_name = Default
@@ -79,17 +79,17 @@ password = $STACK_PASSWORD
 enable_encrypted = False
 # Encryption and decryption tool. Default value is aes. The decryption tool can only decrypt the corresponding ciphertext.
 pwd_encrypter = aes
-username = $OPENSDS_SERVER_NAME
+username = $soda_SERVER_NAME
 auth_url = http://$HOST_IP/identity
 auth_type = password
 
-OPENSDS_GLOBAL_CONFIG_DOC
+soda_GLOBAL_CONFIG_DOC
 
-cp "$TOP_DIR/../../conf/policy.json" "$OPENSDS_CONFIG_DIR"
+cp "$TOP_DIR/../../conf/policy.json" "$soda_CONFIG_DIR"
 }
 
 gelato_conf() {
-    local compose_file=/opt/opensds-gelato-linux-amd64/docker-compose.yml
+    local compose_file=/opt/soda-gelato-linux-amd64/docker-compose.yml
     sed -i "s,OS_AUTH_AUTHSTRATEGY=.*$,OS_AUTH_AUTHSTRATEGY=keystone," $compose_file
     sed -i "s,OS_AUTH_URL=.*$,OS_AUTH_URL=http://$HOST_IP/identity," $compose_file
     sed -i "s,OS_USERNAME=.*$,OS_USERNAME=$MULTICLOUD_SERVER_NAME," $compose_file
@@ -131,20 +131,20 @@ wait_for_keystone () {
 
 create_user_and_endpoint_for_hotpot(){
     . "$DEV_STACK_DIR/openrc" admin admin
-    if openstack user show $OPENSDS_SERVER_NAME &>/dev/null; then
+    if openstack user show $soda_SERVER_NAME &>/dev/null; then
         return
     fi
 
-    openstack user create --domain default --password "$STACK_PASSWORD" "$OPENSDS_SERVER_NAME"
-    openstack role add --project service --user "$OPENSDS_SERVER_NAME" admin
+    openstack user create --domain default --password "$STACK_PASSWORD" "$soda_SERVER_NAME"
+    openstack role add --project service --user "$soda_SERVER_NAME" admin
     openstack group create service
-    openstack group add user service "$OPENSDS_SERVER_NAME"
+    openstack group add user service "$soda_SERVER_NAME"
     openstack role add service --project service --group service
     openstack group add user admins admin
-    openstack service create --name "opensds$OPENSDS_VERSION" --description "OpenSDS Block Storage" "opensds$OPENSDS_VERSION"
-    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" public "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
-    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" internal "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
-    openstack endpoint create --region RegionOne "opensds$OPENSDS_VERSION" admin "http://$HOST_IP:50040/$OPENSDS_VERSION/%(tenant_id)s"
+    openstack service create --name "soda$soda_VERSION" --description "soda Block Storage" "soda$soda_VERSION"
+    openstack endpoint create --region RegionOne "soda$soda_VERSION" public "http://$HOST_IP:50040/$soda_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "soda$soda_VERSION" internal "http://$HOST_IP:50040/$soda_VERSION/%(tenant_id)s"
+    openstack endpoint create --region RegionOne "soda$soda_VERSION" admin "http://$HOST_IP:50040/$soda_VERSION/%(tenant_id)s"
 }
 
 create_user_and_endpoint_for_gelato(){
@@ -183,9 +183,9 @@ download_code(){
 install(){
     if [ "docker" == "$1" ]
     then
-        docker pull opensdsio/opensds-authchecker:latest
-        docker run -d --privileged=true --restart=always --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
-        docker cp "$TOP_DIR/../../conf/keystone.policy.json" opensds-authchecker:/etc/keystone/policy.json
+        docker pull sodaio/soda-authchecker:latest
+        docker run -d --privileged=true --restart=always --net=host --name=soda-authchecker sodaio/soda-authchecker:latest
+        docker cp "$TOP_DIR/../../conf/keystone.policy.json" soda-authchecker:/etc/keystone/policy.json
         keystone_credentials
         wait_for_keystone
         python ${TOP_DIR}/ministone.py endpoint_bulk_update keystone "http://${HOST_IP}/identity"
@@ -207,8 +207,8 @@ install(){
 uninstall(){
     if [ "docker" == "$1" ]
     then
-        docker stop opensds-authchecker
-        docker rm opensds-authchecker
+        docker stop soda-authchecker
+        docker rm soda-authchecker
     else
        su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/clean.sh" >/dev/null
        su "$STACK_USER_NAME" -c "${DEV_STACK_DIR}/unstack.sh" >/dev/null
@@ -227,7 +227,7 @@ config_hotpot() {
         create_user_and_endpoint_for_hotpot
     else
         keystone_credentials
-        python ${TOP_DIR}/ministone.py endpoint_bulk_update "opensds$OPENSDS_VERSION" "http://${HOST_IP}:50040/$OPENSDS_VERSION/%(tenant_id)s"
+        python ${TOP_DIR}/ministone.py endpoint_bulk_update "soda$soda_VERSION" "http://${HOST_IP}:50040/$soda_VERSION/%(tenant_id)s"
     fi
 }
 
@@ -244,8 +244,8 @@ config_gelato() {
 # ***************************
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 
-# OpenSDS configuration directory
-OPENSDS_CONFIG_DIR=${OPENSDS_CONFIG_DIR:-/etc/opensds}
+# soda configuration directory
+soda_CONFIG_DIR=${soda_CONFIG_DIR:-/etc/soda}
 # Keystone configuration directory
 KEYSTONE_CONFIG_DIR=${KEYSTONE_CONFIG_DIR:-/etc/keystone}
 if [[ -e $TOP_DIR/local.conf ]];then

@@ -16,7 +16,7 @@
 
 - name: configure soda global info osdsdock ontap nas
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: netapp_ontap_nas
     option: "{{ item.option }}"
     value: "{{ item.value }}"

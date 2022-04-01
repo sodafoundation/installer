@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ dummy:
 # 'hotpot_only' is the default integration way, but you can change it to 'csi'
 # or 'flexvolume'
 sushi_plugin_type: hotpot_only
-# The IP (127.0.0.1) should be replaced with the opensds actual endpoint IP
+# The IP (127.0.0.1) should be replaced with the soda actual endpoint IP
 hotpot_endpoint: "http://{{ host_ip }}:50040"
 
 # These fields are NOT suggested to be modifie
-sushi_work_dir: /opt/opensds-sushi-linux-amd64
+sushi_work_dir: /opt/soda-sushi-linux-amd64
 
-flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opensds.io~opensds
+flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/soda.io~soda
 
 
 ##############
@@ -43,7 +43,7 @@ flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opens
 sushi_repo_branch: "{{ repo_branch }}"
 
 # These fields are NOT suggested to be modified
-sushi_remote_url: https://github.com/opensds/nbp.git
+sushi_remote_url: https://github.com/soda/nbp.git
 
 ###########
 # RELEASE #
@@ -53,5 +53,5 @@ sushi_remote_url: https://github.com/opensds/nbp.git
 sushi_release: "{{ sushi_release_version }}" # The version should be at least v0.2.1
 
 # These fields are NOT suggested to be modified
-sushi_download_url: https://github.com/opensds/nbp/releases/download/{{ sushi_release }}/opensds-sushi-{{ sushi_release }}-linux-amd64.tar.gz
-sushi_tarball_dir: /tmp/opensds-sushi-{{ sushi_release }}-linux-amd64
+sushi_download_url: https://github.com/soda/nbp/releases/download/{{ sushi_release }}/soda-sushi-{{ sushi_release }}-linux-amd64.tar.gz
+sushi_tarball_dir: /tmp/soda-sushi-{{ sushi_release }}-linux-amd64

@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/opensds.sls
+## soda-installer/salt/srv/salt/install/soda.sls
 base:
   '*':
-    - opensds
+    - soda

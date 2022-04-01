@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@
     - thin-provisioning-tools
     - ibverbs-utils
 
-- name: configure opensds global info osdsdock lvm
+- name: configure soda global info osdsdock lvm
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: lvm
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -36,19 +36,19 @@
         - { option: config_path, value: "{{ lvm_config_path }}" }
   become: yes
 
-- name: copy opensds lvm backend file to lvm config path if specify lvm backend
+- name: copy soda lvm backend file to lvm config path if specify lvm backend
   copy:
     src: ../../../group_vars/lvm/lvm.yaml
     dest: "{{ lvm_config_path }}"
 
-- name: update opensds lvm backend file if specify lvm backend
+- name: update soda lvm backend file if specify lvm backend
   replace:
     path: "{{ lvm_config_path }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
     - { regexp: '127.0.0.1', replace: '{{ host_ip }}'}
-    - { regexp: 'opensds-volumes', replace: '{{ opensds_volume_group }}'}
+    - { regexp: 'soda-volumes', replace: '{{ soda_volume_group }}'}
 
 - name: create directory to volume group file
   file:
@@ -85,11 +85,11 @@
           # create volume group and prepare kernel module
           if [[ -e `find /lib/modules/$(uname -r) -type f -name 'nvme-rdma.ko'` ]]; then
               if [[ -e {{ lvm_nvme_device }} ]]; then
-                  local vg={{ opensds_volume_group_nvme }}
-                  local size={{ opensds_volume_group_nvme_size }}
-                  sudo mkdir -p {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
-                  sudo mount {{ lvm_nvme_device }} {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
-                  local backing_file={{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/${vg}.img
+                  local vg={{ soda_volume_group_nvme }}
+                  local size={{ soda_volume_group_nvme_size }}
+                  sudo mkdir -p {{ hotpot_work_dir }}/volumegroups/{{ soda_volume_group_nvme }}
+                  sudo mount {{ lvm_nvme_device }} {{ hotpot_work_dir }}/volumegroups/{{ soda_volume_group_nvme }}
+                  local backing_file={{ hotpot_work_dir }}/volumegroups/{{ soda_volume_group_nvme }}/${vg}.img
                   if ! sudo vgs $vg; then
                       # Only create if the file doesn't already exists
                       [[ -f $backing_file ]] || truncate -s $size $backing_file
@@ -119,7 +119,7 @@
       }
       # we need this kernel module to support creating thin pool logical volumes (lv) later.
       modprobe dm_thin_pool
-      _create_lvm_volume_group {{ opensds_volume_group }} 10G
+      _create_lvm_volume_group {{ soda_volume_group }} 10G
   args:
     executable: /bin/bash
   become: true

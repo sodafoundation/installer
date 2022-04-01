@@ -1,4 +1,4 @@
-# Default values for opensds csi plugin.
+# Default values for soda csi plugin.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -10,11 +10,11 @@ imagePullPolicy: IfNotPresent
 imageRestartPolicy: Never
 # Please modify data fields in real environment
 data:
-  opensdsEndpoint: http://127.0.0.1:50040
-  opensdsAuthStrategy: keystone
+  sodaEndpoint: http://127.0.0.1:50040
+  sodaAuthStrategy: keystone
   osAuthURL: http://127.0.0.1/identity
   osUsername: admin
-  osPassword: opensds@123
+  osPassword: soda@123
   osTenantName: admin
   osProjectName: admin
   osUserDomainId: default
@@ -23,17 +23,17 @@ data:
 
 # csipluginProvisioner spec
 csipluginProvisioner:
-  name: csi-provisioner-opensdsplugin-file
+  name: csi-provisioner-sodaplugin-file
   replicaCount: 1
 # csipluginAttacher spec
 csipluginAttacher:
-  name: csi-attacher-opensdsplugin-file
+  name: csi-attacher-sodaplugin-file
   replicaCount: 1
 # csipluginNodeplugin spec
 csipluginNodeplugin:
-  name: csi-nodeplugin-opensdsplugin-file
+  name: csi-nodeplugin-sodaplugin-file
   replicaCount: 1
 # csipluginSnapshotter spec
 csipluginSnapshotter:
-  name: csi-snapshotter-opensdsplugin-file
+  name: csi-snapshotter-sodaplugin-file
   replicaCount: 1

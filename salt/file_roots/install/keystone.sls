@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/keystone.sls
+## soda-installer/salt/srv/salt/install/keystone.sls
 base:
   '*':
-    - opensds.keystone
+    - soda.keystone

@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,35 +19,35 @@
     state: directory
     mode: 0755
 
-- name: Copy opensds flexvolume plugin binary file into flexvolume plugin dir
+- name: Copy soda flexvolume plugin binary file into flexvolume plugin dir
   copy:
-    src: "{{ sushi_work_dir }}/bin/flexvolume.server.opensds"
-    dest: "{{ flexvolume_plugin_dir }}/opensds"
+    src: "{{ sushi_work_dir }}/bin/flexvolume.server.soda"
+    dest: "{{ flexvolume_plugin_dir }}/soda"
     mode: 0755
 
-- name: Configure opensds endpoint IP in opensds external provisioner plugin
+- name: Configure soda endpoint IP in soda external provisioner plugin
   lineinfile:
     dest: "{{ sushi_work_dir }}/provisioner/deploy/configmap.yaml"
-    regexp: '^  opensdsendpoint'
-    line: '  opensdsendpoint: {{ hotpot_endpoint }}'
+    regexp: '^  sodaendpoint'
+    line: '  sodaendpoint: {{ hotpot_endpoint }}'
     backup: yes
 
-- name: Configure opensds auth strategy in opensds external provisioner plugin
+- name: Configure soda auth strategy in soda external provisioner plugin
   lineinfile:
     dest: "{{ sushi_work_dir }}/provisioner/deploy/configmap.yaml"
-    regexp: '^  opensdsauthstrategy'
-    line: '  opensdsauthstrategy: {{ opensds_auth_strategy }}'
+    regexp: '^  sodaauthstrategy'
+    line: '  sodaauthstrategy: {{ soda_auth_strategy }}'
     backup: yes
 
-- name: Configure keystone os auth url in opensds external provisioner plugin
+- name: Configure keystone os auth url in soda external provisioner plugin
   lineinfile:
     dest: "{{ sushi_work_dir }}/provisioner/deploy/configmap.yaml"
     regexp: '^  osauthurl'
     line: '  osauthurl: {{ keystone_os_auth_url }}'
     backup: yes
-  when: opensds_auth_strategy == "keystone"
+  when: soda_auth_strategy == "keystone"
 
-- name: Prepare and deploy opensds external provisioner plugin
+- name: Prepare and deploy soda external provisioner plugin
   shell: |
     . /etc/profile
     kubectl create -f deploy/

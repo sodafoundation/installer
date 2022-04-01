@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -166,11 +166,11 @@
   with_items:
     - notario
 #
-# configure opensds.conf ceph section
+# configure soda.conf ceph section
 #
-- name: configure opensds global info osdsdock ceph
+- name: configure soda global info osdsdock ceph
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: ceph
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -182,7 +182,7 @@
   become: yes
   ignore_errors: yes
 
-- name: copy opensds ceph backend file to ceph config file if specify ceph backend
+- name: copy soda ceph backend file to ceph config file if specify ceph backend
   copy:
     src: ../../../group_vars/ceph/ceph.yaml
     dest: "{{ ceph_config_path }}"
@@ -207,7 +207,7 @@
 # 3. ceph installed, and configured properly
 # 3-a. HEALTH_OK, and cluster member status is healthy
 #  -> do version check,
-#     3-a-1 if version OK, just configure opensds ceph backend
+#     3-a-1 if version OK, just configure soda ceph backend
 #     3-a-2 if version NG, abort
 
 # case: 3-a-2

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import sys
 import time
 
 
-def get_opensds_token(ip):
+def get_soda_token(ip):
     url = "http://" + ip + "/identity/v3/auth/tokens"
     headers = {
         'content-type': 'application/json'
@@ -34,7 +34,7 @@ def get_opensds_token(ip):
                     "user": {
                         "name": "admin",
                         "domain": {"id": "default"},
-                        "password": "opensds@123"
+                        "password": "soda@123"
                     }
                 }
             },
@@ -51,8 +51,8 @@ def get_opensds_token(ip):
     resp = requests.post(
         url=url, data=json.dumps(data), headers=headers, verify=False)
     if resp.status_code != 201:
-        print("Request for OpenSDS Token failed ", resp.status_code)
-        raise Exception('Request for OpenSDS Token failed')
+        print("Request for soda Token failed ", resp.status_code)
+        raise Exception('Request for soda Token failed')
 
     return resp.headers['X-Subject-Token']
 
@@ -111,11 +111,11 @@ def add_services(ip, port, pid, uid):
         "group": "provisioning",
         "workflows": [
             {
-                "definition_source": "opensds.provision-volume",
+                "definition_source": "soda.provision-volume",
                 "wfe_type": "st2"
             },
             {
-                "definition_source": "opensds.snapshot-volume",
+                "definition_source": "soda.snapshot-volume",
                 "wfe_type": "st2"
             }
 
@@ -132,7 +132,7 @@ def add_services(ip, port, pid, uid):
         "group": "migration",
         "workflows": [
             {
-                "definition_source": "opensds.migration-bucket",
+                "definition_source": "soda.migration-bucket",
                 "wfe_type": "st2"
             }
         ]
@@ -160,14 +160,14 @@ if __name__ == '__main__':
     # Start
     # Args : ip, orc_ip, orc_port
     if len(sys.argv) != 4:
-        print("Usage: CMD <opensds_ip> <orchestration_ip> <orchestration_port>")
+        print("Usage: CMD <soda_ip> <orchestration_ip> <orchestration_port>")
         raise Exception("Invalid argument")
         
     ip = sys.argv[1]
     orc_ip = sys.argv[2]
     orc_port = sys.argv[3]
 
-    token = get_opensds_token(ip)
+    token = get_soda_token(ip)
     pid = get_project_id(ip, token)
     uid = get_user_id(ip, token)
 

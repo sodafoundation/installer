@@ -6,7 +6,7 @@
 
 **Closed issues:**
 
-- Dashboard installation fails when opensds\_auth\_strategy is set to noauth [\#419](https://github.com/sodafoundation/installer/issues/419)
+- Dashboard installation fails when soda\_auth\_strategy is set to noauth [\#419](https://github.com/sodafoundation/installer/issues/419)
 - Uninstalll of SODA fails because it cannot find srm-toolchain installation [\#417](https://github.com/sodafoundation/installer/issues/417)
 - Installation fails at Delfin installer with error "Could not get output from /usr/local/bin/virtualenv --help: AttributeError: module 'os' has no attribute 'PathLike'\n" [\#405](https://github.com/sodafoundation/installer/issues/405)
 

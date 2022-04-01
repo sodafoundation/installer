@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/installer/tzdns.sls
+## soda-installer/salt/srv/salt/installer/tzdns.sls
 base:
   '*':
     - timezone

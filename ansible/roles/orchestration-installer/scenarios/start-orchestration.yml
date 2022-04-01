@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-# Start OpenSDS Workflow Manager
+# Start soda Workflow Manager
 - name: Get stackstorm password
   shell: cat conf/stackstorm.env | grep ST2_PASSWORD | cut -d '=' -f 2
   args:

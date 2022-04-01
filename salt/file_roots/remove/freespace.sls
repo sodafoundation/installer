@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/remove/freespace.sls
+## soda-installer/salt/srv/salt/remove/freespace.sls
 base:
   '*':
-    - opensds.freespace
+    - soda.freespace

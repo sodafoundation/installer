@@ -34,10 +34,10 @@ spec:
             - --port
             - "8080"
           env:
-            - name: OPENSDS_ENDPOINT
-              value: {{ .Values.opensdsEndpoint }}
-            - name: OPENSDS_AUTH_STRATEGY
-              value: {{ .Values.opensdsAuthStrategy }}
+            - name: soda_ENDPOINT
+              value: {{ .Values.sodaEndpoint }}
+            - name: soda_AUTH_STRATEGY
+              value: {{ .Values.sodaAuthStrategy }}
             - name: OS_AUTH_URL
               value: {{ .Values.osAuthURL }}
             - name: OS_USERNAME

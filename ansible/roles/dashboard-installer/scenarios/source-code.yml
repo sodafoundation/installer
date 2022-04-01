@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,20 +13,20 @@
 # limitations under the License.
 
 ---
-- name: check for opensds-dashboard source code existed
+- name: check for soda-dashboard source code existed
   stat:
     path: "{{ dashboard_work_dir }}"
-  register: opensdsexisted
+  register: sodaexisted
 
-- name: download opensds-dashboard source code if not exists
+- name: download soda-dashboard source code if not exists
   git:
     repo: "{{ dashboard_remote_url }}"
     dest: "{{ dashboard_work_dir }}"
     version: "{{ dashboard_repo_branch }}"
   when:
-    - opensdsexisted.stat.exists is undefined or opensdsexisted.stat.exists == false
+    - sodaexisted.stat.exists is undefined or sodaexisted.stat.exists == false
 
-- name: build and configure opensds dashboard
+- name: build and configure soda dashboard
   shell: "{{ item }}"
   with_items:
     - service apache2 stop

@@ -537,7 +537,7 @@ cli-options() {
 }
 
 #########################################################################
-# SOLUTION: Copyright 2019 The OpenSDS Authors
+# SOLUTION: Copyright 2019 The soda Authors
 #########################################################################
 
 developer-definitions() {
@@ -550,12 +550,12 @@ developer-definitions() {
 solution-definitions() {
     solution['saltmaster']=""
     solution['uri']="https://github.com"
-    solution['entity']="opensds"
-    solution['repo']="opensds-installer"
-    solution['alias']="opensds"
+    solution['entity']="soda"
+    solution['repo']="soda-installer"
+    solution['alias']="soda"
     solution['subdir']="salt"
     solution['provider']="saltstack-formulas"
-    solution['profiles']="opensds|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry|deepsea"
+    solution['profiles']="soda|gelato|auth|hotpot|backend|dashboard|database|dock|keystone|config|infra|sushi|freespace|telemetry|deepsea"
 
     ### derivatives
     solution['homedir']="${SALTFS}/namespaces/${solution[entity]}/${solution[repo]}/${solution[subdir]}"
@@ -588,7 +588,7 @@ custom-install() {
     highstate install ${solution[saltdir]} dashboard
     highstate install ${solution[saltdir]} gelato
     highstate install ${solution[saltdir]} freespace
-    cp ${SALTFS}/namespaces/${solution['entity']}/${solution[repo]}/conf/*.json /etc/opensds/ 2>/dev/null
+    cp ${SALTFS}/namespaces/${solution['entity']}/${solution[repo]}/conf/*.json /etc/soda/ 2>/dev/null
 }
 
 custom-postinstall() {

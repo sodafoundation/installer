@@ -1,4 +1,4 @@
-# Default values for opensds.
+# Default values for soda.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -156,7 +156,7 @@ osdsdb:
 osdsauthchecker:
   name: authchecker
   replicaCount: 1
-  image: opensdsio/opensds-authchecker:latest
+  image: sodaio/soda-authchecker:latest
   # ImagePullPolicy: valid values are "IfNotPresent", "Never", and "Always"
   imagePullPolicy: IfNotPresent
   # Attributes of the authchecker's service resource

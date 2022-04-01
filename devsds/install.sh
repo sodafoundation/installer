@@ -77,7 +77,7 @@ echo "TOP DIR ${TOP_DIR}"
 SODA_DIR=$(cd $TOP_DIR/ && pwd)
 
 # SODA configuration directory
-SODA_CONFIG_DIR=${SODA_CONFIG_DIR:-/etc/opensds}
+SODA_CONFIG_DIR=${SODA_CONFIG_DIR:-/etc/soda}
 SODA_DRIVER_CONFIG_DIR=${SODA_CONFIG_DIR}/driver
 
 # Export openssl config file as environment variable
@@ -150,7 +150,7 @@ source $TOP_DIR/sdsrc
 soda::backendlist_check $SODA_BACKEND_LIST
 
 # clean up soda.conf
-:> $SODA_CONFIG_DIR/opensds.conf
+:> $SODA_CONFIG_DIR/soda.conf
 
 # Install service which is enabled.
 soda::util::service_operation install
@@ -172,14 +172,14 @@ fi
 echo
 echo "Execute commands below to set up ENVs which are needed by SODA CLI:"
 echo "------------------------------------------------------------------"
-echo "export OPENSDS_AUTH_STRATEGY=$SODA_AUTH_STRATEGY"
-echo "export OPENSDS_ENDPOINT=http://localhost:50040"
+echo "export soda_AUTH_STRATEGY=$SODA_AUTH_STRATEGY"
+echo "export soda_ENDPOINT=http://localhost:50040"
 if soda::util::is_service_enabled keystone; then
     if [ "true" == $USE_CONTAINER_KEYSTONE ]
         then
             echo "export OS_AUTH_URL=http://$KEYSTONE_IP/identity"
             echo "export OS_USERNAME=admin"
-            echo "export OS_PASSWORD=opensds@123"
+            echo "export OS_PASSWORD=soda@123"
             echo "export OS_TENANT_NAME=admin"
             echo "export OS_PROJECT_NAME=admin"
             echo "export OS_USER_DOMAIN_ID=default"

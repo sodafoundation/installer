@@ -66,11 +66,11 @@ DEV_STACK_LOCAL_CONF_DOCK
 chown stack:stack $DEV_STACK_LOCAL_CONF
 }
 
-soda::keystone::opensds_conf() {
-cat >> $SODA_CONFIG_DIR/opensds.conf << SODA_GLOBAL_CONFIG_DOC
+soda::keystone::soda_conf() {
+cat >> $SODA_CONFIG_DIR/soda.conf << SODA_GLOBAL_CONFIG_DOC
 [keystone_authtoken]
 memcached_servers = $KEYSTONE_IP:11211
-signing_dir = /var/cache/opensds
+signing_dir = /var/cache/soda
 cafile = /opt/stack/data/ca-bundle.pem
 auth_uri = http://$KEYSTONE_IP/identity
 project_domain_name = Default
@@ -93,22 +93,22 @@ cp $SODA_DIR/examples/policy.json $SODA_CONFIG_DIR
 soda::keystone::create_user_and_endpoint(){
     . $DEV_STACK_DIR/openrc admin admin
     openstack user create --domain default --password $STACK_PASSWORD $SODA_SERVER_NAME
-    openstack role add --project service --user opensds admin
+    openstack role add --project service --user soda admin
     openstack group create service
-    openstack group add user service opensds
+    openstack group add user service soda
     openstack role add service --project service --group service
     openstack group add user admins admin
-    openstack service create --name opensds$SODA_VERSION --description "OpenSDS Block Storage" opensds$SODA_VERSION
-    openstack endpoint create --region RegionOne opensds$SODA_VERSION public http://$HOST_IP:50040/$SODA_VERSION/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne opensds$SODA_VERSION internal http://$HOST_IP:50040/$SODA_VERSION/%\(tenant_id\)s
-    openstack endpoint create --region RegionOne opensds$SODA_VERSION admin http://$HOST_IP:50040/$SODA_VERSION/%\(tenant_id\)s
+    openstack service create --name soda$SODA_VERSION --description "soda Block Storage" soda$SODA_VERSION
+    openstack endpoint create --region RegionOne soda$SODA_VERSION public http://$HOST_IP:50040/$SODA_VERSION/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne soda$SODA_VERSION internal http://$HOST_IP:50040/$SODA_VERSION/%\(tenant_id\)s
+    openstack endpoint create --region RegionOne soda$SODA_VERSION admin http://$HOST_IP:50040/$SODA_VERSION/%\(tenant_id\)s
 }
 
 soda::keystone::delete_user(){
     . $DEV_STACK_DIR/openrc admin admin
-    openstack service delete opensds$SODA_VERSION
+    openstack service delete soda$SODA_VERSION
     openstack role remove service --project service --group service
-    openstack group remove user service opensds
+    openstack group remove user service soda
     openstack group delete service    
     openstack user delete $SODA_SERVER_NAME --domain default
 }
@@ -134,17 +134,17 @@ soda::keystone::install(){
     if [ "true" == $USE_CONTAINER_KEYSTONE ] 
     then
         KEYSTONE_IP=$HOST_IP
-        docker pull opensdsio/opensds-authchecker:latest
-        docker run -d --privileged=true --net=host --name=opensds-authchecker opensdsio/opensds-authchecker:latest
-        soda::keystone::opensds_conf
-        docker cp $TOP_DIR/lib/keystone.policy.json opensds-authchecker:/etc/keystone/policy.json
+        docker pull sodaio/soda-authchecker:latest
+        docker run -d --privileged=true --net=host --name=soda-authchecker sodaio/soda-authchecker:latest
+        soda::keystone::soda_conf
+        docker cp $TOP_DIR/lib/keystone.policy.json soda-authchecker:/etc/keystone/policy.json
     else
         if [ "true" != $USE_EXISTING_KEYSTONE ] 
         then
             KEYSTONE_IP=$HOST_IP
             soda::keystone::create_user
             soda::keystone::download_code
-            soda::keystone::opensds_conf
+            soda::keystone::soda_conf
 
             # If keystone is ready to start, there is no need continue next step.
             if soda::util::wait_for_url http://$HOST_IP/identity "keystone" 0.25 4; then
@@ -155,10 +155,10 @@ soda::keystone::install(){
             su $STACK_USER_NAME -c ${DEV_STACK_DIR}/stack.sh
             soda::keystone::create_user_and_endpoint
             soda::keystone::delete_redundancy_data
-            # add opensds customize policy.json for keystone
+            # add soda customize policy.json for keystone
             cp $TOP_DIR/lib/keystone.policy.json /etc/keystone/policy.json
         else
-            soda::keystone::opensds_conf
+            soda::keystone::soda_conf
             cd ${DEV_STACK_DIR}
             soda::keystone::create_user_and_endpoint
         fi    
@@ -172,8 +172,8 @@ soda::keystone::cleanup() {
 soda::keystone::uninstall(){
     if [ "true" == $USE_CONTAINER_KEYSTONE ] 
     then
-        docker stop opensds-authchecker
-        docker rm opensds-authchecker
+        docker stop soda-authchecker
+        docker rm soda-authchecker
     else
         if [ "true" != $USE_EXISTING_KEYSTONE ] 
         then

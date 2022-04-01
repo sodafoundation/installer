@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,14 +46,14 @@
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh config gelato script
-  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  when: soda_auth_strategy == "keystone" and install_keystone_with_docker != true
   become: yes
 
 - name: gelato keystone configuration when keystone is installed by docker
   shell: "{{ item }}"
   with_items:
     - bash ./script/keystone.sh config gelato docker
-  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
+  when: soda_auth_strategy == "keystone" and install_keystone_with_docker == true
   become: yes
 
 - name: set auth variables for docker-compose configuration
@@ -62,7 +62,7 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-    - { regexp: 'OS_AUTH_AUTHSTRATEGY=.*$', replace: 'OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }}'}
+    - { regexp: 'OS_AUTH_AUTHSTRATEGY=.*$', replace: 'OS_AUTH_AUTHSTRATEGY={{ soda_auth_strategy }}'}
 
 - name: set image tags for docker-compose configuration
   replace:

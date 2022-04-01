@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
 # limitations under the License.
 
 ---
-# Install and start OpenSDS Workflow Manager
-- name: Check for opensds-orchestration source code existed
+# Install and start soda Workflow Manager
+- name: Check for soda-orchestration source code existed
   stat:
     path: "{{ orchestration_work_dir }}"
   register: orchestrationexisted
 
-- name: Download opensds-orchestration source code if not exists
+- name: Download soda-orchestration source code if not exists
   git:
     repo: "{{ orchestration_remote_url }}"
     dest: "{{ orchestration_work_dir }}"

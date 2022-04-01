@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/sushi.sls
+## soda-installer/salt/srv/salt/sushi.sls
 base:
   '*':
-    - opensds.sushi.clean
+    - soda.sushi.clean

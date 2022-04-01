@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ dummy:
 ###########
 
 # These fields are NOT suggested to be modifie
-gelato_work_dir: /opt/opensds-gelato-linux-amd64
+gelato_work_dir: /opt/soda-gelato-linux-amd64
 
 # The installation type of gelato is container, both REPOSITORY and RELEASE will
 # use gelato image to deploy.

@@ -18,7 +18,7 @@
 _XTRACE_CEPH=$(set +o | grep xtrace)
 set +o xtrace
 
-COMPONENT=("opensds" "nbp")
+COMPONENT=("soda" "nbp")
 SODA_CERT_DIR="/opt/soda-security"
 ROOT_CERT_DIR=${ROOT_CERT_DIR:-"${SODA_CERT_DIR}"/ca}
 

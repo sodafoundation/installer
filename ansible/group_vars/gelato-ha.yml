@@ -37,7 +37,7 @@ gelato_ha_s3_ip: 0.0.0.0
 gelato_ha_s3_port: 30090
 
 # These fields are NOT suggested to be modifie
-gelato_work_dir: /opt/opensds-gelato-linux-amd64
+gelato_work_dir: /opt/soda-gelato-linux-amd64
 
 # The installation type of gelato-ha is container, both REPOSITORY and RELEASE will
 # use gelato image to deploy.

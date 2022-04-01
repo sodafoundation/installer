@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ controller_endpoint: "{{ host_ip }}:50049"
 
 
 # These fields are NOT suggested to be modified
-hotpot_work_dir: /opt/opensds-hotpot-linux-amd64
-opensds_config_dir: /etc/opensds
-opensds_driver_config_dir: "{{ opensds_config_dir }}/driver"
-opensds_log_dir: /var/log/opensds
-apiserver_log_file: "{{ opensds_log_dir }}/osdsapiserver.log"
-controller_log_file: "{{ opensds_log_dir }}/osdslet.log"
-dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
+hotpot_work_dir: /opt/soda-hotpot-linux-amd64
+soda_config_dir: /etc/soda
+soda_driver_config_dir: "{{ soda_config_dir }}/driver"
+soda_log_dir: /var/log/soda
+apiserver_log_file: "{{ soda_log_dir }}/osdsapiserver.log"
+controller_log_file: "{{ soda_log_dir }}/osdslet.log"
+dock_log_file: "{{ soda_log_dir }}/osdsdock.log"
 
 
 ##############

@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,17 +71,17 @@
           fi
       }
 
-      clean_lvm_volume_group {{opensds_volume_group}}
+      clean_lvm_volume_group {{soda_volume_group}}
 
-      if [[ `sudo vgs --noheadings -o vg_name {{ opensds_volume_group_nvme }} 2>/dev/null | grep {{ opensds_volume_group_nvme }}` ]]; then
+      if [[ `sudo vgs --noheadings -o vg_name {{ soda_volume_group_nvme }} 2>/dev/null | grep {{ soda_volume_group_nvme }}` ]]; then
         # delete nvme volume group and prepare kernel module
-        _clean_lvm_volume_group {{ opensds_volume_group_nvme }}
-        _remove_lvm_volume_group {{ opensds_volume_group_nvme }}
-        if [[ -z "$(sudo lvs --noheadings -o lv_name {{ opensds_volume_group_nvme }} 2>/dev/null)" ]]; then
-            _clean_lvm_backing_file {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/{{ opensds_volume_group_nvme }}.img
+        _clean_lvm_volume_group {{ soda_volume_group_nvme }}
+        _remove_lvm_volume_group {{ soda_volume_group_nvme }}
+        if [[ -z "$(sudo lvs --noheadings -o lv_name {{ soda_volume_group_nvme }} 2>/dev/null)" ]]; then
+            _clean_lvm_backing_file {{ hotpot_work_dir }}/volumegroups/{{ soda_volume_group_nvme }}/{{ soda_volume_group_nvme }}.img
         fi
-        sudo umount {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}
-        sudo rmdir {{ hotpot_work_dir }}/volumegroups/{{ opensds_volume_group_nvme }}/
+        sudo umount {{ hotpot_work_dir }}/volumegroups/{{ soda_volume_group_nvme }}
+        sudo rmdir {{ hotpot_work_dir }}/volumegroups/{{ soda_volume_group_nvme }}/
       fi
 
   args:
@@ -223,7 +223,7 @@
           fi
       }
 
-      clean_lvm_volume_group {{opensds_nfs_group}}
+      clean_lvm_volume_group {{soda_nfs_group}}
 
   args:
     executable: /bin/bash

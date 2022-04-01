@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/remove/infra.sls
+## soda-installer/salt/srv/salt/remove/infra.sls
 base:
   '*':
-    - opensds.infra.clean
+    - soda.infra.clean

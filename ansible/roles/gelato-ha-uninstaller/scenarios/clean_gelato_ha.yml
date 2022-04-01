@@ -87,8 +87,8 @@
   pause: seconds=2
 
 
-# ---------delete the multi-cloud folder in /opt/opensds-gelato ---------
-- name: Clean artifact path ub /opt/opensds-gelato...
+# ---------delete the multi-cloud folder in /opt/soda-gelato ---------
+- name: Clean artifact path ub /opt/soda-gelato...
   file:
     state: absent
     path: "{{ gelato_work_dir }}/multi-cloud/"

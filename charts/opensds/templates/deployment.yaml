@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The OpenSDS Authors.
+# Copyright (c) 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ spec:
         ports:
         - containerPort: 50040
         volumeMounts:
-        - name: opensds-conf-dir
-          mountPath: /etc/opensds
+        - name: soda-conf-dir
+          mountPath: /etc/soda
       volumes:
-      - name: opensds-conf-dir
+      - name: soda-conf-dir
         hostPath:
-          path: /etc/opensds
+          path: /etc/soda
           type: Directory
 ---
 ##########################################################################
@@ -88,12 +88,12 @@ spec:
         ports:
         - containerPort: 50049
         volumeMounts:
-        - name: opensds-conf-dir
-          mountPath: /etc/opensds
+        - name: soda-conf-dir
+          mountPath: /etc/soda
       volumes:
-      - name: opensds-conf-dir
+      - name: soda-conf-dir
         hostPath:
-          path: /etc/opensds
+          path: /etc/soda
           type: Directory
 ---
 ##########################################################################
@@ -135,8 +135,8 @@ spec:
         ports:
         - containerPort: 50050
         volumeMounts:
-        - name: opensds-conf-dir
-          mountPath: /etc/opensds
+        - name: soda-conf-dir
+          mountPath: /etc/soda
         - name: ceph-conf-dir
           mountPath: /etc/ceph
         - name: tgt-conf-dir
@@ -155,9 +155,9 @@ spec:
           mountPath: /lib/modules
           readOnly: true
       volumes:
-      - name: opensds-conf-dir
+      - name: soda-conf-dir
         hostPath:
-          path: /etc/opensds
+          path: /etc/soda
           type: Directory
       - name: ceph-conf-dir
         hostPath:
@@ -264,13 +264,13 @@ spec:
         image: {{ .Values.osdsdashboard.image }}
         imagePullPolicy: {{ .Values.osdsdashboard.imagePullPolicy }}
         env:
-        - name: OPENSDS_AUTH_URL
+        - name: soda_AUTH_URL
           value: http://{{ .Values.osdsauthchecker.name }}.{{ .Release.Namespace }}.svc.cluster.local/identity
-        - name: OPENSDS_HOTPOT_URL
+        - name: soda_HOTPOT_URL
           value: http://{{ .Values.osdsapiserver.name }}.{{ .Release.Namespace }}.svc.cluster.local:50040
-        - name: OPENSDS_GELATO_URL
+        - name: soda_GELATO_URL
           value: http://127.0.0.1:8089
-        - name: OPENSDS_ORCHESTRATION_URL
+        - name: soda_ORCHESTRATION_URL
           value: http://127.0.0.1:5000
         ports:
         - containerPort: 8088

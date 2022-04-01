@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
 # limitations under the License.
 
 ---
-- name: configure cinder section in opensds global info if specify cinder backend
+- name: configure cinder section in soda global info if specify cinder backend
   shell: |
-    cat >> opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+    cat >> soda.conf <<soda_GLOABL_CONFIG_DOC
 
     [cinder]
     name = {{ cinder_name }}
@@ -23,10 +23,10 @@
     driver_name = {{ cinder_driver_name }}
     config_path = {{ cinder_config_path }}
   args:
-    chdir: "{{ opensds_config_dir }}"
+    chdir: "{{ soda_config_dir }}"
   ignore_errors: yes
 
-- name: copy opensds cinder backend file to cinder config path if specify cinder backend
+- name: copy soda cinder backend file to cinder config path if specify cinder backend
   copy:
     src: ../../../group_vars/cinder/cinder.yaml
     dest: "{{ cinder_config_path }}"

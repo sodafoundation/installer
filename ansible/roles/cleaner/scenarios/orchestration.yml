@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-- name: uninstall opensds orchestration manager
+- name: uninstall soda orchestration manager
   shell: "{{ item }}"
   with_items:
     - kill -9 `lsof -i :5000 |  grep 5000 | awk '{print $2}'`

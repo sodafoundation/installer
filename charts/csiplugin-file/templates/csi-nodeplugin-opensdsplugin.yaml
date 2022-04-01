@@ -1,5 +1,5 @@
 # This YAML file contains driver-registrar & csi driver nodeplugin API objects,
-# which are necessary to run csi nodeplugin for opensds.
+# which are necessary to run csi nodeplugin for soda.
 
 kind: DaemonSet
 apiVersion: apps/v1
@@ -38,7 +38,7 @@ spec:
             - "--kubelet-registration-path=$(ADDRESS)"
           env:
             - name: ADDRESS
-              value: /var/lib/kubelet/plugins/csi-opensdsplugin-file/csi.sock
+              value: /var/lib/kubelet/plugins/csi-sodaplugin-file/csi.sock
             - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:
@@ -58,76 +58,76 @@ spec:
           image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
-            - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
-            - "--opensdsAuthStrategy=$(OPENSDS_AUTH_STRATEGY)"
+            - "--sodaEndpoint=$(soda_ENDPOINT)"
+            - "--sodaAuthStrategy=$(soda_AUTH_STRATEGY)"
             - "--v=8"
           env:
             - name: CSI_ENDPOINT
-              value: unix://var/lib/kubelet/plugins/csi-opensdsplugin-file/csi.sock
-            - name: OPENSDS_ENDPOINT
+              value: unix://var/lib/kubelet/plugins/csi-sodaplugin-file/csi.sock
+            - name: soda_ENDPOINT
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
-                  key: opensdsendpoint
-            - name: OPENSDS_AUTH_STRATEGY
+                  name: csi-configmap-sodaplugin-file
+                  key: sodaendpoint
+            - name: soda_AUTH_STRATEGY
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
-                  key: opensdsauthstrategy
+                  name: csi-configmap-sodaplugin-file
+                  key: sodaauthstrategy
             - name: OS_AUTH_URL
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osauthurl
             - name: OS_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osusername
             - name: OS_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: ospassword
             - name: PASSWORD_ENCRYPTER
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: passwordencrypter
             - name: ENABLE_ENCRYPTED
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: enableEncrypted
             - name: OS_TENANT_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: ostenantname
             - name: PASSWORD_ENCRYPTER
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: passwordencrypter
             - name: ENABLE_ENCRYPTED
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: enableEncrypted
             - name: OS_PROJECT_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osprojectname
             - name: OS_USER_DOMAIN_ID
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osuserdomainid
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
             - name: socket-dir
-              mountPath: /var/lib/kubelet/plugins/csi-opensdsplugin-file
+              mountPath: /var/lib/kubelet/plugins/csi-sodaplugin-file
             - name: pods-mount-dir
               mountPath: /var/lib/kubelet/pods
               mountPropagation: "Bidirectional"
@@ -142,13 +142,13 @@ spec:
             - name: ceph-dir
               mountPath: /etc/ceph/
             - name: certificate-path
-              mountPath: /opt/opensds-security
+              mountPath: /opt/soda-security
             - name: hosts
               mountPath: /etc
       volumes:
         - name: socket-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/csi-opensdsplugin-file
+            path: /var/lib/kubelet/plugins/csi-sodaplugin-file
             type: DirectoryOrCreate
         - name: volume-devices-dir
           hostPath:
@@ -176,7 +176,7 @@ spec:
             type: DirectoryOrCreate
         - name: certificate-path
           hostPath:
-            path: /opt/opensds-security
+            path: /opt/soda-security
             type: DirectoryOrCreate
         - name: hosts
           hostPath:

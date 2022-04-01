@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/gelato.sls
+## soda-installer/salt/srv/salt/install/gelato.sls
 base:
   '*':
-    - opensds.gelato
+    - soda.gelato

@@ -23,14 +23,14 @@ if [ "$HOST_IP" == "" ]; then
     soda::util::die $LINENO "Could not determine host ip address.  See local.conf for suggestions on setting HOST_IP."
 fi
 
-# OpenSDS configuration.
+# soda configuration.
 SODA_VERSION=${SODA_VERSION:-v1beta}
 
 #openstack authentication strategy, support 'noauth', 'keystone'.
 SODA_AUTH_STRATEGY=${SODA_AUTH_STRATEGY:-noauth}
 
-# OpenSDS service name in keystone.
-SODA_SERVER_NAME=${SODA_SERVER_NAME:-opensds}
+# soda service name in keystone.
+SODA_SERVER_NAME=${SODA_SERVER_NAME:-soda}
 
 # SODA backend list.
 SODA_BACKEND_LIST=${SODA_BACKEND_LIST:-lvm}
@@ -41,7 +41,7 @@ SODA_PROJECT=${SODA_PROJECT:-all}
 # devstack keystone configuration
 STACK_GIT_BASE=${STACK_GIT_BASE:-https://git.openstack.org}
 STACK_USER_NAME=${STACK_USER_NAME:-stack}
-STACK_PASSWORD=${STACK_PASSWORD:-opensds@123}
+STACK_PASSWORD=${STACK_PASSWORD:-soda@123}
 STACK_HOME=${STACK_HOME:-/opt/stack}
 STACK_BRANCH=${STACK_BRANCH:-stable/queens}
 DEV_STACK_DIR=$STACK_HOME/devstack
@@ -55,9 +55,9 @@ ETCD_DIR=${OPT_DIR}/etcd
 ETCD_LOGFILE=${ETCD_DIR}/etcd.log
 ETCD_DATADIR=${ETCD_DIR}/data
 
-SODA_ENABLED_SERVICES=opensds,etcd,certificate
+SODA_ENABLED_SERVICES=soda,etcd,certificate
 if [ $SODA_AUTH_STRATEGY = keystone ];then
     SODA_ENABLED_SERVICES+=,keystone
 fi
 SODA_ENABLED_SERVICES+=,$SODA_BACKEND_LIST
-SUPPORT_SERVICES=certificate,keystone,lvm,ceph,etcd,opensds
+SUPPORT_SERVICES=certificate,keystone,lvm,ceph,etcd,soda

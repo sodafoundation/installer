@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ dummy:
 # GENERAL #
 ###########
 
-# OpenSDS authentication strategy, support 'noauth' and 'keystone'.
-opensds_auth_strategy: keystone
+# soda authentication strategy, support 'noauth' and 'keystone'.
+soda_auth_strategy: keystone
 
 # Install keystone with docker
 install_keystone_with_docker: true
@@ -35,4 +35,4 @@ keystone_os_auth_url: "http://{{ host_ip }}/identity"
 keystone_uninstall_purge: false
 
 # Certs dir
-opensds_certs_dir: "/opt/opensds-security/"
+soda_certs_dir: "/opt/soda-security/"

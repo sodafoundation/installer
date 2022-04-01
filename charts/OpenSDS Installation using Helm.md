@@ -1,4 +1,4 @@
-# OpenSDS Installation using Helm # 
+# soda Installation using Helm # 
 
 ## Prerequisite ##
 
@@ -101,12 +101,12 @@ cd $HOME && git clone -b stable-3.0 https://github.com/ceph/ceph-ansible.git
 * Install Ansible and Ceph
 ```
 # Download ansible tool
-cd $HOME && git clone https://github.com/opensds/opensds-installer.git
-cd opensds-installer/ansible
+cd $HOME && git clone https://github.com/soda/soda-installer.git
+cd soda-installer/ansible
 chmod +x ./install_ansible.sh && ./install_ansible.sh
 
 # Install Ceph using ansible tool
-cd $HOME && cp opensds-installer/ansible/group_vars/ceph/ceph.hosts ceph-ansible/
+cd $HOME && cp soda-installer/ansible/group_vars/ceph/ceph.hosts ceph-ansible/
 ansible-playbook ceph-ansible/site.yml -i ceph-ansible/ceph.hosts
 
 # Create pools if not available
@@ -115,19 +115,19 @@ grep -q "^rbd default features" /etc/ceph/ceph.conf || sed -i '/\[global\]/arbd 
 ceph osd pool create rbd 100 && ceph osd pool set rbd size 1 
 ```
 
-### OpenSDS helm chart installation
+### soda helm chart installation
 #### Configuration
 Firstly, you need to configure some global files with command below:
 ```
 export BackendType="lvm" # 'lvm' is the default option, currently also support 'ceph'
 
-mkdir -p /etc/opensds && sudo cat > /etc/opensds/opensds.conf <<OPENSDS_GLOABL_CONFIG_DOC
+mkdir -p /etc/soda && sudo cat > /etc/soda/soda.conf <<soda_GLOABL_CONFIG_DOC
 [osdsapiserver]
 api_endpoint = 0.0.0.0:50040
 auth_strategy = keystone
 # If https is enabled, the default value of cert file
-# is /opt/opensds-security/opensds/opensds-cert.pem,
-# and key file is /opt/opensds-security/opensds/opensds-key.pem
+# is /opt/soda-security/soda/soda-cert.pem,
+# and key file is /opt/soda-security/soda/soda-key.pem
 https_enabled = False
 beego_https_cert_file =
 beego_https_key_file =
@@ -135,27 +135,27 @@ beego_https_key_file =
 password_decrypt_tool = aes
 
 [keystone_authtoken]
-memcached_servers = authchecker.opensds.svc.cluster.local:11211
-signing_dir = /var/cache/opensds
+memcached_servers = authchecker.soda.svc.cluster.local:11211
+signing_dir = /var/cache/soda
 cafile = /opt/stack/data/ca-bundle.pem
-auth_uri = http://authchecker.opensds.svc.cluster.local/identity
+auth_uri = http://authchecker.soda.svc.cluster.local/identity
 project_domain_name = Default
 project_name = service
 user_domain_name = Default
-password = opensds@123
+password = soda@123
 # Whether to encrypt the password. If enabled, the value of the password must be ciphertext.
 enable_encrypted = False
 # Encryption and decryption tool. Default value is aes. The decryption tool can only decrypt the corresponding ciphertext.
 pwd_encrypter = aes
-username = opensds
-auth_url = http://authchecker.opensds.svc.cluster.local/identity
+username = soda
+auth_url = http://authchecker.soda.svc.cluster.local/identity
 auth_type = password
 
 [osdslet]
-api_endpoint = controller.opensds.svc.cluster.local:50049
+api_endpoint = controller.soda.svc.cluster.local:50049
 
 [osdsdock]
-api_endpoint = dock.opensds.svc.cluster.local:50050
+api_endpoint = dock.soda.svc.cluster.local:50050
 # Choose the type of dock resource, only support 'provisioner' and 'attacher'.
 dock_type = provisioner
 # Specify which backends should be enabled, sample,ceph,cinder,lvm and so on.
@@ -165,19 +165,19 @@ enabled_backends = $BackendType
 name = lvm
 description = LVM Test
 driver_name = lvm
-config_path = /etc/opensds/driver/lvm.yaml
+config_path = /etc/soda/driver/lvm.yaml
 host_based_replication_driver = DRBD
 
 [ceph]
 name = ceph
 description = Ceph Test
 driver_name = ceph
-config_path = /etc/opensds/driver/ceph.yaml
+config_path = /etc/soda/driver/ceph.yaml
 
 [database]
-endpoint = db.opensds.svc.cluster.local:2379,db.opensds.svc.cluster.local:2380
+endpoint = db.soda.svc.cluster.local:2379,db.soda.svc.cluster.local:2380
 driver = etcd
-OPENSDS_GLOABL_CONFIG_DOC
+soda_GLOABL_CONFIG_DOC
 ```
 
 If you choose `lvm` as backend, you need to make sure physical volume and volume group existed. Besides, you need to configure lvm driver.
@@ -185,7 +185,7 @@ If you choose `lvm` as backend, you need to make sure physical volume and volume
 sudo pvdisplay # Check if physical volume existed
 sudo vgdisplay # Check if volume group existed
 
-mkdir -p /etc/opensds/driver && sudo cat > /etc/opensds/driver/lvm.yaml <<OPENSDS_DRIVER_CONFIG_DOC
+mkdir -p /etc/soda/driver && sudo cat > /etc/soda/driver/lvm.yaml <<soda_DRIVER_CONFIG_DOC
 tgtBindIp: 127.0.0.1
 tgtConfDir: /etc/tgt/conf.d
 pool:
@@ -207,12 +207,12 @@ pool:
       advanced:
         diskType: SSD
         latency: 5ms
-OPENSDS_DRIVER_CONFIG_DOC
+soda_DRIVER_CONFIG_DOC
 ```
 
 If you choose `ceph` as backend, you need to configure ceph driver.
 ```
-mkdir -p /etc/opensds/driver && sudo cat > /etc/opensds/driver/ceph.yaml <<OPENSDS_DRIVER_CONFIG_DOC
+mkdir -p /etc/soda/driver && sudo cat > /etc/soda/driver/ceph.yaml <<soda_DRIVER_CONFIG_DOC
 configFile: /etc/ceph/ceph.conf
 pool:
   {{ ceph_pool_name }}: # change pool name same to ceph pool, but don't change it if you choose lvm backend
@@ -233,10 +233,10 @@ pool:
       advanced:
         diskType: SSD
         latency: 5ms
-OPENSDS_DRIVER_CONFIG_DOC
+soda_DRIVER_CONFIG_DOC
 ```
 
-##### Run OpenSDS and CSI-Plugin Helm Charts
+##### Run soda and CSI-Plugin Helm Charts
 
 * Tiller Permissions
 
@@ -250,22 +250,22 @@ kubectl create clusterrolebinding tiller-cluster-admin \
     --serviceaccount=kube-system:default
 ```
 
-Then run opensds helm chart in `opensds` namespace:
+Then run soda helm chart in `soda` namespace:
 
 ```
-kubectl create ns opensds
-cd $HOME/opensds-installer/charts
-helm install opensds/ --name={ opensds_service_name } --namespace=opensds
+kubectl create ns soda
+cd $HOME/soda-installer/charts
+helm install soda/ --name={ soda_service_name } --namespace=soda
 ```
-After that, check the result using `kubectl get po -n opensds`
+After that, check the result using `kubectl get po -n soda`
 ```$xslt
 NAME                                                   READY   STATUS    RESTARTS   AGE
-opensds-service-opensds-apiserver-54f9dc9776-6zwhv     1/1     Running   0          1h40m
-opensds-service-opensds-authchecker-68c487c885-9zcf6   1/1     Running   0          1h40m
-opensds-service-opensds-controller-9d7b89c7c-4qln8     1/1     Running   0          1h40m
-opensds-service-opensds-dashboard-5f6c5d958b-ddv7d     1/1     Running   0          1h40m
-opensds-service-opensds-db-6cfcd45598-jxx2f            1/1     Running   0          1h40m
-opensds-service-opensds-dock-76b95bf9dd-78smj          1/1     Running   0          1h40m
+soda-service-soda-apiserver-54f9dc9776-6zwhv     1/1     Running   0          1h40m
+soda-service-soda-authchecker-68c487c885-9zcf6   1/1     Running   0          1h40m
+soda-service-soda-controller-9d7b89c7c-4qln8     1/1     Running   0          1h40m
+soda-service-soda-dashboard-5f6c5d958b-ddv7d     1/1     Running   0          1h40m
+soda-service-soda-db-6cfcd45598-jxx2f            1/1     Running   0          1h40m
+soda-service-soda-dock-76b95bf9dd-78smj          1/1     Running   0          1h40m
 ```
 
 Now you are ready to run csiplugin helm chart
@@ -274,7 +274,7 @@ For using csi block plugin:
     
 ```$xslt
 # Please update csiplugin-block/values.yaml before running csiplugin helm chart
-vim csiplugin-block/values.yaml # Change the opensds endpoint to { opensds_cluster_ip }
+vim csiplugin-block/values.yaml # Change the soda endpoint to { soda_cluster_ip }
 helm install csiplugin-block/ --name={ csiplugin_service_name }
 ````
 
@@ -282,12 +282,12 @@ For using csi file plugin:
     
 ```
 # Please update csiplugin-file/values.yaml before running csiplugin helm chart
-vim csiplugin-file/values.yaml # Change the opensds endpoint to { opensds_cluster_ip }
+vim csiplugin-file/values.yaml # Change the soda endpoint to { soda_cluster_ip }
 helm install csiplugin-file/ --name={ csiplugin_service_name }
 ````    
 
 ## Testing steps
-### OpenSDS CLI tool
+### soda CLI tool
 #### Download cli tool
 ```
 wget https://github.com/sodafoundation/api/releases/download/v1.1.0/soda-api-v1.1.0-linux-amd64.tar.gz
@@ -295,11 +295,11 @@ tar zxvf soda-api-v1.1.0-linux-amd64.tar.gz
 cp soda-api-v1.1.0-linux-amd64/bin/* /usr/local/bin
 chmod 755 /usr/local/bin/osdsctl
 
-export OPENSDS_ENDPOINT=http://{{ apiserver_cluster_ip }}:50040
-export OPENSDS_AUTH_STRATEGY=keystone
+export soda_ENDPOINT=http://{{ apiserver_cluster_ip }}:50040
+export soda_AUTH_STRATEGY=keystone
 export OS_AUTH_URL=http://{{ authchecker_cluster_ip }}/identity
 export OS_USERNAME=admin
-export OS_PASSWORD=opensds@123
+export OS_PASSWORD=soda@123
 export OS_TENANT_NAME=admin
 export OS_PROJECT_NAME=admin
 export OS_USER_DOMAIN_ID=default
@@ -326,17 +326,17 @@ osdsctl volume list
 osdsctl volume delete <your_volume_id>
 ```
 
-### OpenSDS UI
-OpenSDS UI dashboard is available at `http://{your_host_ip}:31975`, please login the dashboard using the default admin credentials: `admin/opensds@123`. Create `tenant`, `user`, and `profiles` as admin. Multi-Cloud service is also supported by dashboard.
+### soda UI
+soda UI dashboard is available at `http://{your_host_ip}:31975`, please login the dashboard using the default admin credentials: `admin/soda@123`. Create `tenant`, `user`, and `profiles` as admin. Multi-Cloud service is also supported by dashboard.
 
 Logout of the dashboard as admin and login the dashboard again as a non-admin user to manage storage resource:
 
 
 #### For CSI Plugin
 ```
-wget https://github.com/sodafoundation/nbp/releases/download/v1.4.0/opensds-sushi-v1.4.0-linux-amd64.tar.gz
-tar zxvf opensds-sushi-v1.4.0-linux-amd64.tar.gz
-cd /opensds-sushi-linux-amd64
+wget https://github.com/sodafoundation/nbp/releases/download/v1.4.0/soda-sushi-v1.4.0-linux-amd64.tar.gz
+tar zxvf soda-sushi-v1.4.0-linux-amd64.tar.gz
+cd /soda-sushi-linux-amd64
 ```
 
 * To create example nginx application using csi block plugin, use below command
@@ -352,11 +352,11 @@ kubectl create -f csi/examples/kubernetes/file/nginx.yaml
 ```
 
 
-This example will mount a opensds volume into `/var/lib/www/html`.
+This example will mount a soda volume into `/var/lib/www/html`.
 
 ## Clean up steps
 
-Clean up example nginx application and opensds CSI pods by the following commands:
+Clean up example nginx application and soda CSI pods by the following commands:
 ```bash
 kubectl delete -f csi/examples/kubernetes/block/nginx.yaml
 kubectl delete -f csi/examples/kubernetes/file/nginx.yaml
@@ -365,7 +365,7 @@ kubectl delete -f csi/examples/kubernetes/file/nginx.yaml
 If you want to remove the existing cluster, please run the command below:
 ```bash
 helm delete { csiplugin_service_name } --purge 
-helm delete { opensds_service_name } --purge
+helm delete { soda_service_name } --purge
 ```
 
 

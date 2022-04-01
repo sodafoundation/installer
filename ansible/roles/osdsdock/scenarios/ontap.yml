@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 
 ---
 
-- name: configure opensds global info osdsdock ontap
+- name: configure soda global info osdsdock ontap
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: netapp_ontap_san
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -27,12 +27,12 @@
         - { option: config_path, value: "{{ ontap_config_path }}" }
   become: yes
 
-- name: copy opensds ontap backend file to ontap config path if specify ontap backend
+- name: copy soda ontap backend file to ontap config path if specify ontap backend
   copy:
     src: ../../../group_vars/netapp/ontap/ontap.yaml
     dest: "{{ ontap_config_path }}"
 
-- name: update opensds ontap backend file if specify ontap backend
+- name: update soda ontap backend file if specify ontap backend
   replace:
     path: "{{ ontap_config_path }}"
     regexp: "{{ item.regexp }}"

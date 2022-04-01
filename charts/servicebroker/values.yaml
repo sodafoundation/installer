@@ -1,4 +1,4 @@
-# Default values for OpenSDS Service Broker
+# Default values for soda Service Broker
 # Image to use
 name: servicebroker
 image:
@@ -13,11 +13,11 @@ imagePullPolicy: IfNotPresent
 deployClusterServiceBroker: true
 
 # Please modify these fields according to your real environment
-opensdsEndpoint: http://127.0.0.1:50040
-opensdsAuthStrategy: noauth
+sodaEndpoint: http://127.0.0.1:50040
+sodaAuthStrategy: noauth
 osAuthURL: http://127.0.0.1/identity
 osUsername: admin
-osPassword: opensds@123
+osPassword: soda@123
 osTenantName: admin
 osProjectName: admin
 osUserDomainID: default

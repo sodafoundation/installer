@@ -1,5 +1,5 @@
 base:
   '*':
     - salt
-    - opensds
+    - soda
     - deepsea

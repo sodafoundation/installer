@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/infra.sls
+## soda-installer/salt/srv/salt/install/infra.sls
 base:
   '*':
-    - opensds.infra
+    - soda.infra

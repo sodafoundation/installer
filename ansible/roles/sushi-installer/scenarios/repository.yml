@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@
 
 - name: check for sushi source code existed
   stat:
-    path: "{{ go_path }}/src/github.com/opensds/nbp"
+    path: "{{ go_path }}/src/github.com/soda/nbp"
   register: sushiexisted
 
 - name: download sushi source code if not exists
   git:
     repo: "{{ sushi_remote_url }}"
-    dest: "{{ go_path }}/src/github.com/opensds/nbp"
+    dest: "{{ go_path }}/src/github.com/soda/nbp"
     version: "{{ sushi_repo_branch }}"
   when:
     - sushiexisted.stat.exists is undefined or sushiexisted.stat.exists == false
@@ -41,7 +41,7 @@
   environment:
     GOPATH: "{{ go_path }}"
   args:
-    chdir: "{{ go_path }}/src/github.com/opensds/nbp"
+    chdir: "{{ go_path }}/src/github.com/soda/nbp"
 
 - name: create sushi install directory if it doesn't exist
   file:
@@ -59,14 +59,14 @@
     dest: "{{ sushi_work_dir }}/csi/"
     directory_mode: yes
   with_items:
-    - "{{ go_path }}/src/github.com/opensds/nbp/csi/deploy"
-    - "{{ go_path }}/src/github.com/opensds/nbp/csi/examples"
+    - "{{ go_path }}/src/github.com/soda/nbp/csi/deploy"
+    - "{{ go_path }}/src/github.com/soda/nbp/csi/examples"
 
 # flex volume support not available going forward
 #- name: copy sushi flexvolume binary file into sushi work directory
 #  copy:
-#    src: "{{ go_path }}/src/github.com/opensds/nbp/build/out/flexvolume.server.opensds"
-#    dest: "{{ sushi_work_dir }}/flexvolume/opensds"
+#    src: "{{ go_path }}/src/github.com/soda/nbp/build/out/flexvolume.server.soda"
+#    dest: "{{ sushi_work_dir }}/flexvolume/soda"
 #    mode: 0755
 
 - name: copy sushi provisioner deploy scripts into sushi work directory
@@ -75,5 +75,5 @@
     dest: "{{ sushi_work_dir }}/provisioner/"
     directory_mode: yes
   with_items:
-    - "{{ go_path }}/src/github.com/opensds/nbp/opensds-provisioner/deploy"
-    - "{{ go_path }}/src/github.com/opensds/nbp/opensds-provisioner/examples"
+    - "{{ go_path }}/src/github.com/soda/nbp/soda-provisioner/deploy"
+    - "{{ go_path }}/src/github.com/soda/nbp/soda-provisioner/examples"

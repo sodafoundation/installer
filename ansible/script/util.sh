@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2017 The OpenSDS Authors.
+# Copyright 2017 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

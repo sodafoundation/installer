@@ -21,9 +21,9 @@ set +o xtrace
 # Defaults
 # --------
 # Name of the lvm volume groups to use/create for iscsi volumes
-VOLUME_GROUP_NAME=${VOLUME_GROUP_NAME:-opensds-volumes}
-FILE_GROUP_NAME=${FILE_GROUP_NAME:-opensds-files}
-FILE_VOLUME_GROUP_NAME=${VOLUME_GROUP_NAME:-opensds-files}
+VOLUME_GROUP_NAME=${VOLUME_GROUP_NAME:-soda-volumes}
+FILE_GROUP_NAME=${FILE_GROUP_NAME:-soda-files}
+FILE_VOLUME_GROUP_NAME=${VOLUME_GROUP_NAME:-soda-files}
 DEFAULT_VOLUME_GROUP_NAME=$VOLUME_GROUP_NAME-default
 FILE_DEFAULT_VOLUME_GROUP_NAME=$FILE_GROUP_NAME-default
 
@@ -43,7 +43,7 @@ mkdir -p $FILE_LVM_DIR
 
 
 # nvme dir
-NVME_DIR=/opt/opensdsNvme
+NVME_DIR=/opt/sodaNvme
 # nvme device
 LVM_DEVICE=/dev/nvme0n1
 
@@ -104,7 +104,7 @@ soda::lvm::create_volume_group(){
 }
 
 soda::lvm::create_volume_group_for_file(){
-    local fvg="opensds-files-default"
+    local fvg="soda-files-default"
     local size=$2
 
     local backing_file=$FILE_DATA_DIR/$fvg$BACKING_FILE_SUFFIX
@@ -153,7 +153,7 @@ soda::lvm::create_nvme_vg(){
 }
 
 soda::lvm::set_configuration(){
-cat > $SODA_DRIVER_CONFIG_DIR/lvm.yaml << OPENSDS_LVM_CONFIG_DOC
+cat > $SODA_DRIVER_CONFIG_DIR/lvm.yaml << soda_LVM_CONFIG_DOC
 tgtBindIp: $HOST_IP
 tgtConfDir: /etc/tgt/conf.d
 pool:
@@ -177,20 +177,20 @@ pool:
       advanced:
         diskType: SSD
         latency: 5ms
-OPENSDS_LVM_CONFIG_DOC
+soda_LVM_CONFIG_DOC
 
-cat >> $SODA_CONFIG_DIR/opensds.conf << OPENSDS_LVM_GLOBAL_CONFIG_DOC
+cat >> $SODA_CONFIG_DIR/soda.conf << soda_LVM_GLOBAL_CONFIG_DOC
 [lvm]
 name = lvm
 description = LVM Test
 driver_name = lvm
-config_path = /etc/opensds/driver/lvm.yaml
+config_path = /etc/soda/driver/lvm.yaml
 
-OPENSDS_LVM_GLOBAL_CONFIG_DOC
+soda_LVM_GLOBAL_CONFIG_DOC
 }
 
 soda::lvm::set_configuration_for_file(){
-cat > $SODA_DRIVER_CONFIG_DIR/nfs.yaml << OPENSDS_FILE_CONFIG_DOC
+cat > $SODA_DRIVER_CONFIG_DIR/nfs.yaml << soda_FILE_CONFIG_DOC
 tgtBindIp: $HOST_IP
 tgtConfDir: /etc/tgt/conf.d
 pool:
@@ -218,20 +218,20 @@ pool:
       advanced:
         diskType: SSD
         latency: 5ms
-OPENSDS_FILE_CONFIG_DOC
+soda_FILE_CONFIG_DOC
 
-cat >> $SODA_CONFIG_DIR/opensds.conf << OPENSDS_FILE_GLOBAL_CONFIG_DOC
+cat >> $SODA_CONFIG_DIR/soda.conf << soda_FILE_GLOBAL_CONFIG_DOC
 [nfs]
 name = nfs
 description = NFS LVM TEST
 driver_name = nfs
-config_path = /etc/opensds/driver/nfs.yaml
+config_path = /etc/soda/driver/nfs.yaml
 
-OPENSDS_FILE_GLOBAL_CONFIG_DOC
+soda_FILE_GLOBAL_CONFIG_DOC
 }
 
 soda::lvm::set_nvme_configuration(){
-cat >> $SODA_DRIVER_CONFIG_DIR/lvm.yaml << OPENSDS_LVM_CONFIG_DOC
+cat >> $SODA_DRIVER_CONFIG_DIR/lvm.yaml << soda_LVM_CONFIG_DOC
 
   $NVME_VOLUME_GROUP_NAME:
     diskType: NL-SAS
@@ -253,7 +253,7 @@ cat >> $SODA_DRIVER_CONFIG_DIR/lvm.yaml << OPENSDS_LVM_CONFIG_DOC
       advanced:
         diskType: SSD
         latency: 20us
-OPENSDS_LVM_CONFIG_DOC
+soda_LVM_CONFIG_DOC
 }
 
 soda::lvm::remove_volumes() {
@@ -270,7 +270,7 @@ soda::lvm::remove_volume_group() {
     sudo vgremove -f $vg
 }
 soda::lvm::remove_volume_group_for_file() {
-    local fvg="opensds-files-default"
+    local fvg="soda-files-default"
     # Remove the volume group
     sudo vgremove -f $fvg
 }
@@ -289,7 +289,7 @@ soda::lvm::clean_backing_file() {
 }
 
 soda::lvm::clean_volume_group_for_file() {
-    local fvg="opensds-files-default"
+    local fvg="soda-files-default"
     soda::lvm::remove_volume_group_for_file $fvg
     # if there is no logical volume left, it's safe to attempt a cleanup
     # of the backing file

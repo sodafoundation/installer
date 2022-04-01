@@ -1,5 +1,5 @@
 # This YAML file contains RBAC API objects,
-# which are necessary to run external csi provisioner for opensds.
+# which are necessary to run external csi provisioner for soda.
 
 apiVersion: v1
 kind: ServiceAccount

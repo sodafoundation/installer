@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,4 +69,4 @@ orchestration_release: "{{ orchestration_release_version }}" #The version should
 
 # These fields are NOT suggested to be modified
 orchestration_download_url: https://github.com/sodafoundation/orchestration/archive/{{ orchestration_release }}.tar.gz
-orchestration_tarball_dir: /tmp/opensds-orchestration-{{ orchestration_release }}-linux-amd64
+orchestration_tarball_dir: /tmp/soda-orchestration-{{ orchestration_release }}-linux-amd64

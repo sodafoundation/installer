@@ -68,7 +68,7 @@ soda::uninstall_purge(){
     soda::util::service_operation uninstall_purge
 
     rm /opt/sodafoundation -rf
-    rm /etc/opensds -rf
+    rm /etc/soda -rf
     rm /var/log/sodafoundation -rf
     rm /etc/bash_completion.d/osdsctl.bash_completion -rf
     rm /opt/soda-security -rf

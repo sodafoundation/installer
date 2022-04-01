@@ -16,7 +16,7 @@ authOptions:
   endpoint: "http://10.10.3.101/identity"
   domainName: "Default"
   username: "admin"
-  password: "opensds"
+  password: "soda"
   # Whether to encrypt the password. If enabled, the value of the password must be ciphertext.
   enableEncrypted: false
   # Encryption and decryption tool. Default value is aes. The decryption tool can only decrypt the corresponding ciphertext.

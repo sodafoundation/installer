@@ -3,20 +3,20 @@
 Site specific deployment values
 ===============================
 
-The default site configuration is detailed in the `/root/opensds-installer/salt/srv/pillar/site.j2` file. This is the primary interface for customizing the deployment experience for OpenSDS installer on Salt. Typically you may want to modify ip addresses, or more rarely set a specific release (urls, hashsums, revisions). This `site.j2` file is consumed by [saltstack-formulas/opensds-formula](https://github.com/saltstack-formulas/opensds-formula) during deployments. Please take care not to corrupt the file with bad syntax if you need to make updates.
+The default site configuration is detailed in the `/root/soda-installer/salt/srv/pillar/site.j2` file. This is the primary interface for customizing the deployment experience for soda installer on Salt. Typically you may want to modify ip addresses, or more rarely set a specific release (urls, hashsums, revisions). This `site.j2` file is consumed by [saltstack-formulas/soda-formula](https://github.com/saltstack-formulas/soda-formula) during deployments. Please take care not to corrupt the file with bad syntax if you need to make updates.
 
-The secondary interface for customizations is the `/root/opensds-installer/salt/srv/pillar/opensds.sls` yaml file. Again caution should be exercised if you make any updates.
+The secondary interface for customizations is the `/root/soda-installer/salt/srv/pillar/soda.sls` yaml file. Again caution should be exercised if you make any updates.
 
 All other files should be left alone.
 
 Flexible Deployments
 =====================
 
-You can install OpenSDS in a more modular fashion. Salt has powerful features for distributed deployment management so the shipped solution could be extended for flexible deployment (salt integration knowledge is useful).
+You can install soda in a more modular fashion. Salt has powerful features for distributed deployment management so the shipped solution could be extended for flexible deployment (salt integration knowledge is useful).
 
 The following commands are provided (or -r for removal).
 ```
- vi ./srv/pillar/opensds.sls       ### Tweak something (advanced)
+ vi ./srv/pillar/soda.sls       ### Tweak something (advanced)
 
  vi site.js                        ### Set IP addresses (easy)
 
@@ -24,13 +24,13 @@ The following commands are provided (or -r for removal).
 
  sudo salter.sh -i keystone          ### Runs devstack-formula
 
- sudo salter.sh -i config            ### Creates directories and /etc/opensds/opensds.conf file
+ sudo salter.sh -i config            ### Creates directories and /etc/soda/soda.conf file
 
  sudo salter.sh -i database          ### Installs ETCD
 
  sudo salter.sh -i hotpot            ### Installs the HotPot
 
- sudo salter.sh -i sushi             ### Configures drivers in opensds.conf and /etc/opensds/driver directory
+ sudo salter.sh -i sushi             ### Configures drivers in soda.conf and /etc/soda/driver directory
 
  sudo salter.sh -i backend           ### Installs Backends (lvm, iscsi, cinder, etc)
 
@@ -79,7 +79,7 @@ Start the virtual environment.
 Upstream support
 ================
 
-The upstream [saltstack-formulas/opensds-formula](https://github.com/saltstack-formulas/opensds-formula) is specifically designed for extensibility.
+The upstream [saltstack-formulas/soda-formula](https://github.com/saltstack-formulas/soda-formula) is specifically designed for extensibility.
 
 To request upstream enhancements or bug fixes please raise a github issue for consideration.
 
@@ -90,9 +90,9 @@ Example Installer output
 ========================
 
 ```
-~/opensds-installer/salt # vi site.j2
+~/soda-installer/salt # vi site.j2
 
-~/opensds-installer/salt # sudo salter.sh -i salter; sudo salter.sh -i opensds
+~/soda-installer/salt # sudo salter.sh -i salter; sudo salter.sh -i soda
 
 Loading repository data...
 Reading installed packages...
@@ -119,7 +119,7 @@ Failed:     0
 -------------
 Total states run:     31
 Total run time:   62.087 s
-See full log in [ /tmp/opensds-installer-salt/install-salt/log.201902211252 ]
+See full log in [ /tmp/soda-installer-salt/install-salt/log.201902211252 ]
 
 Accepted Keys:
 opensuse-leap-x64
@@ -132,7 +132,7 @@ run salt ...
 local:
     ----------
     base:
-        - opensds.infra
+        - soda.infra
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -142,13 +142,13 @@ Failed:     0
 -------------
 Total states run:     83
 Total run time:   55.062 s
-See full log in [ /tmp/opensds-installer-salt/install-infra/log.201902211254 ]
+See full log in [ /tmp/soda-installer-salt/install-infra/log.201902211254 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.keystone
+        - soda.keystone
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -158,7 +158,7 @@ Failed:     0
 -------------
 Total states run:     24
 Total run time:  582.516 s
-See full log in [ /tmp/opensds-installer-salt/install-keystone/log.201902211255 ]
+See full log in [ /tmp/soda-installer-salt/install-keystone/log.201902211255 ]
 
 Services are running under systemd unit files.
 For more information see: 
@@ -174,7 +174,7 @@ run salt ...
 local:
     ----------
     base:
-        - opensds.config
+        - soda.config
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -184,13 +184,13 @@ Failed:     0
 -------------
 Total states run:     15
 Total run time:  390.923 ms
-See full log in [ /tmp/opensds-installer-salt/install-config/log.201902211305 ]
+See full log in [ /tmp/soda-installer-salt/install-config/log.201902211305 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.database
+        - soda.database
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -200,13 +200,13 @@ Failed:     0
 -------------
 Total states run:     33
 Total run time:   60.786 s
-See full log in [ /tmp/opensds-installer-salt/install-database/log.201902211305 ]
+See full log in [ /tmp/soda-installer-salt/install-database/log.201902211305 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.auth
+        - soda.auth
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -216,13 +216,13 @@ Failed:     0
 -------------
 Total states run:     41
 Total run time:   24.252 s
-See full log in [ /tmp/opensds-installer-salt/install-auth/log.201902211307 ]
+See full log in [ /tmp/soda-installer-salt/install-auth/log.201902211307 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.hotpot
+        - soda.hotpot
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -232,13 +232,13 @@ Failed:     0
 -------------
 Total states run:     30
 Total run time:  324.824 s
-See full log in [ /tmp/opensds-installer-salt/install-hotpot/log.201902211307 ]
+See full log in [ /tmp/soda-installer-salt/install-hotpot/log.201902211307 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.sushi
+        - soda.sushi
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -248,13 +248,13 @@ Failed:     0
 -------------
 Total states run:     60
 Total run time:  561.968 s
-See full log in [ /tmp/opensds-installer-salt/install-sushi/log.201902211313 ]
+See full log in [ /tmp/soda-installer-salt/install-sushi/log.201902211313 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.backend
+        - soda.backend
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -264,13 +264,13 @@ Failed:     1
 -------------
 Total states run:     84
 Total run time: 1154.499 s
-See full log in [ /tmp/opensds-installer-salt/install-backend/log.201902211323 ]
+See full log in [ /tmp/soda-installer-salt/install-backend/log.201902211323 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.dock
+        - soda.dock
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -280,13 +280,13 @@ Failed:     0
 -------------
 Total states run:     30
 Total run time:    1.073 s
-See full log in [ /tmp/opensds-installer-salt/install-dock/log.201902211343 ]
+See full log in [ /tmp/soda-installer-salt/install-dock/log.201902211343 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.dashboard
+        - soda.dashboard
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -296,13 +296,13 @@ Failed:     0
 -------------
 Total states run:     21
 Total run time:   47.614 s
-See full log in [ /tmp/opensds-installer-salt/install-dashboard/log.201902211343 ]
+See full log in [ /tmp/soda-installer-salt/install-dashboard/log.201902211343 ]
 
 run salt ...
 local:
     ----------
     base:
-        - opensds.gelato
+        - soda.gelato
  ... this takes a while ... please be patient ...
 
 Summary for local
@@ -312,13 +312,13 @@ Failed:     0
 -------------
 Total states run:     42
 Total run time:  284.863 s
-See full log in [ /tmp/opensds-installer-salt/install-gelato/log.201902211344 ]
+See full log in [ /tmp/soda-installer-salt/install-gelato/log.201902211344 ]
 
 local:
     ----------
-    opensds:
+    soda:
         - default
-Copy opensds-installer/conf/policy.json to /etc/opensds/
+Copy soda-installer/conf/policy.json to /etc/soda/
 ```
 
 
@@ -326,7 +326,7 @@ Copy opensds-installer/conf/policy.json to /etc/opensds/
 
 #### REMOVAL 
 ```
-salter.sh -r opensds
+salter.sh -r soda
 ...
 
 Summary for local

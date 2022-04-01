@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,16 +65,16 @@
     - librbd-dev
   when: ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=18)
 
-- name: create opensds work directory if it doesn't exist
+- name: create soda work directory if it doesn't exist
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
   with_items:
     - "{{ hotpot_work_dir }}"
-    - "{{ opensds_config_dir }}"
-    - "{{ opensds_driver_config_dir }}"
-    - "{{ opensds_log_dir }}"
+    - "{{ soda_config_dir }}"
+    - "{{ soda_driver_config_dir }}"
+    - "{{ soda_log_dir }}"
   when: deploy_project != "gelato"
 
 - name: include scenarios/repository.yml when installing from repository
@@ -85,10 +85,10 @@
   include: scenarios/release.yml
   when: install_from == "release" and deploy_project != "gelato"
 
-- name: copy config templates into opensds global config folder
+- name: copy config templates into soda global config folder
   copy:
     src: ../../../../conf/
-    dest: "{{ opensds_config_dir }}"
+    dest: "{{ soda_config_dir }}"
   when: deploy_project != "gelato"
 
 

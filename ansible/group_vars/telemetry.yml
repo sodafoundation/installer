@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ enable_telemetry_tools: false
 grafana_repositroy: "deb https://packages.grafana.com/oss/deb stable main"
 grafana_gpg_key: https://packages.grafana.com/gpg.key
 
-# Telementry configs to be updated in opensds.conf
+# Telementry configs to be updated in soda.conf
 prometheus_conf_home: /etc/prometheus/
 prometheus_conf_file: prometheus.yml
 prometheus_url: 'http://{{ host_ip }}:9090'
@@ -49,5 +49,5 @@ lvm_exporter_port: '9601'
 kafka_endpoint: '{{ host_ip }}:9092'
 kafka_topic: metrics
 
-opensds_conf_file: /etc/opensds/opensds.conf
-telemetry_work_dir: /opt/opensds-telemetry-linux-amd64
+soda_conf_file: /etc/soda/soda.conf
+telemetry_work_dir: /opt/soda-telemetry-linux-amd64

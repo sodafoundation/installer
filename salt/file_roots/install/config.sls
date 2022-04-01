@@ -1,4 +1,4 @@
-## opensds-installer/salt/srv/salt/install/config.sls
+## soda-installer/salt/srv/salt/install/config.sls
 base:
   '*':
-    - opensds.config
+    - soda.config

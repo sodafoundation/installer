@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 source "$TOP_DIR/util.sh"
 source "$TOP_DIR/sdsrc"
-#FIXME The /orchestration/  changes are to fix  Issue #106 in opensds/opensds-dashboard. 
+#FIXME The /orchestration/  changes are to fix  Issue #106 in soda/soda-dashboard. 
 #This is a temporary fix for the API not being reachable. The Orchestration API endpoint will be changed and this fix will be removed.
 cat > /etc/nginx/sites-available/default <<EOF
     server {
@@ -30,10 +30,10 @@ cat > /etc/nginx/sites-available/default <<EOF
             proxy_pass http://$HOST_IP/identity/v3/;
         }
         location /v1beta/ {
-            proxy_pass http://$HOST_IP:50040/$OPENSDS_VERSION/;
+            proxy_pass http://$HOST_IP:50040/$soda_VERSION/;
         }
         location /orch/ {
-            proxy_pass http://$HOST_IP:5000/$OPENSDS_VERSION/;
+            proxy_pass http://$HOST_IP:5000/$soda_VERSION/;
         }
         location /v1/ {
             proxy_pass http://$HOST_IP:8089/v1/;

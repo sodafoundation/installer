@@ -1,4 +1,4 @@
-## opensds-installer/srv/salt/salt/top.sls
+## soda-installer/srv/salt/salt/top.sls
 base:
   '*':
-    - opensds.clean
+    - soda.clean

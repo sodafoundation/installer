@@ -15,7 +15,7 @@
 tgtBindIp: 100.64.40.97
 tgtConfDir: /etc/tgt/conf.d
 pool:
-  opensds-files-default:
+  soda-files-default:
     diskType: NL-SAS
     availabilityZone: default
     multiAttach: true

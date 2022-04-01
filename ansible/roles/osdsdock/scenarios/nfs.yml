@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@
     - thin-provisioning-tools
     - nfs-kernel-server
 
-- name: configure opensds global info osdsdock nfs
+- name: configure soda global info osdsdock nfs
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: nfs
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -36,19 +36,19 @@
         - { option: config_path, value: "{{ nfs_config_path }}" }
   become: yes
 
-- name: copy opensds nfs backend file to nfs config path if specify nfs backend
+- name: copy soda nfs backend file to nfs config path if specify nfs backend
   copy:
     src: ../../../group_vars/nfs/nfs.yaml
     dest: "{{ nfs_config_path }}"
 
-- name: update opensds nfs backend file if specify nfs backend
+- name: update soda nfs backend file if specify nfs backend
   replace:
     path: "{{ nfs_config_path }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
     - { regexp: '127.0.0.1', replace: '{{host_ip}}'}
-    - { regexp: 'opensds-nfs', replace: '{{opensds_nfs_group}}'}
+    - { regexp: 'soda-nfs', replace: '{{soda_nfs_group}}'}
 
 - name: create directory to volume group file
   file:
@@ -82,7 +82,7 @@
           fi
       }
       modprobe dm_thin_pool
-      _create_lvm_volume_group {{ opensds_nfs_group }} 10G
+      _create_lvm_volume_group {{ soda_nfs_group }} 10G
   args:
     executable: /bin/bash
   become: true

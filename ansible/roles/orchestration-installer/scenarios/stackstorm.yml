@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,10 +68,10 @@
   register: mistral_status
   failed_when: mistral_status.rc == 0
 
-- name: Copy and register opensds packs to stackstorm container
+- name: Copy and register soda packs to stackstorm container
   shell: "{{ item }}"
   with_items:
-   - docker cp contrib/st2/opensds {{ container_id.stdout }}:/opt/stackstorm/packs/
+   - docker cp contrib/st2/soda {{ container_id.stdout }}:/opt/stackstorm/packs/
    - docker exec -i {{ container_id.stdout }} st2ctl reload --register-all
   args:
     chdir: "{{ orchestration_work_dir }}"
@@ -79,8 +79,8 @@
   become: yes
   ignore_errors: yes
 
-- name: Install virtualenv for opensds packs [This task is known failure]
-  shell: docker exec -i {{ container_id.stdout }} st2 run packs.setup_virtualenv packs=opensds
+- name: Install virtualenv for soda packs [This task is known failure]
+  shell: docker exec -i {{ container_id.stdout }} st2 run packs.setup_virtualenv packs=soda
   args:
     chdir: "{{ orchestration_work_dir }}"
     warn: false

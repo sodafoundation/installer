@@ -1,4 +1,4 @@
-# Copyright 2018 The OpenSDS Authors.
+# Copyright 2018 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,10 +49,10 @@
   when:
     - use_cinder_standalone == true and "cinder" in enabled_backends
 
-# ---------update opensds config file with opensds global info---------
-- name: remove old opensds global config for dock
+# ---------update soda config file with soda global info---------
+- name: remove old soda global config for dock
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: "{{ item.section }}"
     state: absent
   with_items:
@@ -60,9 +60,9 @@
         - { section: database }
   become: yes
 
-- name: configure opensds global info osdsdock
+- name: configure soda global info osdsdock
   ini_file:
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: osdsdock
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -73,10 +73,10 @@
         - { option: enabled_backends, value: "{{ enabled_backends }}" }
   become: yes
 
-- name: configure opensds global info database
+- name: configure soda global info database
   ini_file:
     create: no
-    path: "{{ opensds_conf_file }}"
+    path: "{{ soda_conf_file }}"
     section: database
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -170,7 +170,7 @@
     restart_policy: always 
     privileged: true
     volumes:
-    - "/etc/opensds:/etc/opensds"
+    - "/etc/soda:/etc/soda"
     - "/etc/ceph:/etc/ceph"
     - "/dev/:/dev/"
     - "/run/:/run/:shared"

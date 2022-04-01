@@ -6,7 +6,7 @@ backendOptions:
   managementLIF: "127.0.0.1"
   dataLIF: "127.0.0.1"
   svm: "vserver"
-  igroupName: "opensds"
+  igroupName: "soda"
 pool:
   ontap-pool:
     storageType: block

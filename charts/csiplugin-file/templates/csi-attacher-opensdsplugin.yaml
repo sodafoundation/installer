@@ -1,5 +1,5 @@
 # This YAML file contains attacher & csi driver API objects,
-# which are necessary to run external csi attacher for opensds.
+# which are necessary to run external csi attacher for soda.
 
 kind: Service
 apiVersion: v1
@@ -77,71 +77,71 @@ spec:
           image: {{ .Values.image }}
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
-            - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"
-            - "--opensdsAuthStrategy=$(OPENSDS_AUTH_STRATEGY)"
+            - "--sodaEndpoint=$(soda_ENDPOINT)"
+            - "--sodaAuthStrategy=$(soda_AUTH_STRATEGY)"
             - "--v=8"
           env:
             - name: CSI_ENDPOINT
               value: unix://csi/csi.sock
-            - name: OPENSDS_ENDPOINT
+            - name: soda_ENDPOINT
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
-                  key: opensdsendpoint
-            - name: OPENSDS_AUTH_STRATEGY
+                  name: csi-configmap-sodaplugin-file
+                  key: sodaendpoint
+            - name: soda_AUTH_STRATEGY
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
-                  key: opensdsauthstrategy
+                  name: csi-configmap-sodaplugin-file
+                  key: sodaauthstrategy
             - name: OS_AUTH_URL
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osauthurl
             - name: OS_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osusername
             - name: PASSWORD_ENCRYPTER
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: passwordencrypter
             - name: ENABLE_ENCRYPTED
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: enableEncrypted
             - name: OS_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: ospassword
             - name: PASSWORD_ENCRYPTER
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: passwordencrypter
             - name: ENABLE_ENCRYPTED
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: enableEncrypted
             - name: OS_TENANT_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: ostenantname
             - name: OS_PROJECT_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osprojectname
             - name: OS_USER_DOMAIN_ID
               valueFrom:
                 configMapKeyRef:
-                  name: csi-configmap-opensdsplugin-file
+                  name: csi-configmap-sodaplugin-file
                   key: osuserdomainid
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           volumeMounts:
@@ -152,7 +152,7 @@ spec:
             - name: ceph-dir
               mountPath: /etc/ceph/
             - name: certificate-path
-              mountPath: /opt/opensds-security
+              mountPath: /opt/soda-security
       volumes:
         - name: socket-dir
           emptyDir:
@@ -166,5 +166,5 @@ spec:
             type: DirectoryOrCreate
         - name: certificate-path
           hostPath:
-            path: /opt/opensds-security
+            path: /opt/soda-security
             type: DirectoryOrCreate

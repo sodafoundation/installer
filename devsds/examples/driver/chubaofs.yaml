@@ -11,7 +11,7 @@ runtimeEnv:
   clientPath: /var/chubaofs
 
 pool:
-  opensds-files-chubaofs:
+  soda-files-chubaofs:
     diskType: NL-SAS
     availabilityZone: default
     multiAttach: true

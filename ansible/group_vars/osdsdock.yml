@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2019 The soda Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,11 +43,11 @@ dock_type: provisioner
 lvm_name: lvm backend
 lvm_description: This is a lvm backend service
 lvm_driver_name: lvm
-lvm_config_path: "{{ opensds_driver_config_dir }}/lvm.yaml"
+lvm_config_path: "{{ soda_driver_config_dir }}/lvm.yaml"
 lvm_nvme_device: "/dev/nvme0n1"
-opensds_volume_group: opensds-volumes
-opensds_volume_group_nvme: opensds-volumes-nvme
-opensds_volume_group_nvme_size: 10G
+soda_volume_group: soda-volumes
+soda_volume_group_nvme: soda-volumes-nvme
+soda_volume_group_nvme_size: 10G
 
 
 ###########
@@ -63,7 +63,7 @@ ceph_pools: # Specify pool name randomly
 ceph_name: ceph backend
 ceph_description: This is a ceph backend service
 ceph_driver_name: ceph
-ceph_config_path: "{{ opensds_driver_config_dir }}/ceph.yaml"
+ceph_config_path: "{{ soda_driver_config_dir }}/ceph.yaml"
 
 # ceph-ansible playbook branch to be checked out from:
 # https://github.com/ceph/ceph-ansible
@@ -100,7 +100,7 @@ cinder_data_dir: "/opt/cinder_data_dir"
 cinder_name: cinder backend
 cinder_description: This is a cinder backend service
 cinder_driver_name: cinder
-cinder_config_path: "{{ opensds_driver_config_dir }}/cinder.yaml"
+cinder_config_path: "{{ soda_driver_config_dir }}/cinder.yaml"
 
 
 ###########
@@ -111,8 +111,8 @@ cinder_config_path: "{{ opensds_driver_config_dir }}/cinder.yaml"
 nfs_name: nfs backend
 nfs_description: This is a nfs backend service
 nfs_driver_name: nfs
-nfs_config_path: "{{ opensds_driver_config_dir }}/nfs.yaml"
-opensds_nfs_group: opensds-nfs
+nfs_config_path: "{{ soda_driver_config_dir }}/nfs.yaml"
+soda_nfs_group: soda-nfs
 
 ######################
 #   NetApp ONTAP SAN #
@@ -123,7 +123,7 @@ opensds_nfs_group: opensds-nfs
 ontap_name: netapp ontap backend
 ontap_description: This is a netapp ontap san backend service
 ontap_driver_name: netapp_ontap_san
-ontap_config_path: "{{ opensds_driver_config_dir }}/netapp_ontap_san.yaml"
+ontap_config_path: "{{ soda_driver_config_dir }}/netapp_ontap_san.yaml"
 
 
 #####################
@@ -135,4 +135,4 @@ ontap_config_path: "{{ opensds_driver_config_dir }}/netapp_ontap_san.yaml"
 ontap_nas_name: netapp ontap backend
 ontap_nas_description: This is a netapp ontap nas backend service
 ontap_nas_driver_name: netapp_ontap_nas
-ontap_nas_config_path: "{{ opensds_driver_config_dir }}/netapp_ontap_nas.yaml"
+ontap_nas_config_path: "{{ soda_driver_config_dir }}/netapp_ontap_nas.yaml"

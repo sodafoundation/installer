@@ -53,18 +53,3 @@
         name: gelato-ha-uninstaller
       when: gelato_ha == true
   tags: gelato_ha
-
-- name: uninstall tools for telemetry
-  hosts: controllers
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/telemetry.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: telemetry-uninstaller
-      when:
-        - enable_telemetry_tools == true
-  tags: telemetry

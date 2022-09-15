@@ -50,11 +50,13 @@
   systemd:
     name: soda-etcd
     state: stopped
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
 
 - name: Disable etcd service
   systemd:
     name: soda-etcd
     enabled: no
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
 
 - name: Remove systemd service files
   file:
@@ -68,6 +70,7 @@
     - "/etc/systemd/system/soda-etcd.service"
   ignore_errors: yes
   become: true
+  when: ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)
 
 - name: Remove etcd data dir
   file:
@@ -78,3 +81,4 @@
   become: true
   when:
     - database_purge == true
+    - ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version']|int >= 16 and ansible_facts['distribution_major_version']|int <= 18)

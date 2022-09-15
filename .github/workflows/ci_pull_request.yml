@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         go-version: [1.13.x]
-        os: [ubuntu-18.04]
+        os: [ubuntu-18.04, ubuntu-20.04]
         
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,11 +37,11 @@ jobs:
             echo "Installed Ansible Version in Runtime: "
             ansible --version
         
-      - name: Remove latest ansible on Ubuntu 18.04
-        run: |
-            echo "uninstall with pipx"
-            pipx uninstall ansible-core
-        if: ${{ matrix.os == 'ubuntu-18.04' }}
+      #- name: Remove latest ansible on Ubuntu 18.04
+      #  run: |
+      #      echo "uninstall with pipx"
+      #      pipx uninstall ansible-core
+      #  if: ${{ matrix.os == 'ubuntu-18.04' }}
 
       # Change the permissions of the ansible installer
       - name: 'Make ansible installer executable and run install ansible on OS: ${{ matrix.os }}'

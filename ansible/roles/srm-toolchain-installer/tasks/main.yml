@@ -57,7 +57,7 @@
   shell: export PROMETHEUS=True
 
 - name: start service
-  shell: docker-compose up -d
+  shell: docker compose up -d
   args:
     chdir: "{{ srm_toolchain_work_dir }}/"
 

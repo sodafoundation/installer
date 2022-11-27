@@ -16,6 +16,10 @@
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
 
+- set_fact:
+    go_path: "{{ lookup('env', 'HOME') }}/go"
+  when: go_path == ""
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:

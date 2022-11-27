@@ -33,10 +33,10 @@
       OPENSDS_S3_URL: "http://{{ host_ip }}:8090"
       OPENSDS_S3_HOST: "{{ host_ip }}" 
       OPENSDS_S3_PORT: "8090"
-      SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
-      SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
-      SODA_GRAFANA_PORT: "{{ grafana_port }}"
-      STORAGE_SERVICE_PLAN_ENABLED: "{{ enable_storage_service_plans }}"
+      SODA_PROMETHEUS_PORT: "{{ prometheus_port | quote }}"
+      SODA_ALERTMANAGER_PORT: "{{ alertmanager_port | quote }}"
+      SODA_GRAFANA_PORT: "{{ grafana_port | quote }}"
+      STORAGE_SERVICE_PLAN_ENABLED: "{{ enable_storage_service_plans | string }}"
       SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"
   when: gelato_ha != true
   
@@ -56,9 +56,9 @@
       OPENSDS_S3_URL: "http://{{ gelato_ha_s3_ip }}:{{ gelato_ha_s3_port }}"
       OPENSDS_S3_HOST: "{{ gelato_ha_s3_ip }}"
       OPENSDS_S3_PORT: "{{ gelato_ha_s3_port }}"
-      SODA_PROMETHEUS_PORT: "{{ prometheus_port }}"
-      SODA_ALERTMANAGER_PORT: "{{ alertmanager_port }}"
-      SODA_GRAFANA_PORT: "{{ grafana_port }}"
-      STORAGE_SERVICE_PLAN_ENABLED: "{{ enable_storage_service_plans }}"
+      SODA_PROMETHEUS_PORT: "{{ prometheus_port | quote }}"
+      SODA_ALERTMANAGER_PORT: "{{ alertmanager_port | quote }}"
+      SODA_GRAFANA_PORT: "{{ grafana_port | quote }}"
+      STORAGE_SERVICE_PLAN_ENABLED: "{{ enable_storage_service_plans | string }}"
       SODA_ALERTMANAGER_URL: "http://{{ host_ip }}:{{ alertmanager_port }}"      
   when: gelato_ha == true

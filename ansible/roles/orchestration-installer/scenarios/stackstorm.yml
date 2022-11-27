@@ -31,7 +31,7 @@
   shell: "{{ item }}"
   with_items:
     - make env
-    - docker-compose up -d
+    - docker compose up -d
   args:
     chdir: "{{ st2_installer_work_dir }}"
     warn: false
@@ -51,9 +51,9 @@
   shell:
     _raw_params: |
       docker exec -i {{ container_id.stdout }} st2ctl stop
-      docker-compose stop postgres
+      docker compose stop postgres
       docker system prune --volumes --force
-      docker-compose up -d postgres
+      docker compose up -d postgres
       docker exec -i {{ container_id.stdout }} st2ctl start
   args:
     chdir: "{{ st2_installer_work_dir }}"

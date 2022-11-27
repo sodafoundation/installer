@@ -12,121 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: stop container where dashboard is located
-  docker_container:
-    name: dashboard
-    image: "{{ dashboard_docker_image }}"
-    state: absent
-  when: dashboard_installation_type == "container"
-  ignore_errors: true
+- name: Uninstall and cleanup Dashboard
+  include_tasks: scenarios/dashboard.yml
+  when: enable_dashboard == true
   tags: dashboard
 
-# Kill all the systemd processes and disable services
-- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
-  shell: killall osdslet osdsdock osdsapiserver etcd
-  when: install_from != "container" and install_as_systemd == false
-  ignore_errors: true
-  become: true
+- name: Uninstall and cleanup Hotpot
+  include_tasks: scenarios/hotpot.yml
+  when: enable_hotpot == true
   tags: hotpot
 
-# Kill all the systemd processes and disable services
-- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
-  shell: killall osdslet osdsdock osdsapiserver etcd
-  when: install_from != "container" and install_as_systemd == true
-  notify:
-    - Stop Controller service
-    - Disable Controller service
-    - Stop API service
-    - Disable API service
-    - Stop Dock service
-    - Disable Dock service
-    - Stop etcd service
-    - Disable etcd service
-    - Reload daemon
-    - Remove systemd service files
-    - Remove etcd data dir
-  ignore_errors: true
-  become: true
-  tags: hotpot
-
-- name: kill osdslet containerized service
-  docker_container:
-    name: osdslet
-    image: "{{ controller_docker_image }}"
-    state: absent
-  when: install_from == "container"
-  tags: hotpot
-
-- name: kill osdsapiserver containerized service
-  docker_container:
-    name: apiserver
-    image: "{{ apiserver_docker_image }}"
-    state: absent
-  when: install_from == "container"
-  tags: hotpot
-
-- name: kill osdsdock containerized service
-  docker_container:
-    name: osdsdock
-    image: "{{ dock_docker_image }}"
-    state: absent
-  when: install_from == "container"
-  tags: hotpot
-
-- name: clean etcd folder
-  file:
-    path: "{{ etcd_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
-  tags: hotpot
-
-- name: clean etcd db
-  file:
-    path: "{{ etcd_data_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
-  tags: hotpot
-
-- name: stop all gelato services
-  shell: docker-compose down
-  args:
-    chdir: "{{ gelato_work_dir }}"
-  when: deploy_project != "hotpot"
-  ignore_errors: yes
+- name: Uninstall and cleanup Gelato
+  include_tasks: scenarios/gelato.yml
+  when: enable_gelato == true
   tags: gelato
 
-- name: clean opensds flexvolume plugins binary file if flexvolume specified
-  file:
-    path: "{{ flexvolume_plugin_dir }}"
-    state: absent
-    force: yes
-  ignore_errors: yes
-  when: sushi_plugin_type == "flexvolume"
-  tags: sushi
-
-- name: clean opensds external provisioner plugin if flexvolume specified
-  shell: |
-    . /etc/profile
-    kubectl delete -f deploy/
-  args:
-    chdir: "{{ sushi_work_dir }}/provisioner"
-  ignore_errors: yes
-  when: sushi_plugin_type == "flexvolume"
-  tags: sushi
-
-- name: clean opensds csi plugin if csi plugin specified
-  shell: |
-    . /etc/profile
-    kubectl delete -f deploy/kubernetes/block
-    kubectl delete -f deploy/kubernetes/file
-  args:
-    chdir: "{{ sushi_work_dir }}/csi"
-  ignore_errors: yes
-  when: sushi_plugin_type == "csi"
+- name: Uninstall and cleanup Sushi
+  include_tasks: scenarios/sushi.yml
+  when: enable_sushi == true
   tags: sushi
 
 - name: include scenarios/auth-keystone.yml when keystone specified
@@ -160,29 +63,3 @@
   include_tasks: scenarios/srm-toolchain.yml
   when: install_srm_toolchain == true
   tags: srm_toolchain
-
-- name: clean all configuration and log files
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "{{ opensds_config_dir }}"
-    - "{{ opensds_log_dir }}"
-    - "{{ opensds_certs_dir }}"
-    - "{{ delfin_config_dir }}"
-  ignore_errors: yes
-
-- name: clean all created work directories
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "{{ hotpot_work_dir }}"
-    - "{{ sushi_work_dir }}"
-    - "{{ dashboard_work_dir }}"
-    - "{{ gelato_work_dir }}"
-  ignore_errors: yes
-  when: source_purge is undefined or source_purge != false
-  tags: clean

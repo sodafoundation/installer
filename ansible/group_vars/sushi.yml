@@ -22,6 +22,10 @@ dummy:
 # GENERAL #
 ###########
 
+enable_sushi: false
+
+sushi_release_version: v1.4.0
+
 # 'hotpot_only' is the default integration way, but you can change it to 'csi'
 # or 'flexvolume'
 sushi_plugin_type: hotpot_only
@@ -40,7 +44,7 @@ flexvolume_plugin_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/opens
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-sushi_repo_branch: "{{ repo_branch }}"
+sushi_repo_branch: master
 
 # These fields are NOT suggested to be modified
 sushi_remote_url: https://github.com/opensds/nbp.git

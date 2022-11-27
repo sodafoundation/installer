@@ -25,6 +25,8 @@ dummy:
 # Install Orchestration Manager (true/false)
 enable_orchestration: false
 
+orchestration_release_version: v0.13.0
+
 # Orchestration configuration input
 hotpot_ip: "{{ host_ip }}"
 hotpot_port: "50040"
@@ -49,7 +51,7 @@ venv: "{{ orchestration_work_dir }}/venv"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-orchestration_repo_branch: "{{ repo_branch }}"
+orchestration_repo_branch: master
 
 # TODO: This is temp fix to use deprecated all in one image.
 # FIXME: Change the deprecated image to new st2-docker

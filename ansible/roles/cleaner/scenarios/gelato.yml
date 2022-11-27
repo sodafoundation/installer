@@ -1,4 +1,4 @@
-# Copyright 2021 The OpenSDS Authors.
+# Copyright 2022 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,21 @@
 # limitations under the License.
 
 ---
-- name: build and install delfin using containerized deployment
-  shell: "{{ item }}"
-  with_items:
-    - docker build -t sodafoundation/delfin .
-    - DELFIN_METRICS_DIR={{ delfin_exporter_prometheus_metrics_dir }} DELFIN_HOST_IP={{ host_ip }} DELFIN_RABBITMQ_USER={{ delfin_rabbitmq_user }} DELFIN_RABBITMQ_PASS={{ delfin_rabbitmq_pass }} docker-compose up -d
-  become: yes
+
+- name: stop all gelato services
+  shell: docker compose down
   args:
-    chdir: "{{ delfin_work_dir }}"
+    chdir: "{{ gelato_work_dir }}"
+  ignore_errors: yes
+  tags: gelato
+
+- name: clean all Gelato created work directories
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ gelato_work_dir }}"
+  ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean

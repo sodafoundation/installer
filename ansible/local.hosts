@@ -28,3 +28,5 @@ localhost ansible_connection=local
 [k8smaster]
 # master ansible_port=22 ansible_user=root ansible_host=192.168.20.xx
 
+[delfin-nodes]
+localhost ansible_connection=local

@@ -32,9 +32,9 @@
   shell: "{{ item }}"
   become_user: "{{ k8s_user }}"
   with_items:
-    - "kubectl patch pvc mongo-0-pv-claim -p '\''{{patch_param }}'\'' --type=merge -n soda-multi-cloud"
-    - "kubectl patch pvc mongo-1-pv-claim -p '\''{{patch_param }}'\'' --type=merge -n soda-multi-cloud"
-    - "kubectl patch pvc mongo-2-pv-claim -p '\''{{patch_param }}'\'' --type=merge -n soda-multi-cloud"
+    - 'kubectl patch pvc mongo-0-pv-claim -p "{{patch_param }}" --type=merge -n soda-multi-cloud'
+    - 'kubectl patch pvc mongo-1-pv-claim -p "{{patch_param }}" --type=merge -n soda-multi-cloud'
+    - 'kubectl patch pvc mongo-2-pv-claim -p "{{patch_param }}" --type=merge -n soda-multi-cloud'
   ignore_errors: yes
 
 - name: Pause for 2 seconds
@@ -88,10 +88,8 @@
 
 
 # ---------delete the multi-cloud folder in /opt/opensds-gelato ---------
-- name: Clean artifact path ub /opt/opensds-gelato...
+- name: Clean artifact path ub /opt/opensds-gelato
   file:
     state: absent
     path: "{{ gelato_work_dir }}/multi-cloud/"
-  ignore_error: yes
   become: yes
-  

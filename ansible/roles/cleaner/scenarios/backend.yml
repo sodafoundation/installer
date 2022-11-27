@@ -91,7 +91,7 @@
   ignore_errors: yes
 
 - name: stop cinder-standalone service
-  shell: docker-compose down
+  shell: docker compose down
   become: true
   args:
     chdir: "{{ cinder_data_dir }}/cinder/contrib/block-box"

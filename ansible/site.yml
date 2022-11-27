@@ -1,4 +1,4 @@
-# Copyright 2019 The OpenSDS Authors.
+# Copyright 2022 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,36 @@
   become: True
   
 # Defines deployment design and assigns role to server groups
+- name: Install delfin
+  hosts: delfin-nodes
+  remote_user: root
+  vars_files:
+    - group_vars/delfin.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: delfin-installer
+      when:
+        - enable_delfin == true
+  tags: delfin
+
+- name: Install SRM Toolchain
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/delfin.yml
+    - group_vars/srm-toolchain.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: srm-toolchain-installer
+      when:
+        - install_srm_toolchain == true
+  tags: srm_toolchain
+
 - name: Install keystone services
   hosts: controllers
   remote_user: root
@@ -29,14 +59,16 @@
     - group_vars/common.yml
     - group_vars/hotpot.yml
     - group_vars/auth.yml
+    - group_vars/dashboard.yml
+    - group_vars/gelato.yml
+    - group_vars/gelato-ha.yml
   gather_facts: false
   become: True
   tasks:
     - import_role:
-        name: common
-      tags: common
-    - import_role:
         name: auth-installer
+      when:
+        - enable_dashboard == true or enable_hotpot == true or enable_gelato == true or gelato_ha == true
   tags: keystone
 
 - name: Deploy SODA Hotpot(api, controller, dock) installer
@@ -52,15 +84,14 @@
   become: True
   tasks:
     - import_role:
-        name: common
-      when: common_role_done is not defined
-    - import_role:
         name: osdsdb
+      when:
+        - enable_hotpot == true
       tags: etcd
     - import_role:
         name: hotpot-installer
       when:
-        - deploy_project != "gelato"
+        - enable_hotpot == true
   tags: hotpot
 
 - name: Deploy Dock
@@ -75,99 +106,10 @@
   become: True
   tasks:
     - import_role:
-        name: common
-      when: common_role_done is not defined
-    - import_role:
         name: osdsdock
       when:
-        - deploy_project != "gelato"
+        - enable_hotpot == true
   tags: dock
-
-- name: Install delfin
-  hosts: controllers
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/delfin.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: delfin-installer
-      when:
-        - enable_delfin == true
-  tags: delfin
-  
-- name: Install SRM Toolchain
-  hosts: controllers
-  remote_user: root
-  vars_files: 
-    - group_vars/common.yml
-    - group_vars/delfin.yml
-    - group_vars/srm-toolchain.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: srm-toolchain-installer
-      when:
-        - install_srm_toolchain == true
-  tags: srm_toolchain
-
-# Defines deployment design and assigns role to server groups
-
-- name: Install Gelato
-  hosts: controllers
-  remote_user: root
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/hotpot.yml
-    - group_vars/auth.yml
-    - group_vars/gelato.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: common
-      when: common_role_done is not defined
-    - import_role:
-        name: gelato-installer
-      when:
-        - deploy_project != "hotpot"
-        - gelato_ha == false  
-  tags: gelato
- 
-- name: Install Gelato - HA Mode
-  hosts:
-  -  k8smaster
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/gelato-ha.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: gelato-ha-installer
-      when:
-        - deploy_project != "hotpot"
-        - gelato_ha == true
-  tags: gelato-ha
-
-- name: Update the API, S3 IPs and Ports
-  hosts: controllers
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/gelato-ha.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: ha-ip-update
-      when:
-        - deploy_project != "hotpot"
-        - gelato_ha == true
-  tags: gelato-ha
-
 
 - name: Install Sushi
   hosts: controllers
@@ -181,11 +123,9 @@
   become: True
   tasks:
     - import_role:
-        name: common
-      when: common_role_done is not defined
-    - import_role:
         name: sushi-installer
       when:
+        - enable_sushi == true
         - sushi_plugin_type != "hotpot_only"
   tags: sushi
 
@@ -205,6 +145,8 @@
         file: group_vars/gelato-ha.yml
     - include_role:
         name: dashboard-installer
+      when:
+        - enable_dashboard == true
   tags: dashboard
 
 - name: deploy tools for telemetry

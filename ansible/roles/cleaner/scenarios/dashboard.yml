@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-# Copyright 2020 The SODA Authors.
+# Copyright 2022 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,5 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source {{ venv }}/bin/activate
-python3 $@
+---
+
+- name: stop container where Dashboard is located
+  docker_container:
+    name: dashboard
+    image: "{{ dashboard_docker_image }}"
+    state: absent
+  when: dashboard_installation_type == "container"
+  ignore_errors: true
+  tags: dashboard
+
+- name: clean all Dashboard created work directories
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ dashboard_work_dir }}"
+  ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean

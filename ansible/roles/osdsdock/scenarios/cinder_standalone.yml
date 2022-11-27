@@ -163,7 +163,7 @@
     chdir: "{{ cinder_data_dir }}/cinder/contrib/block-box"
 
 - name: start cinder-standalone service
-  shell: docker-compose up -d
+  shell: docker compose up -d
   become: true
   args:
     chdir: "{{ cinder_data_dir }}/cinder/contrib/block-box"

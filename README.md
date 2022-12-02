@@ -29,9 +29,9 @@ SODA Installer supports installation of following SODA projects. If you want to 
 
 ### Install steps
 
-Ensure no ansible & docker installed, OR **Lastest** ansible and docker tools are installed with versions listed below or later. If ansible & docker is not installed in the OS, script `install_dependencies.sh` will install it.
+Ensure no ansible & docker installed, OR **Latest** ansible and docker tools are installed with versions listed below or later. If ansible & docker is not installed in the OS, script `install_dependencies.sh` will install it.
 
-Update configurations for individual projects in **`installer/ansible/group_var/*.yml`** and follow comands listed below.
+Update configurations for individual projects in **`installer/ansible/group_var/*.yml`** and follow commands listed below.
 
 * auth.yml
 * common.yml

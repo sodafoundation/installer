@@ -53,6 +53,15 @@ install_hotpot(){
     sed -i 's/^enable_dashboard: .*/enable_dashboard: '"false"'/g' ansible/group_vars/dashboard.yml
 }
 
+install_gelato(){
+    # Enable Gelato and Dashboard installation
+    sed -i 's/^enable_gelato: .*/enable_gelato: '"true"'/g' ansible/group_vars/gelato.yml
+    sed -i 's/^enable_dashboard: .*/enable_dashboard: '"true"'/g' ansible/group_vars/dashboard.yml
+    sudo -E env "PATH=$PATH" ansible-playbook ansible/site.yml -i ansible/local.hosts -v
+    sudo -E env "PATH=$PATH" ansible-playbook ansible/clean.yml -i ansible/local.hosts -v
+    sed -i 's/^enable_gelato: .*/enable_gelato: '"false"'/g' ansible/group_vars/gelato.yml
+    sed -i 's/^enable_dashboard: .*/enable_dashboard: '"false"'/g' ansible/group_vars/dashboard.yml
+}
 
 case "$# $1" in
     "1 delfin")
@@ -63,8 +72,12 @@ case "$# $1" in
     echo "Validate the installation using container type"
     install_hotpot
     ;;
+    "1 gelato")
+    echo "Validate the installation using repository type"
+    install_gelato
+    ;;
      *)
-    echo "Usage: $(basename $0) <delfin|hotpot>"
+    echo "Usage: $(basename $0) <delfin|hotpot|gelato>"
     exit 1
     ;;
 esac

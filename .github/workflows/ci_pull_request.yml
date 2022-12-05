@@ -54,3 +54,9 @@ jobs:
           GOPATH: "/home/runner/work/installer/"
         if: ${{ always() }}
 
+      - name: 'Make the CI check executable and initiate the testing with SODA gelato'
+        run: |
+          sudo chmod +x ./ci/ci_check.sh
+          ./ci/ci_check.sh gelato
+        shell: bash
+        if: ${{ always() }}

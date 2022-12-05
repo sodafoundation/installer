@@ -12,21 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Check and Install Redis
-  include_tasks: scenarios/redis.yml
-  when: delfin_installation_type != "container"
-
-- name: Check and Install RabbitMQ
-  include_tasks: scenarios/rabbitmq.yml
-  when: delfin_installation_type != "container"
-
-- name: Get delfin source code
-  include_tasks: scenarios/source-code.yml
-
-- name: Start delfin processes
-  include_tasks: scenarios/start-delfin.yml
-  when: delfin_installation_type != "container"
-
-- name: containerized delfin deployment
-  include_tasks: scenarios/container.yml
-  when: delfin_installation_type == "container"
+- name: Calling Delfin ansible installer
+  include_tasks: scenarios/delfin_install.yml

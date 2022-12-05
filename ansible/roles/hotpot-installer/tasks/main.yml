@@ -13,6 +13,46 @@
 # limitations under the License.
 
 ---
+- name: install system packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - make
+    - gcc
+    - open-iscsi
+    - librados-dev
+    - librbd-dev
+  when: ansible_distribution == "Ubuntu" and (ansible_lsb.major_release|int >=16 and ansible_lsb.major_release|int <=22)
+
+- name: install requests package with pip
+  pip:
+    name: requests
+
+- name: create opensds work directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ hotpot_work_dir }}"
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_driver_config_dir }}"
+    - "{{ opensds_log_dir }}"
+
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/repository.yml
+  when: install_from == "repository"
+
+- name: include scenarios/release.yml when installing from release
+  include: scenarios/release.yml
+  when: install_from == "release"
+
+- name: copy config templates into opensds global config folder
+  copy:
+    src: ../../../../conf/
+    dest: "{{ opensds_config_dir }}"
+
 - name: generate certificates
   shell: "{{ item }}"
   with_items:

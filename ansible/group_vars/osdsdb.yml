@@ -31,7 +31,7 @@ etcd_data_dir: /var/lib/etcd
 #  ETCD   #
 ###########
 
-etcd_release: v3.2.25
+etcd_release: v3.5.6
 #FOR MULTI-NODE USE HOST_IP INSTEAD OF 127.0.0.1
 etcd_host: 127.0.0.1 # For multi-node set it host ip as controllers ip address
 etcd_port: 2379
@@ -39,7 +39,7 @@ etcd_peer_port: 2380
 
 # These fields are NOT suggested to be modified
 etcd_tarball: etcd-{{ etcd_release }}-linux-amd64.tar.gz
-etcd_download_url: https://github.com/coreos/etcd/releases/download/{{ etcd_release }}/{{ etcd_tarball }}
+etcd_download_url: https://storage.googleapis.com/etcd/{{ etcd_release }}/{{ etcd_tarball }}
 etcd_dir: /opt/etcd-{{ etcd_release }}-linux-amd64
 
 

@@ -1,0 +1,107 @@
+# Copyright 2022 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+# Kill all the systemd processes and disable services
+- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
+  shell: killall osdslet osdsdock osdsapiserver etcd
+  when: install_from != "container" and install_as_systemd == false
+  ignore_errors: true
+  become: true
+  tags: hotpot
+
+# Kill all the systemd processes and disable services
+- name: kill osdslet and osdsdock and osdsapiserver etcd daemon service
+  shell: killall osdslet osdsdock osdsapiserver etcd
+  when: install_from != "container" and install_as_systemd == true
+  notify:
+    - Stop Controller service
+    - Disable Controller service
+    - Stop API service
+    - Disable API service
+    - Stop Dock service
+    - Disable Dock service
+    - Stop etcd service
+    - Disable etcd service
+    - Reload daemon
+    - Remove systemd service files
+    - Remove etcd data dir
+  ignore_errors: true
+  become: true
+  tags: hotpot
+
+- name: kill osdslet containerized service
+  docker_container:
+    name: osdslet
+    image: "{{ controller_docker_image }}"
+    state: absent
+  when: install_from == "container"
+  tags: hotpot
+
+- name: kill osdsapiserver containerized service
+  docker_container:
+    name: apiserver
+    image: "{{ apiserver_docker_image }}"
+    state: absent
+  when: install_from == "container"
+  tags: hotpot
+
+- name: kill osdsdock containerized service
+  docker_container:
+    name: osdsdock
+    image: "{{ dock_docker_image }}"
+    state: absent
+  when: install_from == "container"
+  tags: hotpot
+
+- name: clean etcd folder
+  file:
+    path: "{{ etcd_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
+  tags: hotpot
+
+- name: clean etcd db
+  file:
+    path: "{{ etcd_data_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  when: install_as_systemd == false and ( database_purge is undefined or database_purge == true )
+  tags: hotpot
+
+- name: clean all Hotpot configuration and log files
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ opensds_config_dir }}"
+    - "{{ opensds_log_dir }}"
+    - "{{ opensds_certs_dir }}"
+  ignore_errors: yes
+
+- name: clean all created work directories
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ hotpot_work_dir }}"
+  ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean

@@ -13,56 +13,18 @@
 # limitations under the License.
 
 ---
-- name: Stop delfin containers, if started
+- name: Check for Delfin source code existed
+  stat:
+    path: "{{ delfin_work_dir }}/installer/ansible"
+  ignore_errors: yes
+  register: delfinexisted
+
+- name: Uninstall Delfin using ansible playbook
   shell: "{{ item }}"
   with_items:
-    - docker-compose down
-  become: yes
+    - ansible-playbook clean.yml -i local.hosts | tee /var/log/delfin_ansible.log
+  when:
+    - delfinexisted.stat.exists is defined or delfinexisted.stat.exists == true
   ignore_errors: yes
   args:
-    chdir: "{{ delfin_work_dir }}"
-
-- name: Get running delfin processes
-  shell: "ps -ef | grep -v grep | grep -i 'python3 /opt/delfin-linux-amd64/delfin/' | awk '{print $2}'"
-  register: running_processes
-
-- name: Kill running delfin processes
-  shell: "kill {{ item }}"
-  with_items: "{{ running_processes.stdout_lines }}"
-  ignore_errors: yes
-
-- wait_for:
-    path: "/proc/{{ item }}/status"
-    state: absent
-  with_items: "{{ running_processes.stdout_lines }}"
-  ignore_errors: yes
-  register: killed_processes
-
-- name: Force kill stuck processes
-  shell: "kill -9 {{ item }}"
-  with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
-
-- name: Stop service of delfin, if started
-  service:
-    name: "{{ item }}"
-    state: stopped
-  with_items:
-    - rabbitmq-server
-    - redis-server
-  become: yes
-  ignore_errors: yes
-
-- name: clean up all delfin directories
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
-  with_items:
-    - "{{ delfin_work_dir }}"
-    - "{{ delfin_tarball_dir }}"
-  ignore_errors: yes
-  tags:
-    - delfin
-    - clean
-  when:
-    - source_purge is undefined or source_purge != false
+    chdir: "{{ delfin_work_dir }}/installer/ansible"

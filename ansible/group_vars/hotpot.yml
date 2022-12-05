@@ -22,8 +22,17 @@ dummy:
 # GENERAL #
 ###########
 
+enable_hotpot: false
+
+api_release_version: v1.1.0
+controller_release_version: v1.1.0
+dock_release_version: v1.3.0
+
 apiserver_endpoint: "{{ host_ip }}:50040"
 controller_endpoint: "{{ host_ip }}:50049"
+
+# SODA hotpot configuration file
+opensds_conf_file: /etc/opensds/opensds.conf
 
 
 # These fields are NOT suggested to be modified
@@ -42,9 +51,9 @@ dock_log_file: "{{ opensds_log_dir }}/osdsdock.log"
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-api_repo_branch: "{{ repo_branch }}"
-controller_repo_branch: "{{ repo_branch }}"
-dock_repo_branch: "{{ repo_branch }}"
+api_repo_branch: master
+controller_repo_branch: master
+dock_repo_branch: master
 
 # These fields are NOT suggested to be modified
 api_remote_url: https://github.com/sodafoundation/api.git

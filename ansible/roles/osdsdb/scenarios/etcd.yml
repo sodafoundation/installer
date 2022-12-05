@@ -109,10 +109,3 @@
   when:
     - install_as_systemd == true and ( service_etcd_status.rc != 0 and etcd_service_source_exists.stat.exists is undefined or etcd_service_source_exists.stat.exists == false )  
   become: true
-
-- name: check etcd cluster health
-  shell: ./etcdctl --endpoints http://{{ etcd_host }}:{{ etcd_port }} cluster-health
-  become: true
-  ignore_errors: true
-  args:
-    chdir: "{{ etcd_dir }}"

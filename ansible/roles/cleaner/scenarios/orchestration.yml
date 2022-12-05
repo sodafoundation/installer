@@ -24,7 +24,7 @@
 - name: bring down stackstorm docker instances
   shell: "{{ item }}"
   with_items:
-    - docker-compose down
+    - docker compose down
   args:
     chdir: "{{ st2_installer_work_dir }}"
     warn: false

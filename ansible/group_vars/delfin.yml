@@ -1,4 +1,4 @@
-# Copyright 2020 The SODA Authors.
+# Copyright 2022 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,19 +22,36 @@ dummy:
 # GENERAL #
 ###########
 
-# Install delfin (true/false)
 enable_delfin: false
 
-# delfin installation types are: 'repository', 'release' and 'container''
-delfin_installation_type: "{{ install_from }}"
+# This field indicates local machine host ip
+delfin_host_ip: 127.0.0.1
 
-# These fields are NOT suggested to be modifie
+# delfin installation types are: 'repository', 'release' and 'container''
+delfin_installation_type: repository
+
+# These fields below will specify the tag based on install from type
+delfin_branch: master
+
+# Delfin  projects release versions
+delfin_release_version: v1.6.1
+
+# delete all source packages
+source_purge: true
+
+# delete database
+database_purge: true
+
+# URLs, Environment Variables, IP addresses and Ports list
+soda_delfin_url: "http://{{ host_ip }}:8190"
+
+# These fields are NOT suggested to be modified
 delfin_work_dir: /opt/delfin-linux-amd64
 delfin_config_dir: /etc/delfin
 venv: "{{ delfin_work_dir }}/venv"
 
 delfin_redis_ip: 127.0.0.1
-delfin_redis_port: 26379
+delfin_redis_port: 6379
 
 delfin_rabbitmq_user: delfinuser
 delfin_rabbitmq_pass: delfinpass
@@ -70,7 +87,7 @@ delfin_exporter_alertmanager_port: 9093
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-delfin_repo_branch: "{{ repo_branch }}"
+delfin_repo_branch: "{{ delfin_branch }}"
 
 # These fields are NOT suggested to be modified
 delfin_remote_url: https://github.com/sodafoundation/delfin.git

@@ -15,8 +15,8 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [1.13.x]
-        os: [ubuntu-18.04]
+        go-version: [1.17.9]
+        os: [ubuntu-20.04]
         
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -32,59 +32,25 @@ jobs:
       - name: checkout the repository
         uses: actions/checkout@v2
       
-      - name: List ansible sources in the runtime
+      - name: Install Pre-requisites
         run: |
-            echo "Installed Ansible Version in Runtime: "
-            ansible --version
-        
-      - name: Remove latest ansible on Ubuntu 18.04
-        run: |
-            echo "uninstall with pipx"
-            pipx uninstall ansible-core
-        if: ${{ matrix.os == 'ubuntu-18.04' }}
-
-      # Change the permissions of the ansible installer
-      - name: 'Make ansible installer executable and run install ansible on OS: ${{ matrix.os }}'
-        run: |
-            sudo chmod +x ./ansible/install_ansible.sh
-            ./ansible/install_ansible.sh
-        shell: bash
-        env:
-          CI: true
-        if: ${{ always() }}
-
-      - name: 'Make the CI check executable and initiate the testing with SODA Containers'
-        run: |
-          sudo chmod +x ./ci/ci_check.sh
-          ./ci/ci_check.sh container
-        shell: bash
-        env:
-          GOPATH: "/home/runner/work/installer/"
-        if: ${{ always() }}
-
-      - name: 'Make the CI check executable and initiate the testing with SODA repository'
-        run: |
-          sudo chmod +x ./ci/ci_check.sh
-          ./ci/ci_check.sh repository
-        shell: bash
-        env:
-          GOPATH: "/home/runner/work/installer/"
-        if: ${{ always() }}
+          wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+          echo deb https://download.ceph.com/debian-luminous/ xenial main | sudo tee /etc/apt/sources.list.d/ceph.list
+          sudo apt-get update && sudo apt-get install -y libcephfs-dev librbd-dev librados-dev
       
-      - name: 'Make the CI check executable and initiate the testing with SODA release'
+      - name: 'Make the CI check executable and initiate the testing with SODA delfin'
         run: |
           sudo chmod +x ./ci/ci_check.sh
-          ./ci/ci_check.sh release
+          ./ci/ci_check.sh delfin
+        shell: bash
+        if: ${{ always() }}
+
+      - name: 'Make the CI check executable and initiate the testing with SODA hotpot'
+        run: |
+          sudo chmod +x ./ci/ci_check.sh
+          ./ci/ci_check.sh hotpot
         shell: bash
         env:
           GOPATH: "/home/runner/work/installer/"
         if: ${{ always() }}
 
-      - name: 'Uninstall SODA release and clean up'
-        run: |
-          sudo chmod +x ./ci/ci_check.sh
-          ./ci/ci_check.sh uninstall_release
-        shell: bash
-        env:
-          GOPATH: "/home/runner/work/installer/"
-        if: ${{ always() }}

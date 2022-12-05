@@ -16,6 +16,10 @@
 - set_fact:
     go_path: "{{ lookup('env', 'GOPATH') }}"
 
+- set_fact:
+    go_path: "{{ lookup('env', 'HOME') }}/go"
+  when: go_path == ""
+
 - name: check go_path
   shell: "{{ item }}"
   with_items:
@@ -27,29 +31,24 @@
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/sodafoundation/api"
-  when: deploy_project != "gelato"
+  when: enable_hotpot == true
   tags: hotpot
+  ignore_errors: yes
 
 - name: clean sodafoundation controller data
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/sodafoundation/controller"
-  when: deploy_project != "gelato"
+  when: enable_hotpot == true
   tags: hotpot
+  ignore_errors: yes
 
 - name: clean sodafoundation dock data
   shell: make clean
   args:
     chdir: "{{ go_path }}/src/github.com/sodafoundation/dock"
-  when: deploy_project != "gelato"
+  when: enable_hotpot == true
   tags: hotpot
-
-- name: clean sodafoundation multi-cloud engine data
-  shell: make clean
-  args:
-    chdir: "{{ go_path }}/src/github.com/sodafoundation/multi-cloud"
-  when: deploy_project != "hotpot"
-  tags: gelato
   ignore_errors: yes
 
 - name: clean sodafoundation northbound plugin data

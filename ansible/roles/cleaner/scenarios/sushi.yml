@@ -1,0 +1,55 @@
+# Copyright 2022 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: clean opensds flexvolume plugins binary file if flexvolume specified
+  file:
+    path: "{{ flexvolume_plugin_dir }}"
+    state: absent
+    force: yes
+  ignore_errors: yes
+  when: sushi_plugin_type == "flexvolume"
+  tags: sushi
+
+- name: clean opensds external provisioner plugin if flexvolume specified
+  shell: |
+    . /etc/profile
+    kubectl delete -f deploy/
+  args:
+    chdir: "{{ sushi_work_dir }}/provisioner"
+  ignore_errors: yes
+  when: sushi_plugin_type == "flexvolume"
+  tags: sushi
+
+- name: clean opensds csi plugin if csi plugin specified
+  shell: |
+    . /etc/profile
+    kubectl delete -f deploy/kubernetes/block
+    kubectl delete -f deploy/kubernetes/file
+  args:
+    chdir: "{{ sushi_work_dir }}/csi"
+  ignore_errors: yes
+  when: sushi_plugin_type == "csi"
+  tags: sushi
+
+- name: clean all SUSHI created work directories
+  file:
+    path: "{{ item }}"
+    state: absent
+    force: yes
+  with_items:
+    - "{{ sushi_work_dir }}"
+  ignore_errors: yes
+  when: source_purge is undefined or source_purge != false
+  tags: clean

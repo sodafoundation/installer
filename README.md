@@ -69,7 +69,7 @@ sudo apt-get update && sudo apt-get install -y git
 git clone https://github.com/sodafoundation/installer.git
 # git checkout <installer-release-version>
 cd installer/ansible
-chmod +x install_dependencies.sh && ./install_dependencies.sh
+chmod +x install_dependencies.sh && source install_dependencies.sh
 export PATH=$PATH:/home/$USER/.local/bin
 export HOST_IP=192.168.0.2 # Change HOST_IP value to real host ip
 sudo -E env "PATH=$PATH" ansible-playbook site.yml -i local.hosts -v

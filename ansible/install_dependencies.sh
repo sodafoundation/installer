@@ -59,9 +59,5 @@ else
 fi
 
 # Ensure /usr/local/bin is in path
-export PATH=$PATH:/usr/local/bin
-
-# Ensure usr/local/go/bin is in path, create GOPATH and source it
-echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
-echo 'export GOPATH=$HOME/gopath' >> /etc/profile
-source /etc/profile
+export PATH=$PATH:/usr/local/bin:/usr/local/go/bin
+export GOPATH=$HOME/gopath

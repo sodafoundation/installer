@@ -45,4 +45,6 @@
     - ansible-playbook site.yml -i local.hosts | tee /var/log/delfin_ansible.log
   args:
     chdir: "{{ delfin_work_dir }}/installer/ansible"
-  register: ansible_stdout
+
+- name: Check return status of Delfin ansible playbook
+  shell: grep '.* ok=.* changed=.* failed=0 ' /var/log/delfin_ansible.log

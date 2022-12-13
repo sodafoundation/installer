@@ -43,4 +43,6 @@
     - ansible-playbook site.yml -i local.hosts | tee /var/log/gelato_ansible.log
   args:
     chdir: "{{ gelato_work_dir }}/installer/ansible"
-  register: ansible_stdout
+
+- name: Check return status of gelato ansible playbook
+  shell: grep '.* ok=.* changed=.* failed=0 ' /var/log/gelato_ansible.log

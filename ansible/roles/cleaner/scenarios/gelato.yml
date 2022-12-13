@@ -13,21 +13,18 @@
 # limitations under the License.
 
 ---
-
-- name: stop all gelato services
-  shell: docker compose down
-  args:
-    chdir: "{{ gelato_work_dir }}"
+- name: Check for Gelato source code existed
+  stat:
+    path: "{{ gelato_work_dir }}/installer/ansible"
   ignore_errors: yes
-  tags: gelato
+  register: gelatoexisted
 
-- name: clean all Gelato created work directories
-  file:
-    path: "{{ item }}"
-    state: absent
-    force: yes
+- name: Uninstall Gelato using ansible playbook
+  shell: "{{ item }}"
   with_items:
-    - "{{ gelato_work_dir }}"
+    - ansible-playbook clean.yml -i local.hosts | tee /var/log/gelato_ansible.log
+  when:
+    - gelatoexisted.stat.exists is defined or gelatoexisted.stat.exists == true
   ignore_errors: yes
-  when: source_purge is undefined or source_purge != false
-  tags: clean
+  args:
+    chdir: "{{ gelato_work_dir }}/installer/ansible"

@@ -39,21 +39,6 @@
     - import_role:
         name: cleaner
 
-# Uninstall the Multicloud services on Kubernetes Cluster.        
-- name: uninstall multi-cloud HA services on Kubernetes Cluster.
-  hosts: k8smaster
-  remote_user:  "{{ k8s_user }}"
-  vars_files:
-    - group_vars/common.yml
-    - group_vars/gelato-ha.yml
-  gather_facts: false
-  become: True
-  tasks:
-    - import_role:
-        name: gelato-ha-uninstaller
-      when: gelato_ha == true
-  tags: gelato_ha
-
 - name: uninstall tools for telemetry
   hosts: controllers
   remote_user: root

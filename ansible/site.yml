@@ -71,6 +71,21 @@
         - enable_dashboard == true or enable_hotpot == true or enable_gelato == true or gelato_ha == true
   tags: keystone
 
+- name: Install Gelato/Gelato-HA
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/gelato.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - import_role:
+        name: gelato-installer
+      when:
+        - enable_gelato == true or gelato_ha == true
+  tags: gelato
+
 - name: Deploy SODA Hotpot(api, controller, dock) installer
   hosts: controllers
   remote_user: root
@@ -179,4 +194,3 @@
       when:
         - enable_orchestration == true
   tags: orchestration
-

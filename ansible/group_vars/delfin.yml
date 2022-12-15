@@ -51,7 +51,7 @@ delfin_config_dir: /etc/delfin
 venv: "{{ delfin_work_dir }}/venv"
 
 delfin_redis_ip: 127.0.0.1
-delfin_redis_port: 6379
+delfin_redis_port: 26379
 
 delfin_rabbitmq_user: delfinuser
 delfin_rabbitmq_pass: delfinpass

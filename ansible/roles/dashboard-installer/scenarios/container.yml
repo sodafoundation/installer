@@ -55,7 +55,7 @@
       OPENSDS_ORCHESTRATION_URL: "http://{{ host_ip }}:5000"
       OPENSDS_S3_URL: "http://{{ gelato_ha_s3_ip }}:{{ gelato_ha_s3_port }}"
       OPENSDS_S3_HOST: "{{ gelato_ha_s3_ip }}"
-      OPENSDS_S3_PORT: "{{ gelato_ha_s3_port }}"
+      OPENSDS_S3_PORT: "{{ gelato_ha_s3_port | quote }}"
       SODA_PROMETHEUS_PORT: "{{ prometheus_port | quote }}"
       SODA_ALERTMANAGER_PORT: "{{ alertmanager_port | quote }}"
       SODA_GRAFANA_PORT: "{{ grafana_port | quote }}"

@@ -24,7 +24,7 @@ dummy:
 
 enable_dashboard: false
 
-dashboard_release_version: v1.7.1
+dashboard_release_version: v1.7.2
 
 # Dashboard installation types are: 'container', 'source_code'
 dashboard_installation_type: container

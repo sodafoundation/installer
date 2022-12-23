@@ -50,9 +50,46 @@ Update configurations for individual projects in **`installer/ansible/group_var/
 
 Please refer [SODA documentation](https://docs.sodafoundation.io/soda-gettingstarted/installation-using-ansible/) for the detailed installation steps and configuration options available.
 
+**Example#1:** To install Strato(Multi-cloud) and Dashboard using ansible installer.
 
 
-**Example:** To install Delfin, SRM tool chain and Dashboard using ansible installer.
+```bash
+sudo apt-get update && sudo apt-get install -y git
+git clone https://github.com/sodafoundation/installer.git
+# git checkout <installer-release-version>
+cd installer/ansible
+chmod +x install_dependencies.sh && source install_dependencies.sh
+export PATH=$PATH:/home/$USER/.local/bin
+```
+
+Enable following configurations
+ * In file installer/ansible/group_vars/gelato.yml
+`enable_gelato.yml: true`
+* In file installer/ansible/group_vars/dashboard.yml
+`enable_dashboard: true`
+* In file installer/ansible/group_vars/common.yml
+`host_ip: <User's IP address, eg. 192.168.0.2>`
+
+Note : 
+* Change HOST_IP value in below export command also.
+* To enable Storage Service Plan in Multi-cloud edit the configuration file installer/ansible/group_vars/common.yml as below 
+`enable_storage_service_plans: true`
+
+```bash
+export HOST_IP=192.168.0.2 # Change HOST_IP value to real host ip
+sudo -E env "PATH=$PATH" ansible-playbook site.yml -i local.hosts -v
+```
+
+**Example#2:** To install Delfin, SRM tool chain and Dashboard using ansible installer.
+
+```bash
+sudo apt-get update && sudo apt-get install -y git
+git clone https://github.com/sodafoundation/installer.git
+# git checkout <installer-release-version>
+cd installer/ansible
+chmod +x install_dependencies.sh && source install_dependencies.sh
+export PATH=$PATH:/home/$USER/.local/bin
+```
 
 Enable following configurations
  * In file installer/ansible/group_vars/delfin.yml
@@ -65,12 +102,6 @@ Enable following configurations
 `host_ip: <User's IP address, eg. 192.168.0.2>`
 
 ```bash
-sudo apt-get update && sudo apt-get install -y git
-git clone https://github.com/sodafoundation/installer.git
-# git checkout <installer-release-version>
-cd installer/ansible
-chmod +x install_dependencies.sh && source install_dependencies.sh
-export PATH=$PATH:/home/$USER/.local/bin
 export HOST_IP=192.168.0.2 # Change HOST_IP value to real host ip
 sudo -E env "PATH=$PATH" ansible-playbook site.yml -i local.hosts -v
 ```

@@ -80,7 +80,7 @@ export HOST_IP=192.168.0.2 # Change HOST_IP value to real host ip
 sudo -E env "PATH=$PATH" ansible-playbook site.yml -i local.hosts -v
 ```
 
-**Installation steps for Delfin :** To install Delfin, SRM tool chain and Dashboard using ansible installer,, please follow below steps.
+**Installation steps for Delfin :** To install Delfin, SRM tool chain and Dashboard using ansible installer, please follow below steps.
 
 ```bash
 sudo apt-get update && sudo apt-get install -y git

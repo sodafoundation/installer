@@ -50,7 +50,7 @@ Update configurations for individual projects in **`installer/ansible/group_var/
 
 Please refer [SODA documentation](https://docs.sodafoundation.io/soda-gettingstarted/installation-using-ansible/) for the detailed installation steps and configuration options available.
 
-**Installation steps for strato: ** To install Strato(Multi-cloud) and Dashboard using ansible installer, please follow below steps.
+**Installation steps for Strato :** To install Strato(Multi-cloud) and Dashboard using ansible installer, please follow below steps.
 
 
 ```bash

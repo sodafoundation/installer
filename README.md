@@ -56,7 +56,7 @@ Please refer [SODA documentation](https://docs.sodafoundation.io/soda-gettingsta
 ```bash
 sudo apt-get update && sudo apt-get install -y git
 git clone https://github.com/sodafoundation/installer.git
-git checkout 1.8.0 # you may choose specific release version also
+git checkout v1.8.0 # you may choose specific release version also
 cd installer/ansible
 chmod +x install_dependencies.sh && source install_dependencies.sh
 export PATH=$PATH:/home/$USER/.local/bin
@@ -85,7 +85,7 @@ sudo -E env "PATH=$PATH" ansible-playbook site.yml -i local.hosts -v
 ```bash
 sudo apt-get update && sudo apt-get install -y git
 git clone https://github.com/sodafoundation/installer.git
-git checkout 1.8.0 # you may choose specific release version also
+git checkout v1.8.0 # you may choose specific release version also
 cd installer/ansible
 chmod +x install_dependencies.sh && source install_dependencies.sh
 export PATH=$PATH:/home/$USER/.local/bin

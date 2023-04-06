@@ -22,10 +22,10 @@ dummy:
 # GENERAL #
 ###########
 
-enable_delfin: false
+enable_delfin: true
 
 # This field indicates local machine host ip
-delfin_host_ip: 127.0.0.1
+delfin_host_ip: 10.0.2.15
 
 # delfin installation types are: 'repository', 'release' and 'container''
 delfin_installation_type: repository
@@ -87,10 +87,10 @@ delfin_exporter_alertmanager_port: 9093
 
 # If user specifies intalling from repository, then he can choose the specific
 # repository branch
-delfin_repo_branch: "{{ delfin_branch }}"
+delfin_repo_branch: fix_rabbitmq_install
 
 # These fields are NOT suggested to be modified
-delfin_remote_url: https://github.com/sodafoundation/delfin.git
+delfin_remote_url: https://github.com/joseph-v/delfin.git
 
 ###########
 # RELEASE #

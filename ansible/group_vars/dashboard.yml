@@ -22,7 +22,7 @@ dummy:
 # GENERAL #
 ###########
 
-enable_dashboard: true
+enable_dashboard: false
 
 dashboard_release_version: v1.8.0
 

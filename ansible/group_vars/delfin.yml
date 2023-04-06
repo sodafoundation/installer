@@ -22,10 +22,10 @@ dummy:
 # GENERAL #
 ###########
 
-enable_delfin: true
+enable_delfin: false
 
 # This field indicates local machine host ip
-delfin_host_ip: 10.0.2.15
+delfin_host_ip: 127.0.0.1
 
 # delfin installation types are: 'repository', 'release' and 'container''
 delfin_installation_type: repository

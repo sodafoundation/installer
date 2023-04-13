@@ -60,4 +60,4 @@ fi
 
 # Ensure /usr/local/bin is in path
 export PATH=$PATH:/usr/local/bin:/usr/local/go/bin
-export GOPATH=$HOME/gopath
+export GOPATH=$HOME/gopath 

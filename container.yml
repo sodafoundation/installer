@@ -1,0 +1,38 @@
+# Copyright 2018 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: Install docker-py package using pip, while enabling containerized deployment
+  pip:
+    name: docker-py
+
+- name: Run osdslet containerized service
+  docker_container:
+    name: osdslet
+    image: "{{ controller_docker_image }}"
+    state: started
+    network_mode: host
+    restart_policy: always
+    volumes:
+    - "/etc/opensds/:/etc/opensds"
+
+- name: Run osdsapiserver containerized service
+  docker_container:
+    name: apiserver
+    image: "{{ apiserver_docker_image }}"
+    state: started
+    network_mode: host
+    restart_policy: always
+    volumes:
+    - "/etc/opensds/:/etc/opensds"

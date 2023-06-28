@@ -164,6 +164,25 @@
         - enable_dashboard == true
   tags: dashboard
 
+- name: deploy Strato UI
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/auth.yml
+    - group_vars/strato-ui.yml
+    - group_vars/gelato-ha.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - include_vars:
+        file: group_vars/gelato-ha.yml
+    - include_role:
+        name: strato-ui-installer
+      when:
+        - enable_strato_ui == true
+  tags: stratoui
+
 - name: deploy tools for telemetry
   hosts: controllers
   remote_user: root

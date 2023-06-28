@@ -17,6 +17,11 @@
   when: enable_dashboard == true
   tags: dashboard
 
+- name: Uninstall and cleanup Strato UI
+  include_tasks: scenarios/strato-ui.yml
+  when: enable_strato_ui == true
+  tags: stratoui
+
 - name: Uninstall and cleanup Hotpot
   include_tasks: scenarios/hotpot.yml
   when: enable_hotpot == true

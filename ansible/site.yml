@@ -62,13 +62,14 @@
     - group_vars/dashboard.yml
     - group_vars/gelato.yml
     - group_vars/gelato-ha.yml
+    - group_vars/strato-ui.yml
   gather_facts: false
   become: True
   tasks:
     - import_role:
         name: auth-installer
       when:
-        - enable_dashboard == true or enable_hotpot == true or enable_gelato == true or gelato_ha == true
+        - enable_dashboard == true or enable_hotpot == true or enable_gelato == true or gelato_ha == true or enable_strato_ui == true
   tags: keystone
 
 - name: Install Gelato/Gelato-HA

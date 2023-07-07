@@ -21,3 +21,9 @@
     state: absent
   ignore_errors: true
   tags: stratoui
+
+- name: Remove Strato UI docker image
+  docker_image:
+    state: absent
+    name: sodafoundation/strato-ui
+    tag: "{{ strato_ui_release_version }}"

@@ -17,6 +17,11 @@
   when: enable_dashboard == true
   tags: dashboard
 
+- name: Uninstall and cleanup Delfin UI
+  include_tasks: scenarios/delfin-ui.yml
+  when: enable_delfin_ui == true
+  tags: delfin_ui
+
 - name: Uninstall and cleanup Hotpot
   include_tasks: scenarios/hotpot.yml
   when: enable_hotpot == true

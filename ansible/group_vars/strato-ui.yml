@@ -26,7 +26,7 @@ enable_strato_ui: false
 
 strato_ui_port: 9003
 
-strato_ui_release_version: latest
+strato_ui_release_version: v1.8.1
 
 
 # Strato UI Console Login Address

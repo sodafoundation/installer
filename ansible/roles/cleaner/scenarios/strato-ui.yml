@@ -27,3 +27,7 @@
     state: absent
     name: sodafoundation/strato-ui
     tag: "{{ strato_ui_release_version }}"
+  when: 
+    - enable_strato_ui == true
+    - source_purge == true
+  tags: stratoui

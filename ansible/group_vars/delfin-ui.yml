@@ -22,7 +22,7 @@ dummy:
 # GENERAL #
 ###########
 
-enable_delfin_ui: true
+enable_delfin_ui: false
 
 delfin_ui_port: 9001
 

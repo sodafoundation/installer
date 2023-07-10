@@ -21,3 +21,13 @@
     state: absent
   ignore_errors: true
   tags: delfin_ui
+
+- name: Remove Delfin UI docker image
+  docker_image:
+    state: absent
+    name: sodafoundation/delfin-ui
+    tag: "{{ delfin_ui_release_version }}"
+  when: 
+    - enable_delfin_ui == true
+    - source_purge == true
+  tags: delfin_ui

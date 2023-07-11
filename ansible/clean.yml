@@ -33,6 +33,7 @@
     - group_vars/orchestration.yml
     - group_vars/delfin.yml
     - group_vars/srm-toolchain.yml
+    - group_vars/strato-ui.yml
     - group_vars/delfin-ui.yml
   gather_facts: false
   become: True

@@ -165,6 +165,7 @@
         - enable_dashboard == true
   tags: dashboard
 
+
 - name: deploy Strato UI
   hosts: controllers
   remote_user: root
@@ -183,6 +184,22 @@
       when:
         - enable_strato_ui == true
   tags: stratoui
+
+- name: Deploy Delfin UI
+  hosts: controllers
+  remote_user: root
+  vars_files:
+    - group_vars/common.yml
+    - group_vars/srm-toolchain.yml
+    - group_vars/delfin-ui.yml
+  gather_facts: false
+  become: True
+  tasks:
+    - include_role:
+        name: delfin-ui-installer
+      when:
+        - enable_delfin_ui == true
+  tags: delfin_ui
 
 - name: deploy tools for telemetry
   hosts: controllers

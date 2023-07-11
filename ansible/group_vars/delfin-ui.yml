@@ -1,0 +1,40 @@
+# Copyright 2023 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# Dummy variable to avoid error because ansible does not recognize the
+# file as a good configuration file when no variable in it.
+dummy:
+
+
+###########
+# GENERAL #
+###########
+
+enable_delfin_ui: false
+
+delfin_ui_port: 9001
+
+delfin_ui_release_version: v1.7.1
+
+#Dashboard Console Login Address
+delfin_ui_login_url: "{{ host_ip }}:{{ delfin_ui_port }}"
+
+##########
+# DOCKER #
+##########
+
+delfin_ui_docker_image: sodafoundation/delfin-ui:{{ delfin_ui_release_version }}
+
+

@@ -26,7 +26,7 @@ enable_delfin_ui: false
 
 delfin_ui_port: 9001
 
-delfin_ui_release_version: v1.7.1
+delfin_ui_release_version: v1.8.0
 
 #Dashboard Console Login Address
 delfin_ui_login_url: "{{ host_ip }}:{{ delfin_ui_port }}"

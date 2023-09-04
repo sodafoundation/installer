@@ -7,7 +7,7 @@
 
 ## Introduction
 
-SODA installer project provides easy installation and basic deployment based on specific configurations for SODA Projects. The installer is created so as to support the integrated installation of specific projects for each SODA Release.
+SODA installer project provides easy installation and basic deployment based on specific configurations for SODA Projects. The installer is created so as to support the integrated installation of specific projects foreach SODA Release.
 
 It is modular and specific project installation information is built based on the installation hooks and related configurations. Basically SODA installer plays a wrapper role to put all together and provide a simple installation for the users and experience overall solution.
 

@@ -21,7 +21,7 @@
   any_errors_fatal: true
   become: True
   
-# Defines deployment design and assigns role to server groups
+# Install delfin on delfin-nodes group if enable_delfin is true
 - name: Install delfin
   hosts: delfin-nodes
   remote_user: root
@@ -36,6 +36,7 @@
         - enable_delfin == true
   tags: delfin
 
+# Install SRM Toolchain on controllers group if install_srm_toolchain is true
 - name: Install SRM Toolchain
   hosts: controllers
   remote_user: root
@@ -52,7 +53,8 @@
         - install_srm_toolchain == true
   tags: srm_toolchain
 
-- name: Install keystone services
+# Install Keystone services and Gelato/Gelato-HA on controllers group depending on variables
+- name: Install Keystone Services and Gelato/Gelato-HA
   hosts: controllers
   remote_user: root
   vars_files:
@@ -66,27 +68,20 @@
   gather_facts: false
   become: True
   tasks:
+    # Install auth service for Keystone if enable_dashboard, enable_hotpot, enable_gelato, or gelato_ha is true
     - import_role:
         name: auth-installer
       when:
         - enable_dashboard == true or enable_hotpot == true or enable_gelato == true or gelato_ha == true or enable_strato_ui == true
   tags: keystone
 
-- name: Install Gelato/Gelato-HA
-  hosts: controllers
-  remote_user: root
-  vars_files:
-    - group_vars/gelato.yml
-    - group_vars/gelato-ha.yml
-  gather_facts: false
-  become: True
-  tasks:
+  # Install Gelato and/or Gelato-HA if enable_gelato or gelato_ha is true
     - import_role:
         name: gelato-installer
       when:
         - enable_gelato == true or gelato_ha == true
   tags: gelato
-
+  
 - name: Deploy SODA Hotpot(api, controller, dock) installer
   hosts: controllers
   remote_user: root

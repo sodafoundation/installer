@@ -24,7 +24,7 @@ dummy:
 
 # This field indicates local machine host ip
 # For HA configuration, add the IP on which the Core Services (Hotpot) are reachable from the Kubernetes node.
-host_ip: 127.0.0.1
+host_ip: 127.0.0.1 # Make sure you replace this Dummy IP with your IP address
 
 # This field indicates which way user prefers to install, currently support
 # 'repository', 'release' and 'container'

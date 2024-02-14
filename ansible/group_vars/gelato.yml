@@ -24,7 +24,7 @@ dummy:
 
 enable_gelato: false
 
-gelato_release_version: v1.9.0
+gelato_release_version: v1.10.0
 
 # These fields are NOT suggested to be modifie
 gelato_work_dir: /opt/opensds-gelato-linux-amd64
